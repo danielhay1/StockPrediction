@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google" translatable="false">
+        "value"
+    </string>
+    <!--RapidApi-->
+    <string name="rapidapi" translatable="false">
+        "dec24f6be8msh81b00b56ec3ad92p16405ajsn732e998311d1"
+    </string>
+
+</resources>

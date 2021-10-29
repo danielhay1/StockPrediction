@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Check with guy the relevant data to display-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:paddingVertical="12dp">
+
+    <ImageView
+        android:id="@+id/RVROW_IMG_StockImg"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:src="@mipmap/ic_launcher" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@+id/RVROW_IMG_StockImg"
+        android:layout_alignBottom="@id/RVROW_IMG_StockImg"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/RVROW_LBL_StockName"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:gravity="left"
+                android:textSize="8pt"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-light"
+                android:text="Stock Name"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/RVROW_IMG_currentStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:src="@mipmap/ic_launcher_round"
+                    />
+                <ImageView
+                    android:id="@+id/RVROW_IMG_predictionStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:src="@mipmap/ic_launcher_round"
+                    />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:gravity="left"
+                    android:textSize="6pt"
+                    android:text=" | "/>
+                <TextView
+                    android:id="@+id/RVROW_LBL_StockSymbol"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:gravity="left"
+                    android:textSize="6pt"
+                    android:text="Stock symbol"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingRight="12dp"
+            android:gravity="right"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/RVROW_LBL_StockValue"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                android:gravity="right"
+                android:textSize="8pt"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-light"
+                android:text="Value"/>
+
+            <TextView
+                android:id="@+id/RVROW_LBL_StockStatusDetails"
+                android:layout_width="match_parent"
+                android:gravity="right"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textSize="6pt"
+                android:text="+184.84(+0.71%)"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

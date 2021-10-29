@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.application'
+    apply plugin: 'com.google.gms.google-services'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.example.stockprediction"
+        minSdkVersion 26
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // Stock dependencies:
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    // recyclerview dependencies:
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    // Gson
+    implementation 'com.google.code.gson:gson:2.8.6'
+    // Http API
+    implementation 'com.android.volley:volley:1.2.1'
+    // implementation 'com.github.gmazzo:okhttp-client-mock:f132a40ed2'
+    // Menu dependencies:
+    // Material Navigation View Library
+    implementation 'com.shreyaspatil:MaterialNavigationView:1.2'
+    // Material Design Library
+    implementation 'com.google.android.material:material:1.0.0'
+    //Firebase dependencies:
+    implementation platform('com.google.firebase:firebase-bom:28.4.2')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-database' // Realtime DB
+    // YahooFinance:
+    // api group: 'de.sfuhrm', name: 'YahooFinanceAPI', version: 'x.y.z'
+
+    // OkHttpClient:
+
+}
