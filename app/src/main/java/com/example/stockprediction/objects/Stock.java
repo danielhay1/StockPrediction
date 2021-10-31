@@ -3,6 +3,8 @@ package com.example.stockprediction.objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+
 public class Stock {
     public enum StockStatus {
         INCREASE,
@@ -104,8 +106,14 @@ public class Stock {
         return this;
     }
 
-    public Stock JsonToStock(String jsonStock) {
-        return null;
+    public static Stock JsonToStock(String jsonStock) {
+        Gson gson = new Gson();
+        return gson.fromJson(jsonStock,Stock.class);
+    }
+
+    public String stockToJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this,Stock.class);
     }
 
     @Override
