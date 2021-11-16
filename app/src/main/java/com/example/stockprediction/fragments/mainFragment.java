@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
+import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.objects.Stock;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 import com.example.stockprediction.utils.HttpTasksClasses.HttpTasks;
@@ -22,12 +23,22 @@ import com.example.stockprediction.utils.HttpTasksClasses.HttpTasks;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
+import okhttp3.Call;
 
 public class mainFragment extends Fragment {
     private StockRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
     private ArrayList<Stock> stocksData;
+
+    private interface DataReadyCallback
+    {
+        void dataReady(ArrayList data);
+    }
 
     @Nullable
     @Override
@@ -48,16 +59,22 @@ public class mainFragment extends Fragment {
 
     private void initStockRecyclerView()  {
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        this.stocksData = loadStocksData(); // Loading stocks data
-        adapter = new StockRecyclerViewAdapter(this.getContext(), stocksData);
-        adapter.setClickListener(new StockRecyclerViewAdapter.ItemClickListener() {
+        loadStocksData(new DataReadyCallback() {
             @Override
-            public void onItemClick(View view, int position) {
-                Log.d("pttt", "onItemClick: Selected item: "+position);
+            public void dataReady(ArrayList data) {
+                stocksData = data;
+                Log.d("pttt", "dataReady: "+data);
+//                adapter = new StockRecyclerViewAdapter(getContext(), stocksData);
+//                adapter.setClickListener(new StockRecyclerViewAdapter.ItemClickListener() {
+//                    @Override
+//                    public void onItemClick(View view, int position) {
+//                        Log.d("pttt", "onItemClick: Selected item: "+position);
+//                    }
+//                });
+//                recyclerView.setAdapter(adapter);
+//                addDivider();
             }
-        });
-        recyclerView.setAdapter(adapter);
-        addDivider();
+        }); // Loading stocks data
     }
     private void addDivider(){
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.recyclerView.getContext(),
@@ -69,31 +86,69 @@ public class mainFragment extends Fragment {
 
     }
 
-    private ArrayList<Stock> loadStocksData() {
+    private void loadStocksData(DataReadyCallback dataReadyCallback) {
         ArrayList<Stock> stocks = new ArrayList<>();
-        // STUB IMPLEMENTATION
-        stocks.add(new Stock("name", "symbol", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
-        stocks.add(new Stock("name", "symbol", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
+        // Option1:
         // Load stocks data from YAHOO-API\FIREBASE
+        Iterator it = RapidApi.MY_STOCKS.entrySet().iterator();
+        boolean islastElement = false;
+        while (it.hasNext()) {
+            // x -> y -> null
+            Map.Entry<String,String> pair = (Map.Entry<String,String>)it.next();
+            if(!it.hasNext()) { // Check if this is the last element.
+                islastElement = true;
+            }
+            boolean finalIslastElement = islastElement;
+            RapidApi.getInstance().httpGetJson(pair.getValue(), RapidApi.STOCK_OPERATIONS.GET_CHART, new RapidApi.CallBack_HttpTasks() {
+                @Override
+                public void onResponse(Call call, JSONObject json) {
+                    // it.remove(); // avoids a ConcurrentModificationException
+                    Log.e("pttt", "StockJson: "+json);
+                    stocks.add(new Stock(pair.getKey(),pair.getValue(), 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
+                    //Iterator temp = (Iterator) it.next();
+                   if(finalIslastElement) {
+                       Log.d("pttt", "onResponse: ************: "+ pair);
+                       dataReadyCallback.dataReady(stocks);
+                   }
+                }
 
-        String url="";
-        HttpTasks.getInstance().httpGetRequest(url, new HttpTasks.CallBack_HttpTasks() {
+                @Override
+                public void onErrorResponse(Call call, IOException error) {
+                    Log.e("pttt", "StockJson: "+error);
+                }
+            });
+        }
+       /* // Option2:
+        // Load stocks data from YAHOO-API\FIREBASE
+        for (Map.Entry<String, String> entry : RapidApi.MY_STOCKS.entrySet()) {
+            RapidApi.getInstance().httpGetJson(entry.getValue(), RapidApi.STOCK_OPERATIONS.GET_CHART, new RapidApi.CallBack_HttpTasks() {
+                @Override
+                public void onResponse(Call call, JSONObject json) {
+                    Log.e("pttt", "StockJson: "+json);
+                    stocks.add(new Stock(entry.getKey(), entry.getValue(), 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
+
+                }
+
+                @Override
+                public void onErrorResponse(Call call, IOException error) {
+                    Log.e("pttt", "StockJson: "+error);
+                }
+            });
+        }*/
+       /* // STUB IMPLEMENTATION
+        RapidApi.getInstance().httpGetJson("NVDA", RapidApi.STOCK_OPERATIONS.GET_CHART, new RapidApi.CallBack_HttpTasks() {
             @Override
-            public void onResponse(JSONObject response) {
-                Log.d("pttt", "loadStocksData: data="+response);
-                //Log.d("pttt", "loadStocksData: data="+stocks);
+            public void onResponse(Call call, JSONObject json) {
+                Log.e("pttt", "StockJson: "+json);
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-
-            @Override
-            public void onErrorResponse(JSONException error) {
-
+            public void onErrorResponse(Call call, IOException error) {
+                Log.e("pttt", "StockJson: "+error);
             }
         });
-        return stocks;
+
+        stocks.add(new Stock("name", "NVDA", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
+        stocks.add(new Stock("name", "NVDA", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));*/
     }
 }

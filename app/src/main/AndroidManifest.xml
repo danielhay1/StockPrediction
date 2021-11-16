@@ -3,7 +3,7 @@
     package="com.example.stockprediction">
     <!-- PERMISSIONS -->
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />  permission for testing network-->
     <application
         android:name=".App"
         android:allowBackup="true"

@@ -17,6 +17,7 @@ import com.example.stockprediction.R;
 import com.example.stockprediction.objects.Stock;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class favoritiesFragment extends Fragment {
@@ -63,8 +64,9 @@ public class favoritiesFragment extends Fragment {
     private ArrayList<Stock> loadStocksData() {
         ArrayList<Stock> favoriteStocks = new ArrayList<>();
         // STUB IMPLEMENTATION
-        favoriteStocks.add(new Stock("name", "symbol", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
-        favoriteStocks.add(new Stock("name", "symbol", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
+        favoriteStocks.add(new Stock("name", "NVDA", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
+        favoriteStocks.add(new Stock("name", "NVDA", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
+
         // Load favorities stocks from shared-preference.
         return favoriteStocks;
     }

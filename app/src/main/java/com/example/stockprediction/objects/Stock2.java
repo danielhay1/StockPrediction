@@ -1,40 +1,32 @@
 package com.example.stockprediction.objects;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.stockprediction.apis.RapidApi;
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.Date;
 
-import okhttp3.Call;
-
-public class Stock {
+public class Stock2 {
 
     /**
      *  YH stock(single day):
      *  "chart" : "result":
      *  0 :
-     *  - "meta" : "regularMarketPrice" -> will bring current price
-     *  - "timestamp" : time in long
-     *  - "indicators" : "quote"[0]:
-     *  - open: long value
-     *  - close: Long value
-     *
-     *  YH stock(multiple day):
-     *  "chart" : "result"[0]:
-     *  - "timestamp" : time in long
-     *  - "indicators" : "quote"[0]:
-     *  - open: long value
-     *  - close: Long value
+         *  - "meta" : "regularMarketPrice" -> will bring current price
+         *  - "timestamp" : time in long
+         *  - "indicators" : "quote"[0]:
+         *  - open: long value
+         *  - close: Long value
+         *
+         *  YH stock(multiple day):
+         *  "chart" : "result"[0]:
+         *  - "timestamp" : time in long
+         *  - "indicators" : "quote"[0]:
+         *  - open: long value
+         *  - close: Long value
      */
-    public enum StockStatus {
+    public enum Stock2Status {
         INCREASE,
         DECREASE,
         UNCHANGED,
@@ -42,17 +34,18 @@ public class Stock {
     }
     private String name;
     private String symbol; // Use also as stock identifier
+    private long chart;
     private double value;
-    private StockStatus currentStatus;
-    private StockStatus predictionStatus;
+    private Stock2Status currentStatus;
+    private Stock2Status predictionStatus;
     private String stockStatusDetails;
     private String stockImg;
 
-    public Stock() {
+    public Stock2() {
 
     }
 
-    public Stock(String name, String symbol, double value, StockStatus currentStatus, StockStatus predictionStatus, String stockStatusDetails, String stockImg) {
+    public Stock2(String name, String symbol, double value, Stock2Status currentStatus, Stock2Status predictionStatus, String stockStatusDetails, String stockImg) {
         this.name = name;
         this.symbol = symbol;
         this.value = value;
@@ -60,19 +53,15 @@ public class Stock {
         if(predictionStatus != null) {
             this.predictionStatus = predictionStatus;
         } else {
-            this.predictionStatus = StockStatus.NO_DATA;
+            this.predictionStatus = Stock2Status.NO_DATA;
         }
         if(currentStatus != null) {
             this.predictionStatus = predictionStatus;
         } else {
-            this.predictionStatus = StockStatus.NO_DATA;
+            this.predictionStatus = Stock2Status.NO_DATA;
         }
         this.stockStatusDetails = stockStatusDetails;
         this.stockImg = stockImg;
-    }
-
-    private void setValueFromAPI() {
-
     }
 
     private String timeMillisToDate(long timeMillis) {
@@ -83,7 +72,7 @@ public class Stock {
         return name;
     }
 
-    public Stock setName(String name) {
+    public Stock2 setName(String name) {
         this.name = name;
         return this;
     }
@@ -92,7 +81,7 @@ public class Stock {
         return symbol;
     }
 
-    public Stock setSymbol(String symbol) {
+    public Stock2 setSymbol(String symbol) {
         this.symbol = symbol;
         return this;
     }
@@ -101,25 +90,25 @@ public class Stock {
         return value;
     }
 
-    public Stock setValue(double value) {
+    public Stock2 setValue(double value) {
         this.value = value;
         return this;
     }
 
-    public StockStatus getCurrentStatus() {
+    public Stock2Status getCurrentStatus() {
         return currentStatus;
     }
 
-    public Stock setCurrentStatus(StockStatus currentStatus) {
+    public Stock2 setCurrentStatus(Stock2Status currentStatus) {
         this.currentStatus = currentStatus;
         return this;
     }
 
-    public StockStatus getPredictionStatus() {
+    public Stock2Status getPredictionStatus() {
         return predictionStatus;
     }
 
-    public Stock setPredictionStatus(StockStatus predictionStatus) {
+    public Stock2 setPredictionStatus(Stock2Status predictionStatus) {
         this.predictionStatus = predictionStatus;
         return this;
     }
@@ -128,7 +117,7 @@ public class Stock {
         return stockStatusDetails;
     }
 
-    public Stock setStockStatusDetails(String stockStatusDetails) {
+    public Stock2 setStockStatusDetails(String stockStatusDetails) {
         this.stockStatusDetails = stockStatusDetails;
         return this;
     }
@@ -137,19 +126,19 @@ public class Stock {
         return stockImg;
     }
 
-    public Stock setStockImg(String stockImg) {
+    public Stock2 setStockImg(String stockImg) {
         this.stockImg = stockImg;
         return this;
     }
 
-    public static Stock JsonToStock(String jsonStock) {
+    public static Stock2 JsonToStock(String jsonStock) {
         Gson gson = new Gson();
-        return gson.fromJson(jsonStock,Stock.class);
+        return gson.fromJson(jsonStock,Stock2.class);
     }
 
     public String stockToJson() {
         Gson gson = new Gson();
-        return gson.toJson(this,Stock.class);
+        return gson.toJson(this,Stock2.class);
     }
 
     @Override
@@ -158,7 +147,7 @@ public class Stock {
             return false;
         }
         else {
-            final Stock stock = (Stock) obj;
+            final Stock2 stock = (Stock2) obj;
             return this.symbol == stock.symbol;
         }
     }
