@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/general_title">
+        <SwitchPreference
+            android:key="notfication"
+            android:title="@string/notfication_title"
+            android:defaultValue="false"/>
+        <ListPreference
+            android:key="theme"
+            android:title="@string/theme_title"
+            android:dialogTitle="@string/theme_title"
+            android:entries="@array/theme_array"
+            android:entryValues="@array/theme_values"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/about_title">
+        <Preference
+            android:title="@string/version_title"
+            android:summary="@string/version_number"/>
+        <Preference
+            android:title="About Us"/>
+            <intent android:action="android.intent.action.VIEW"
+                android:data="http://codepath.com/" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -21,7 +21,10 @@ import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.material.navigation.NavigationView;
 
+import java.security.PrivateKey;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private String currency = "USD";    // Will be enum currency and it would effect stock values.
     // Side menu
     private DrawerLayout drawer;
     private NavigationView navigationView;

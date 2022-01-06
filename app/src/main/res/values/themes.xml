@@ -17,4 +17,12 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="Theme.App" parent="Theme.AppCompat">
+        <item name="preferenceTheme">@style/Theme.App.Preferences</item>
+    </style>
+    <style name="Theme.App.Preferences" parent="PreferenceThemeOverlay">
+        ...
+    </style>
+
+
 </resources>

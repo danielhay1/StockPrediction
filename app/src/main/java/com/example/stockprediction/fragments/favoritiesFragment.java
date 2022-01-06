@@ -64,9 +64,8 @@ public class favoritiesFragment extends Fragment {
     private ArrayList<Stock> loadStocksData() {
         ArrayList<Stock> favoriteStocks = new ArrayList<>();
         // STUB IMPLEMENTATION
-        favoriteStocks.add(new Stock("name", "NVDA", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
-        favoriteStocks.add(new Stock("name", "NVDA", 0.0, Stock.StockStatus.INCREASE, Stock.StockStatus.DECREASE, "+184.84(+0.71%)","ic_launcher_background"));
-
+        favoriteStocks.add(new Stock("name", "NVDA", 0.0, 51, 33.5,Stock.StockStatus.DECREASE,"ic_launcher_background"));
+        favoriteStocks.add(new Stock("name", "NVDA", 0.0, 5.2, 33.5, Stock.StockStatus.DECREASE, "ic_launcher_background"));
         // Load favorities stocks from shared-preference.
         return favoriteStocks;
     }

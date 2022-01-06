@@ -16,30 +16,50 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
     private List<Stock> stocksData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
+    private Context context;
+
 
     // data is passed into the constructor
     public StockRecyclerViewAdapter(Context context, List<Stock> stocksData) {
         this.mInflater = LayoutInflater.from(context);
         this.stocksData = stocksData;
+        this.context = context;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.recycler_view_row, parent, false);
+        View view = mInflater.inflate(R.layout.recycle_card, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        String ValSign = "";
         Stock stock = stocksData.get(position);
         setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
-        setStockStatusImg(holder.RVROW_IMG_currentStatus,stock.getCurrentStatus(),"current_status");
         setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
         holder.RVROW_LBL_StockName.setText(stock.getName());
         holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
-        holder.RVROW_LBL_StockValue.setText(String.valueOf(stock.getValue()));
-        holder.RVROW_LBL_StockStatusDetails.setText(stock.getStockStatusDetails());
+        holder.RVROW_LBL_StockValue.setText("$" + String.valueOf(stock.getValue()));
+        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
+        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
+        setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
+        setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
+
+    }
+
+    private void setTextViewColor (TextView textView) {
+        char sign =  textView.getText().charAt(0);
+        if (sign == '-') {
+            textView.setTextColor(context.getColor(R.color.red_200));
+        }   else if (sign == '+') {
+            textView.setTextColor(context.getColor(R.color.green_200));
+        }
+    }
+    private String getStockChangeDetails(Stock stock,TextView textView){
+        String sign = (stock.getChangeAmount() > 0) ? "+" : (stock.getChangeAmount() < 0) ? "-" : "";
+        return sign+stock.getChangeAmount() + "(" + stock.getChangePercent()+ ")";
     }
 
     @Override
@@ -62,31 +82,19 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
                 if(type.equalsIgnoreCase("prediction_status")) {
                     imgName="prediction_status_increase";
                 }
-                else if(type.equalsIgnoreCase("current_status")) {
-                    imgName="current_status_increase";
-                }
                 break;
             case DECREASE:
                 if(type.equalsIgnoreCase("prediction_status")) {
                     imgName="prediction_status_decrease";
-                }
-                else if(type.equalsIgnoreCase("current_status")) {
-                    imgName="current_status_decrease";
                 }
                 break;
             case UNCHANGED:
                 if(type.equalsIgnoreCase("prediction_status")) {
                     imgName="prediction_status_unchanged";
                 }
-                else if(type.equalsIgnoreCase("current_status")) {
-                    imgName="current_status_unchanged";
-                }
                 break;
             case NO_DATA:
                 if(type.equalsIgnoreCase("prediction_status")) {
-                    imgName="";
-                }
-                else if(type.equalsIgnoreCase("current_status")) {
                     imgName="";
                 }
                 break;
@@ -102,16 +110,18 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         private TextView RVROW_LBL_StockSymbol;
         private TextView RVROW_LBL_StockValue;
         private TextView RVROW_LBL_StockStatusDetails;
+        private TextView RVROW_LBL_StockPredictionDetails;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             RVROW_IMG_StockImg = itemView.findViewById(R.id.RVROW_IMG_StockImg);
-            RVROW_IMG_currentStatus = itemView.findViewById(R.id.RVROW_IMG_currentStatus);
             RVROW_IMG_predictionStatus = itemView.findViewById(R.id.RVROW_IMG_predictionStatus);
             RVROW_LBL_StockName = itemView.findViewById(R.id.RVROW_LBL_StockName);
             RVROW_LBL_StockSymbol = itemView.findViewById(R.id.RVROW_LBL_StockSymbol);
             RVROW_LBL_StockValue = itemView.findViewById(R.id.RVROW_LBL_StockValue);
             RVROW_LBL_StockStatusDetails = itemView.findViewById(R.id.RVROW_LBL_StockStatusDetails);
+            RVROW_LBL_StockPredictionDetails = itemView.findViewById(R.id.RVROW_LBL_StockPredictionDetails);
             itemView.setOnClickListener(this);
         }
 

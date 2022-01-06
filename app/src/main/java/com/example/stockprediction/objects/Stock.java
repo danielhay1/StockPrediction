@@ -40,35 +40,39 @@ public class Stock {
         UNCHANGED,
         NO_DATA
     }
-    private String name;
-    private String symbol; // Use also as stock identifier
-    private double value;
-    private StockStatus currentStatus;
-    private StockStatus predictionStatus;
-    private String stockStatusDetails;
-    private String stockImg;
+    private String name = "";
+    private String symbol = ""; // Use also as stock identifier
+    private double value = 0.0;
+    private StockStatus predictionStatus = StockStatus.NO_DATA;
+    private double predictionValue = 0.0;
+    private double changeAmount = 0.0;
+    private double changePercent = 0.0;
+    private String stockImg = "";
 
     public Stock() {
 
     }
 
-    public Stock(String name, String symbol, double value, StockStatus currentStatus, StockStatus predictionStatus, String stockStatusDetails, String stockImg) {
+/*
+    public Stock(String jsonStock) {
+        Stock stock = JsonToStock(jsonStock);
+    }
+*/
+
+    public Stock(String name, String symbol) {
+        this.name = name;
+        this.symbol = symbol;
+    }
+
+    public Stock(String name, String symbol, double value, double previousValue, double predictionValue, StockStatus predictionStatus, String stockImg) {
         this.name = name;
         this.symbol = symbol;
         this.value = value;
-        this.currentStatus = currentStatus;
-        if(predictionStatus != null) {
-            this.predictionStatus = predictionStatus;
-        } else {
-            this.predictionStatus = StockStatus.NO_DATA;
-        }
-        if(currentStatus != null) {
-            this.predictionStatus = predictionStatus;
-        } else {
-            this.predictionStatus = StockStatus.NO_DATA;
-        }
-        this.stockStatusDetails = stockStatusDetails;
+        this.predictionStatus = (predictionStatus != null) ? predictionStatus : StockStatus.NO_DATA;
+        this.predictionValue = predictionValue;
         this.stockImg = stockImg;
+        this.changeAmount = calcStockChangeAmount(previousValue);
+        this.changePercent = calcStockChangePercent(previousValue);
     }
 
     private void setValueFromAPI() {
@@ -106,12 +110,12 @@ public class Stock {
         return this;
     }
 
-    public StockStatus getCurrentStatus() {
-        return currentStatus;
+    public double getPredictionValue() {
+        return predictionValue;
     }
 
-    public Stock setCurrentStatus(StockStatus currentStatus) {
-        this.currentStatus = currentStatus;
+    public Stock setPredictionValue(double predictionValue) {
+        this.predictionValue = predictionValue;
         return this;
     }
 
@@ -119,18 +123,35 @@ public class Stock {
         return predictionStatus;
     }
 
-    public Stock setPredictionStatus(StockStatus predictionStatus) {
-        this.predictionStatus = predictionStatus;
+    public Stock setPredictionStatus() {
+        this.predictionStatus = predictionValue > 0 ? predictionStatus.INCREASE : predictionValue < 0 ? predictionStatus.DECREASE : predictionValue == 0 ? predictionStatus.UNCHANGED : predictionStatus.NO_DATA;
         return this;
     }
 
-    public String getStockStatusDetails() {
-        return stockStatusDetails;
+    public double getChangeAmount() {
+        return changeAmount;
     }
 
-    public Stock setStockStatusDetails(String stockStatusDetails) {
-        this.stockStatusDetails = stockStatusDetails;
+    public Stock setChangeAmount(double changeAmount) {
+        this.changeAmount = changeAmount;
         return this;
+    }
+
+    public double getChangePercent() {
+        return changePercent;
+    }
+
+    public Stock setChangePercent(double changePercent) {
+        this.changePercent = changePercent;
+        return this;
+    }
+
+    public double calcStockChangeAmount(double oldValue) {
+        return value - oldValue;
+    }
+
+    public double calcStockChangePercent(double oldValue) {
+        return calcStockChangeAmount(oldValue) / value*100;
     }
 
     public String getStockImg() {
@@ -142,7 +163,7 @@ public class Stock {
         return this;
     }
 
-    public static Stock JsonToStock(String jsonStock) {
+    public Stock JsonToStock(String jsonStock) {
         Gson gson = new Gson();
         return gson.fromJson(jsonStock,Stock.class);
     }

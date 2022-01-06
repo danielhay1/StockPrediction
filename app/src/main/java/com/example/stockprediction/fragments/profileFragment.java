@@ -8,15 +8,34 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
 import com.example.stockprediction.R;
 
-public class profileFragment extends Fragment {
-    @Nullable
+public class profileFragment extends PreferenceFragmentCompat {
+    private Preference myPerf;
+    public static final String SETTINGS = "settings";
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        findViews(view);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        addPreferencesFromResource(R.xml.preferences);
+        //setPreferencesFromResource(R.xml.preferences,rootKey);
+//        myPerf = (ListPreference) findPreference("settings");
+//        myPerf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+//            @Override
+//            public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                // Enter changes in application
+//                return false;
+//            }
+//        });
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        //view.setBackgroundColor(getContext().getResources().getDrawable(R.drawable.round_corners_bg));
+
         return view;
     }
 

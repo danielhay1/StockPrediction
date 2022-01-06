@@ -34,7 +34,7 @@ public class RapidApi {
         MY_STOCKS.put("Nvidia", "NVDA");
         MY_STOCKS.put("Intel", "INTC");
         MY_STOCKS.put("AMD", "AMD");
-        MY_STOCKS.put("siemens", "SIEGY");
+        MY_STOCKS.put("Siemens", "SIEGY");
         MY_STOCKS.put("TSMC", "TSMC");
     }
 
@@ -98,8 +98,7 @@ public class RapidApi {
                 error.printStackTrace();
             }
         });
-        // Convert json to stock
-        Stock.JsonToStock("");
+        // TODO: Convert json to stock
     }
 
     private String rapidUrlBuilder(String operation, String symbol, String interval, String range, String region) {
@@ -115,7 +114,7 @@ public class RapidApi {
         return url;
     }
     public void httpGetJson(String symbol, STOCK_OPERATIONS operation, CallBack_HttpTasks callBack_httpTasks) {
-        String url = this.rapidUrlBuilder(getOperationStringVal(operation),symbol,"10m","1w","US");
+        String url = this.rapidUrlBuilder(getOperationStringVal(operation),symbol,"10m","5d","US");
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
