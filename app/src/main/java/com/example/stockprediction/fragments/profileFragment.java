@@ -1,49 +1,58 @@
 package com.example.stockprediction.fragments;
 
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
+import android.widget.Toolbar;
 
 import com.example.stockprediction.R;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
-public class profileFragment extends PreferenceFragmentCompat {
-    private Preference myPerf;
-    public static final String SETTINGS = "settings";
+public class profileFragment extends Fragment {
+    MaterialButton profile_BTN_edit;
+    MaterialButton profile_BTN_Settings;
+
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        addPreferencesFromResource(R.xml.preferences);
-        //setPreferencesFromResource(R.xml.preferences,rootKey);
-//        myPerf = (ListPreference) findPreference("settings");
-//        myPerf.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                // Enter changes in application
-//                return false;
-//            }
-//        });
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        //view.setBackgroundColor(getContext().getResources().getDrawable(R.drawable.round_corners_bg));
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        findViews(view);
+        initViews();
         return view;
     }
 
-    private void findViews(View view) {
-
+    public void findViews(View view) {
+        this.profile_BTN_edit = view.findViewById(R.id.profile_BTN_edit);
+        this.profile_BTN_Settings = view.findViewById(R.id.profile_BTN_Settings);
     }
 
-    private void initViews() {
-
+    public void initViews() {
+        profile_BTN_edit.setOnClickListener(v -> {
+            Fragment fragment = new EditProfileFragment();
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.profile_BTN_edit, fragment);
+            fragmentTransaction.commit();
+        });
     }
+
+    public void changeFragment(Fragment newFragment,int layout) {
+        getActivity().getSupportFragmentManager().beginTransaction().replace(layout, newFragment).commit();
+    }
+
+
 }

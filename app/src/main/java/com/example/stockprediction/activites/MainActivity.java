@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -16,12 +17,11 @@ import android.widget.TextView;
 import com.example.stockprediction.R;
 import com.example.stockprediction.fragments.favoritiesFragment;
 import com.example.stockprediction.fragments.mainFragment;
+import com.example.stockprediction.fragments.SettingsFragment;
 import com.example.stockprediction.fragments.profileFragment;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.material.navigation.NavigationView;
-
-import java.security.PrivateKey;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String currency = "USD";    // Will be enum currency and it would effect stock values.
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Fragments
     private mainFragment mainFragment;
     private favoritiesFragment favoritiesFragment;
-    private profileFragment profileFragment;
+    private SettingsFragment SettingsFragment;
     // User
     private User user;
 
@@ -69,6 +69,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void replaceFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
+                , fragment).commit();
+    }
+
     @Override
     public void onBackPressed() {
         if(drawer.isDrawerOpen(GravityCompat.START)) {
@@ -83,18 +88,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.nav_main:
                 Log.d("pttt", "Switch to mainFragment");
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
-                        , new mainFragment()).commit();
+                replaceFragment(new mainFragment());
                 break;
             case R.id.nav_favorities:
                 Log.d("pttt", "Switch to favoritiesFragment");
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
-                        , new favoritiesFragment()).commit();
+                replaceFragment(new favoritiesFragment());
                 break;
             case R.id.nav_profile:
                 Log.d("pttt", "Switch to profileFragment");
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
-                        , new profileFragment()).commit();
+                replaceFragment(new profileFragment());
                 break;
             case R.id.nav_share:
                 MySignal.getInstance().toast("Share");

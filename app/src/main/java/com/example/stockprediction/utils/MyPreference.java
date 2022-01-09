@@ -14,10 +14,12 @@ public class MyPreference {
     private SharedPreferences sharedPreferences;
 
     private final String PREFERENCE_ROOT = "preferences_root";
-    // private final String FAV_STOCKS = "favorities_stocks";
-
+    // Application Preference Public Keys:
     public interface KEYS {
         public final String FAV_STOCKS = "favorities_stocks";
+        public final String STOCKS_DATA = "stocks_data";
+        public final String  SETTINGS = "settings";
+        public final String  USER_DETAILS = "user_details";
     }
 
     public static MyPreference getInstance() {
