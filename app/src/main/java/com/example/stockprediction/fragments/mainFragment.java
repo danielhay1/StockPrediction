@@ -48,6 +48,7 @@ public class mainFragment extends Fragment {
 
     private void findViews(View view) {
         this.recyclerView = view.findViewById(R.id.main_RV_stocks);
+
     }
 
     private void initViews() {
@@ -94,7 +95,7 @@ public class mainFragment extends Fragment {
         }
     }
 
-    private void updateRecicleView(ArrayList<Stock> stockList, int position,StockRecyclerViewAdapter adapter) {
+    private void updateRecicleView(ArrayList<Stock> stockList, int position,StockRecyclerViewAdapter adapter) { // Fix method
         stocksData.get(position)
                 .setPredictionStatus()
                 .setValue(10.0);
