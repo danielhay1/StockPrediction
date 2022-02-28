@@ -1,25 +1,22 @@
 package com.example.stockprediction.apis;
 
-import android.app.ActivityManager;
-import android.app.MediaRouteActionProvider;
+
 import android.content.Context;
 import android.util.Log;
-import com.example.stockprediction.R;
-import com.example.stockprediction.objects.Stock;
-import com.google.firebase.database.core.persistence.PruneForest;
 
-import org.json.JSONException;
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.example.stockprediction.R;
+import com.example.stockprediction.utils.HttpServices.HttpRequestQueue;
+
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
 public class RapidApi {
@@ -27,6 +24,9 @@ public class RapidApi {
     private Context appContext;
     private final String HOST = "yh-finance.p.rapidapi.com";
     private static String api_key;
+    private HttpRequestQueue httpRequestQueue;
+
+
     //private OkHttpClient client;
     // Stock hash collection
     public static final HashMap<String,String> MY_STOCKS =  new HashMap<String,String>();
@@ -48,8 +48,8 @@ public class RapidApi {
 
     // Callback interface
     public interface CallBack_HttpTasks {
-        void onResponse(Call call, JSONObject json);
-        void onErrorResponse(Call call, IOException error);
+        void onResponse(JSONObject json);
+        void onErrorResponse(VolleyError error);
     }
 
 
@@ -60,6 +60,7 @@ public class RapidApi {
     private RapidApi(Context context) {
         this.appContext = context.getApplicationContext();
         this.api_key = this.appContext.getString(R.string.rapidapi);
+        httpRequestQueue = HttpRequestQueue.getInstance(appContext);
     }
 
     public static void Init(Context context){
@@ -85,7 +86,7 @@ public class RapidApi {
     private void getHistoricalData(String symbol) {
         this.httpGetJson(symbol, STOCK_OPERATIONS.GET_HISTORICAL_DATA, new CallBack_HttpTasks() {
             @Override
-            public void onResponse(Call call, JSONObject json) {
+            public void onResponse(JSONObject json) {
                 /**
                  * send response to activity
                  */
@@ -93,12 +94,14 @@ public class RapidApi {
             }
 
             @Override
-            public void onErrorResponse(Call call, IOException error) {
-                Log.e("pttt", "httpGetRequest: Response Failed!");
+            public void onErrorResponse(VolleyError error) {
+                Log.e("pttt", "httpGetRequest: VolleyError: "+error);
                 error.printStackTrace();
             }
         });
         // TODO: Convert json to stock
+
+
     }
 
     private String rapidUrlBuilder(String operation, String symbol, String interval, String range, String region) {
@@ -113,52 +116,40 @@ public class RapidApi {
         String url = apiUrl + operation + "?symbol=" + symbol + "&interval="+ interval + "&range="+ range + "&region=" + region;
         return url;
     }
+
+
     public void httpGetJson(String symbol, STOCK_OPERATIONS operation, CallBack_HttpTasks callBack_httpTasks) {
         String url = this.rapidUrlBuilder(getOperationStringVal(operation),symbol,"10m","5d","US");
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .addHeader("x-rapidapi-host", this.HOST)
-                .addHeader("x-rapidapi-key", this.api_key)
-                .build();
+        Log.d("rapid_api", "httpGetJson: url= "+url);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (com.android.volley.Request.Method.GET, url, null, new com.android.volley.Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("pttt", "onResponse: "+ response);
+                        callBack_httpTasks.onResponse(response);
 
-        //Response response = client.newCall(request).execute();
-        //if(response.isSuccessful()) {
-        //            return response.body().string();
-        //        }   else {
-        //            throw new httpGetRequestException("Response failed.");
-        //        }
-        //return call;
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callBack_httpTasks.onErrorResponse(call,e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if(response.isSuccessful()) {
-                    String jsonData = response.body().string();
-                    try {
-                        JSONObject Jobject = new JSONObject(jsonData);
-                        callBack_httpTasks.onResponse(call, Jobject);
-                    } catch (JSONException e) {
-                        callBack_httpTasks.onErrorResponse(call,new httpGetRequestException(e.getMessage()));
                     }
-                }   else {
-                    callBack_httpTasks.onErrorResponse(call,new httpGetRequestException("Response failed."));
-                }
+                }, new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        Log.d("pttt", "onResponse: VolleyError: "+ error);
+                        callBack_httpTasks.onErrorResponse(error);
+
+                    }
+                })  {
+            /**
+             * Passing some request headers
+             */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("x-rapidapi-host", HOST);
+                headers.put("x-rapidapi-key", api_key);
+                headers.put("key", "Value");
+                return headers;
             }
-        });
-    }
-
-
-
-    class httpGetRequestException extends IOException {
-        public httpGetRequestException(String msg) {
-            super("HttpGetRequest Exception: " + msg);
-        }
+        };
+        httpRequestQueue.addToRequestQueue(jsonObjectRequest);
     }
 }

@@ -3,6 +3,7 @@ package com.example.stockprediction;
 import android.app.Application;
 
 import com.example.stockprediction.apis.RapidApi;
+import com.example.stockprediction.utils.HttpServices.HttpRequestQueue;
 import com.example.stockprediction.utils.HttpTasksClasses.HttpTasks;
 import com.example.stockprediction.utils.MySignal;
 

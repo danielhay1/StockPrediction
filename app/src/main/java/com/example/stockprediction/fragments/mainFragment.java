@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.objects.Stock;
@@ -19,12 +20,8 @@ import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-
-import okhttp3.Call;
 
 interface DataReadyCallback
 {
@@ -81,21 +78,21 @@ public class mainFragment extends Fragment {
             int finalI = i;
             RapidApi.getInstance().httpGetJson(stock.getSymbol(), RapidApi.STOCK_OPERATIONS.GET_CHART, new RapidApi.CallBack_HttpTasks() {
                 @Override
-                public void onResponse(Call call, JSONObject json) {
+                public void onResponse(JSONObject json) {
                     // it.remove(); // avoids a ConcurrentModificationException
                     Log.e("pttt", "StockJson found: "+json);
                     // TODO: figure out what data is needed for stock class and parse the relevant data.
-                    updateRecicleView(stocksData,finalI,adapter);
+                    updateRecycleView(stocksData,finalI,adapter);
                 }
                 @Override
-                public void onErrorResponse(Call call, IOException error) {
+                public void onErrorResponse(VolleyError error) {
                     Log.e("pttt", "StockJson error: "+error);
                 }
             });
         }
     }
 
-    private void updateRecicleView(ArrayList<Stock> stockList, int position,StockRecyclerViewAdapter adapter) { // Fix method
+    private void updateRecycleView(ArrayList<Stock> stockList, int position, StockRecyclerViewAdapter adapter) { // Fix method
         stocksData.get(position)
                 .setPredictionStatus()
                 .setValue(10.0);
