@@ -83,8 +83,12 @@ public class RapidApi {
         return operationStringVal;
     }
 
+    private void getDataFromCache(String key) {
+
+    }
+
     private void getHistoricalData(String symbol) {
-        this.httpGetJson(symbol, STOCK_OPERATIONS.GET_HISTORICAL_DATA, new CallBack_HttpTasks() {
+        httpGetJson(symbol, STOCK_OPERATIONS.GET_HISTORICAL_DATA, new CallBack_HttpTasks() {
             @Override
             public void onResponse(JSONObject json) {
                 /**
@@ -100,8 +104,6 @@ public class RapidApi {
             }
         });
         // TODO: Convert json to stock
-
-
     }
 
     private String rapidUrlBuilder(String operation, String symbol, String interval, String range, String region) {

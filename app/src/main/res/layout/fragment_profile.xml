@@ -17,95 +17,87 @@
         android:layout_marginBottom="50dp"/>
 
 
-    <ScrollView
-        android:id="@+id/scrolView_account"
+    <RelativeLayout
+        android:id="@+id/linear_account"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-
-        <RelativeLayout
-            android:id="@+id/linear_account"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="100dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="100dp"
+                android:layout_marginRight="10dp"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="100dp"
-                    android:layout_marginRight="10dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="profile Details"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Username"
-                        android:textSize="18sp"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Email"
-                        android:textSize="18sp"/>
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:background="@color/purple_700">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/imageview_account_profile"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="30dp"
-                    android:src="@mipmap/ic_launcher"
-                    app:civ_border_color="#FFFFFF"
-                    app:civ_border_width="2dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/profile_BTN_edit"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginRight="28dp"
-                    android:text="Edit"
-                    android:textColor="@color/white"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="@color/white" />
-            </RelativeLayout>
+                    android:layout_marginBottom="10dp"
+                    android:text="profile Details"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/profile_TV_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textSize="17sp"/>
+                <TextView
+                    android:id="@+id/profile_TV_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+        </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/purple_700">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageview_account_profile"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:src="@mipmap/ic_launcher"
+                app:civ_border_color="#FFFFFF"
+                app:civ_border_width="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/profile_BTN_edit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="24dp"
+                android:layout_marginRight="28dp"
+                android:text="Edit"
+                android:textColor="@color/white"
+                app:cornerRadius="50dp"
+                app:strokeColor="@color/white" />
         </RelativeLayout>
-
-    </ScrollView>
+    </RelativeLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profile_BTN_Settings"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_margin="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_centerHorizontal="true"
         android:text="Settings"
         android:textColor="@color/purple_700"
         android:layout_above="@id/profile_BTN_Logout"
@@ -113,11 +105,12 @@
         app:strokeColor="@color/purple_700" />
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profile_BTN_Logout"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Dialog.Flush"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:layout_margin="4dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="4dp"
         android:text="Logout"
         android:textColor="@color/purple_700"
         app:cornerRadius="50dp"

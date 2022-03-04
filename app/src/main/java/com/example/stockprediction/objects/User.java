@@ -6,11 +6,14 @@ import java.util.ArrayList;
 
 public class User {
     private String uid;
-    private String userName;
+    private String email;
+    private String name;
     private String imageUrl;
-    private ArrayList<Stock> favStocks = new ArrayList<Stock>();    // init arraylist on constactor
+    private ArrayList<Stock> favStocks;
 
-    public User() {}
+    public User() {
+        favStocks = new ArrayList<Stock>();
+    }
 
     public String getUid() {
         return uid;
@@ -21,12 +24,21 @@ public class User {
         return this;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getEmail() {
+        return email;
     }
 
-    public User setUserName(String userName) {
-        this.userName = userName;
+    public User setEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public User setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -46,17 +58,17 @@ public class User {
 
     private void addStock(Stock stock) {
         this.favStocks.add(stock);
-        MyPreference.getInstance().putStockArrayList(this.favStocks);
+        MyPreference.getInstance().putFavStockArrayList(this.favStocks);
     }
 
     private void removeStocks(Stock stock) {
         this.favStocks.remove(stock);
-        MyPreference.getInstance().putStockArrayList(this.favStocks);
+        MyPreference.getInstance().putFavStockArrayList(this.favStocks);
     }
 
     private void removeAllStocks() {
         this.favStocks.clear();
-        MyPreference.getInstance().putStockArrayList(this.favStocks);
+        MyPreference.getInstance().putFavStockArrayList(this.favStocks);
     }
 
     private void loadFavStocks() {
@@ -67,8 +79,9 @@ public class User {
         return this.favStocks;
     }
 
+
     private void login() {
-        // After user is loged in:
+        // After user is logged in:
 
         // Load user details.
         // Load user favorite stocks.

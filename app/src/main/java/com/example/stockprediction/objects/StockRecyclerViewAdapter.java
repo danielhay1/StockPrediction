@@ -10,8 +10,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.stockprediction.R;
+import com.example.stockprediction.utils.MyPreference;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import co.ankurg.expressview.ExpressView;
+import co.ankurg.expressview.OnCheckListener;
+
 public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecyclerViewAdapter.ViewHolder> {
     private List<Stock> stocksData;
     private LayoutInflater mInflater;
@@ -46,7 +54,28 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
         setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
         setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
+        Log.d("pttt", "onBindViewHolder: "+ stock.getSymbol());
+        //markAsLiked(stock.getSymbol(),holder); // TODO: fix null pointer exception
+        holder.RVROW_EV_likeButton.setOnCheckListener(new OnCheckListener() {
+            @Override
+            public void onChecked(@Nullable ExpressView expressView) {
+                ArrayList<Stock> favStocks = MyPreference.getInstance().getUserFavStocks();
+                favStocks.add(stock);
+                MyPreference.getInstance().putFavStockArrayList(favStocks);
+            }
 
+            @Override
+            public void onUnChecked(@Nullable ExpressView expressView) {
+                MyPreference.getInstance().removeFavStock(stock);
+            }
+        });
+    }
+
+    private void markAsLiked(String symbol,ViewHolder holder) {
+        ArrayList<Stock> favStocks = MyPreference.getInstance().getUserFavStocks();
+        if(favStocks != null) {
+            holder.RVROW_EV_likeButton.setChecked(true);
+        }
     }
 
     private void setTextViewColor (TextView textView) {
@@ -111,6 +140,7 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         private TextView RVROW_LBL_StockValue;
         private TextView RVROW_LBL_StockStatusDetails;
         private TextView RVROW_LBL_StockPredictionDetails;
+        private ExpressView RVROW_EV_likeButton;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -122,6 +152,7 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
             RVROW_LBL_StockValue = itemView.findViewById(R.id.RVROW_LBL_StockValue);
             RVROW_LBL_StockStatusDetails = itemView.findViewById(R.id.RVROW_LBL_StockStatusDetails);
             RVROW_LBL_StockPredictionDetails = itemView.findViewById(R.id.RVROW_LBL_StockPredictionDetails);
+            RVROW_EV_likeButton = itemView.findViewById(R.id.RVROW_EV_likeButton);
             itemView.setOnClickListener(this);
         }
 

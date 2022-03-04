@@ -8,6 +8,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.stockprediction.R;
+import com.example.stockprediction.utils.MyFireBaseServices;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -27,8 +28,13 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void startApp() {
-        Intent inent = new Intent(getBaseContext(), MainActivity.class);
-        startActivity(inent);
+        Intent intent;
+        if (MyFireBaseServices.getInstance().login()) {
+            intent = new Intent(getBaseContext(), MainActivity.class);
+        } else {
+            intent = new Intent(getBaseContext(), LoginActivity.class);
+        }
+        startActivity(intent);
         finish();
     }
 

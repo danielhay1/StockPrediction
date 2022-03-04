@@ -18,61 +18,118 @@
 <!--        android:text="Spark"-->
 <!--        android:src=""/>-->
 
-    <TextView
-        android:id="@+id/splash_TEXTVIEW_logo"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/login_IMG_logo"
+        android:layout_width="170dp"
         android:layout_height="1dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp"
-        android:gravity="center"
-        android:text="Logo"
-        android:textSize="40sp"
-        android:textColor="@color/white"
-        />
-
+        android:layout_marginTop="44dp"
+        android:layout_weight="1"/>
 
     <LinearLayout
-        android:layout_width="140dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
         android:layout_weight="0.3"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
-        >
+        android:orientation="vertical"
+        android:padding="44dp">
+
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/login_EDT"
+            android:id="@+id/login_EDT_name"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/phone_number"
-            app:boxStrokeErrorColor="@color/red"
-            android:textColorHint="@color/white"
-            app:placeholderText="+972-50-0000000"
-            app:placeholderTextColor="@color/light_blue"
+            android:hint="Name"
+            android:textColorHint="@color/light_gray"
             app:boxStrokeColor="@color/white"
+            app:boxStrokeErrorColor="@color/red"
             app:hintTextColor="@color/white"
-            >
+            android:visibility="invisible">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="phone"
                 android:ems="10"
+                android:inputType="textEmailAddress"
                 android:textColor="@color/white"
-                app:boxStrokeColor="@color/white"
-                android:textColorHint="@color/light_blue"
-
-                />
+                android:textColorHint="@color/light_gray"
+                app:boxStrokeColor="@color/white" />
         </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:cornerRadius="50dp"
-            android:id="@+id/login_BTN_continue"
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_EDT_email"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:textColorHint="@color/light_gray"
+            app:boxStrokeColor="@color/white"
+            app:boxStrokeErrorColor="@color/red"
+            app:hintTextColor="@color/white">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textColorHint="@color/light_gray"
+                app:boxStrokeColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login_EDT_password"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:textColorHint="@color/light_gray"
+            app:boxStrokeColor="@color/white"
+            app:boxStrokeErrorColor="@color/red"
+            app:hintTextColor="@color/white">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:textColor="@color/white"
+                android:textColorHint="@color/light_gray"
+                app:boxStrokeColor="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/login_TV_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Invalid email or password inserted."
+            android:visibility="invisible"
+            android:textColor="@color/red_200"/>
+        <ProgressBar
+            android:visibility="invisible"
+            android:id="@+id/login_PB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:strokeColor="@color/white"
-            android:text="@string/continue_"
-            android:layout_marginTop="24dp"
-            android:textColor="@color/white"
+            android:layout_marginTop="40dp"
             />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/login_BTN_login"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Login"
+            android:textColor="@color/white"
+            app:cornerRadius="50dp"
+            app:strokeColor="@color/white" />
+
+        <TextView
+            android:id="@+id/login_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Register"
+            android:textColor="@color/white"/>
+        <!---> Finger Print Icon <!-->
+
     </LinearLayout>
 </LinearLayout>

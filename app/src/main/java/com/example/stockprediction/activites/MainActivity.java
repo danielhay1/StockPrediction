@@ -11,15 +11,18 @@ import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.stockprediction.R;
 import com.example.stockprediction.fragments.favoritiesFragment;
 import com.example.stockprediction.fragments.mainFragment;
 import com.example.stockprediction.fragments.SettingsFragment;
 import com.example.stockprediction.fragments.profileFragment;
 import com.example.stockprediction.objects.User;
+import com.example.stockprediction.utils.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.material.navigation.NavigationView;
 
@@ -28,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Side menu
     private DrawerLayout drawer;
     private NavigationView navigationView;
-    private ImageView nav_IMGVIEW_userImg;
+    private de.hdodenhof.circleimageview.CircleImageView nav_IMGVIEW_userImg;
     private TextView nav_LBL_userName;
     private TextView nav_LBL_userInfo;
     // Fragments
@@ -55,8 +58,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     , new mainFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_main);
         }
-
+        nav_IMGVIEW_userImg.setOnClickListener(v -> navigationView.setCheckedItem(R.id.nav_main));
     }
+
     private void findViews() {
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -67,6 +71,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initListeners() {
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void setUserDetails() {
+        MyFireBaseServices.getInstance().loadUserFromFireBase(MyFireBaseServices.getInstance().getFirebaseUser().getUid(),
+                new MyFireBaseServices.CallBack_LoadUser() {
+            @Override
+            public void userDetailsUpdated(User result) {
+                nav_LBL_userName.setText(result.getName());
+                nav_LBL_userInfo.setText(result.getEmail());
+                if(result.getImageUrl() != null) {
+
+                }
+            }
+
+            @Override
+            public void loadFailed(Exception e) {
+                Log.e("pttt", "loadFailed: setUserDetails-exception: "+e);
+            }
+        });
+    }
+
+    private void setImageUserWithUriGlide(String stringImg) {
+        Log.d("pttt", "setImageUserWithUriGlide:");
+        Glide.with(this)
+                .load(stringImg)
+                .centerCrop()
+                .into(nav_IMGVIEW_userImg);
     }
 
     private void replaceFragment(Fragment fragment) {

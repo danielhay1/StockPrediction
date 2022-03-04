@@ -1,9 +1,14 @@
 package com.example.stockprediction.utils;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.example.stockprediction.activites.SplashActivity;
+import com.example.stockprediction.objects.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -13,23 +18,110 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import java.util.ArrayList;
 
 public class MyFireBaseServices {
+
+    private final String DB_URL = "https://stockprediction-b3afb-default-rtdb.europe-west1.firebasedatabase.app/";
     private FirebaseUser firebaseUser;   // Current login user
     private  static MyFireBaseServices instance;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase database;
-
     public static MyFireBaseServices getInstance() {
         return instance;
     }
 
+    private MyFireBaseServices() {
+        this.firebaseAuth = FirebaseAuth.getInstance();
+        this.database = FirebaseDatabase.getInstance(DB_URL);
+    }
+
     // ################# keys #################:
     private final String MY_USERS = "users";
-    private final String FAVORITE_STOCKS = "favorite_stocks";
+    private final String FAV_STOCKS = "favorities_stocks";
     private final String STOCKS_PREDICTION = "stocks_prediction";
-    // ########################################:
+    private final String SETTINGS = "settings";
+
+    // ########################################
+
+    // ################# CallBacks #################:
+    public interface CallBack_LoadUser {
+        void userDetailsUpdated(User result);
+        void loadFailed(Exception e);
+    }
+
+    // #############################################
+    public static void Init(){
+        if(instance == null) {
+            Log.d("pttt", "Init: MyFireBaseServices");
+            instance = new MyFireBaseServices();
+        }
+    }
+
+    public boolean login() {
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        boolean loginSuccess;
+        if (firebaseUser == null) {
+            loginSuccess = false;
+            Log.d("pttt", "login: failed");
+        } else {
+            setFirebaseUser(firebaseUser);
+            Log.d("pttt", "Uid = " + firebaseUser.getUid()
+                    + "\nDisplayName = " + firebaseUser.getDisplayName()
+                    + "\nEmail = " + firebaseUser.getEmail()
+                    + "\nPhoneNumber = " + firebaseUser.getPhoneNumber()
+                    + "\nPhotoUrl = " + firebaseUser.getPhotoUrl());
+            loginSuccess = true;
+        }
+        return loginSuccess;
+    }
+
+
+    public void setFirebaseUser(FirebaseUser firebaseUser) {
+        this.firebaseUser = firebaseUser;
+    }
+
+    public FirebaseAuth getFirebaseAuth() {
+        return firebaseAuth;
+    }
+
+    public FirebaseUser getFirebaseUser() {
+        return firebaseUser;
+    }
+
+    public void signOut(Activity source) {
+        this.firebaseAuth.signOut();
+        Intent intent = new Intent(source, SplashActivity.class);
+        source.startActivity(intent);
+        source.finish();
+    }
+
+    public void saveUserToFireBase(User user) {
+        DatabaseReference myRef = database.getReference(MY_USERS);
+        myRef.child(user.getUid()).setValue(user);
+        Log.d("pttt", "saveUserToFireBase: ");
+    }
+
+    public void loadUserFromFireBase(String userId, CallBack_LoadUser callBack_loadUser) {
+        DatabaseReference myRef = database.getReference(MY_USERS);
+        if(userId!=null){
+            myRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(snapshot != null) {
+                        User value = snapshot.getValue(User.class);
+                        Log.d("pttt", "Value is: "+ value);
+                        callBack_loadUser.userDetailsUpdated(value);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    callBack_loadUser.loadFailed(error.toException());
+                }
+            });
+        }
+    }
+
+
 
     // ################# CallBacks #################:
    /* public interface CallBack_LoadVehicle {
@@ -50,89 +142,7 @@ public class MyFireBaseServices {
         this.database = FirebaseDatabase.getInstance();
     }
     // #############################################:
-    public static void Init(){
-        if(instance == null) {
-            Log.d("pttt", "Init: MyFireBaseServices");
-            instance = new com.example.spark.untils.MyFireBaseServices();
-        }
-    }
 
-    public boolean login() {
-        *//**
-         * function check if user is login to system:
-         * if user is login ,Method sets the user as the current user and returns true.
-         * else Method returns false and not sets user.
-         * *//*
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        boolean loginSuccess;
-        if (firebaseUser == null) {
-            loginSuccess = false;
-        } else {
-            setFirebaseUser(firebaseUser);
-            Log.d("pttt", "Uid = " + firebaseUser.getUid()
-                    + "\nDisplayName = " + firebaseUser.getDisplayName()
-                    + "\nEmail = " + firebaseUser.getEmail()
-                    + "\nPhoneNumber = " + firebaseUser.getPhoneNumber()
-                    + "\nPhotoUrl = " + firebaseUser.getPhotoUrl());
-            loginSuccess = true;
-        }
-        return loginSuccess;
-    }
-
-    private void setFirebaseUser(FirebaseUser firebaseUser) {
-        this.firebaseUser = firebaseUser;
-    }
-
-    public FirebaseUser getFirebaseUser() {
-        return firebaseUser;
-    }
-
-    public FirebaseAuth getFirebaseAuth() {
-        return firebaseAuth;
-    }
-
-    public String getUID() {
-        if(firebaseUser.getUid() == null) {
-            return "";
-        } else {
-            return firebaseUser.getUid();
-        }
-    }
-
-    public String getUserName() {
-        if(firebaseUser.getDisplayName() == null) {
-            return "";
-        } else {
-            return firebaseUser.getDisplayName();
-        }
-    }
-
-    public String getUserPhone() {
-        if(firebaseUser.getPhoneNumber() == null) {
-            return "";
-        } else {
-            return firebaseUser.getPhoneNumber();
-        }
-    }
-
-    public void signOut() {
-        this.firebaseAuth.signOut();
-    }
-
-    public void updateUserDisplayName(String name) {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                .setDisplayName(name)
-                .build();
-        firebaseUser.updateProfile(userProfileChangeRequest);
-        firebaseAuth.updateCurrentUser(firebaseUser);
-    }
-
-    public void saveUserToFireBase(User user) {
-        DatabaseReference myRef = database.getReference(MY_USERS);
-        myRef.child(user.getUid()).setValue(user);
-    }
 
     public void saveVehicleToFireBase(Vehicle vehicle) {
         if(!vehicle.getVehicleID().equalsIgnoreCase("")) {

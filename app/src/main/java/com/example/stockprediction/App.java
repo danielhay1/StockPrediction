@@ -2,6 +2,7 @@ package com.example.stockprediction;
 
 import android.app.Application;
 import com.example.stockprediction.apis.RapidApi;
+import com.example.stockprediction.utils.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
 
 public class App extends Application {
@@ -11,5 +12,6 @@ public class App extends Application {
         // App singleton-classes initiate
         MySignal.Init(this);
         RapidApi.Init(this);
+        MyFireBaseServices.getInstance().Init();
     }
 }

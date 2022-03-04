@@ -23,6 +23,4 @@
     <style name="Theme.App.Preferences" parent="PreferenceThemeOverlay">
         ...
     </style>
-
-
 </resources>

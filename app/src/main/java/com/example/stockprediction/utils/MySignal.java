@@ -31,6 +31,15 @@ public class MySignal {
         Toast.makeText(appContext,msg,Toast.LENGTH_SHORT).show();
     }
 
+    public void alertDialog(Activity activity, String title, String msg, String pos, DialogInterface.OnClickListener onClickListener) {
+        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(msg)
+                //set positive button
+                .setPositiveButton(pos, onClickListener)
+                .show();
+    }
+
     public void alertDialog(Activity activity, String title, String msg, String pos, String neg, DialogInterface.OnClickListener onClickListener) {
                 AlertDialog alertDialog = new AlertDialog.Builder(activity)
                 .setTitle(title)

@@ -35,7 +35,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         //view.setBackgroundColor(getContext().getResources().getDrawable(R.drawable.round_corners_bg));
-
         return view;
     }
 

@@ -16,6 +16,7 @@ public class MyPreference {
     private final String PREFERENCE_ROOT = "preferences_root";
     // Application Preference Public Keys:
     public interface KEYS {
+        public final String CACHED_STOCKS = "cached_stocks";
         public final String FAV_STOCKS = "favorities_stocks";
         public final String STOCKS_DATA = "stocks_data";
         public final String  SETTINGS = "settings";
@@ -35,6 +36,7 @@ public class MyPreference {
         if (instance == null) {
             Log.d("pttt", "Init: MyPreference");
             instance = new MyPreference(appContext);
+            instance.putFavStockArrayList(new ArrayList<Stock>());
         }
     }
 
@@ -82,23 +84,40 @@ public class MyPreference {
         return gson.fromJson(getString(key), Stock.class);
     }
 
-    public ArrayList<Stock> getStockArrayList(String key) {
+    // Favorite stocks methods:
+
+    private ArrayList<Stock> getStockArrayList(String key) {
         // TODO: debug method
         Log.d("pttt", "getStock, key= "+key);
         Gson gson = new Gson();
         ArrayList<Stock> stocks = gson.fromJson(getString(key), ArrayList.class);
         return stocks;
     }
+    
+    public Stock getStockFromFav(String symbol) {
+        for (Stock stock: getUserFavStocks()) {
+            if(stock.getSymbol().equalsIgnoreCase(symbol)) {
+                return stock;
+            }
+        }
+        return null;
+    } 
 
     public ArrayList<Stock> getUserFavStocks() {
         return this.getStockArrayList(KEYS.FAV_STOCKS);
     }
 
-    public void putStockArrayList(ArrayList<Stock> stocks) {
+    public void putFavStockArrayList(ArrayList<Stock> stocks) {
         this.putObject(KEYS.FAV_STOCKS,stocks);
     }
 
-    public void removeFavStock() {
+    public void removeFavStock(Stock stock) {
+        ArrayList<Stock> favStocks = getUserFavStocks();
+        favStocks.remove(stock);
+        putFavStockArrayList(favStocks);
+    }
+
+    public void removeFavStocks() {
         this.deleteKey(KEYS.FAV_STOCKS);
     }
 

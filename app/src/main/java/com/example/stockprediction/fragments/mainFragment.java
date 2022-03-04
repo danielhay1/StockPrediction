@@ -73,6 +73,9 @@ public class mainFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         adapter = initAdapter(recyclerView, stocksData);
 
+        new Thread() {
+
+        };
         for (int i = 0; i < stocksData.size(); i++) {
             Stock stock = stocksData.get(i);
             int finalI = i;
@@ -93,7 +96,7 @@ public class mainFragment extends Fragment {
     }
 
     private void updateRecycleView(ArrayList<Stock> stockList, int position, StockRecyclerViewAdapter adapter) { // Fix method
-        stocksData.get(position)
+        stockList.get(position)
                 .setPredictionStatus()
                 .setValue(10.0);
         getActivity().runOnUiThread(new Runnable() {

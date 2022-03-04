@@ -18,6 +18,13 @@
     <string name="notfication_all_predictions">all prediction</string>
     <string name="enter_code">Enter code</string>
     <string name="login">Login</string>
+    <!--User login\creation-->
+    <string name="password_constraint">Password must contain at least 6 characters</string>
+    <string name="name_constraint">No name inserted</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="invalid_password">Invalid password</string>
+    <string name="already_account">There is already a user with this email address</string>
+
 
 
 </resources>
