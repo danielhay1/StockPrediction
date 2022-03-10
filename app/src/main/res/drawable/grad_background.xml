@@ -2,9 +2,9 @@
     <item>
         <shape>
             <gradient
-                android:startColor="#000000"
-                android:endColor="#343667"
-                android:angle="45" /> <!--Change this to see the combination of gradient color-->
+                android:startColor="#1E2061"
+                android:endColor="#503798"
+                android:angle="-90" /> <!--Change this to see the combination of gradient color-->
         </shape>
     </item>
 </selector>

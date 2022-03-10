@@ -14,16 +14,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.activites.MainActivity;
+import com.example.stockprediction.objects.BaseFragment;
 import com.example.stockprediction.objects.Stock;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
+import com.example.stockprediction.objects.User;
+import com.example.stockprediction.utils.MyAsyncTask;
+import com.example.stockprediction.utils.MyFireBaseServices;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
-public class favoritiesFragment extends Fragment {
+
+public class favoritiesFragment extends BaseFragment {
     private StockRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
-    private ArrayList<Stock> favoriteStocksData;
+    private LinkedHashSet<Stock> favoriteStocksData;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,24 +50,36 @@ public class favoritiesFragment extends Fragment {
         initStockRecyclerView();
     }
 
-    private void initStockRecyclerView() {
-        this.recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        this.favoriteStocksData = loadStocksData(); // Loading stocks data
-        adapter = new StockRecyclerViewAdapter(this.getContext(), favoriteStocksData);
-        adapter.setClickListener(new StockRecyclerViewAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Log.d("pttt", "onItemClick: Selected item: "+position);
-            }
-        });
-        recyclerView.setAdapter(adapter);
-        addDivider();
-    }
 
-    private void addDivider(){
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.recyclerView.getContext(),
-                new LinearLayoutManager(this.getContext()).getOrientation());
-        this.recyclerView.addItemDecoration(dividerItemDecoration);
+    private void initStockRecyclerView() {
+        new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
+            //this.favoriteStocksData = loadStocksData(); // Loading stocks data
+            favoriteStocksData = (LinkedHashSet)getUser().getFavStocks();
+        },() -> { // Run on UI thread
+            this.recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+            adapter = new StockRecyclerViewAdapter(this.getContext(), favoriteStocksData, getUser().getFavStocks(), new StockRecyclerViewAdapter.OnStockLike_Callback() {
+                @Override
+                public void onStockLike(Stock stock) {
+                }
+
+                @Override
+                public void onStockDislike(Stock stock) {
+                    LinkedHashSet<Stock> stocks = getUser().getFavStocks();
+                    stocks.remove(stock);
+                    favoriteStocksData = stocks;
+                    updateUser(getUser().setFavStocks(stocks));
+                    MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
+                }
+            });
+            recyclerView.setAdapter(adapter);
+            adapter.setClickListener(new StockRecyclerViewAdapter.ItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    Log.d("pttt", "onItemClick: Selected item: "+position);
+                }
+            });
+        });
+
     }
 
     private ArrayList<Stock> loadStocksData() {
@@ -68,5 +89,15 @@ public class favoritiesFragment extends Fragment {
         favoriteStocks.add(new Stock("name", "NVDA", 0.0, 5.2, 33.5, Stock.StockStatus.DECREASE, "ic_launcher_background"));
         // Load favorities stocks from shared-preference.
         return favoriteStocks;
+    }
+
+    private void addToFavStocks(Stock stock) {
+        new MyAsyncTask().executeBgTask(() -> { // Run on background thread.
+            favoriteStocksData.add(stock);
+            updateUser(getUser().setFavStocks(favoriteStocksData));
+            MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
+        },() -> { // Run on ui thread.
+            adapter.notifyItemChanged(favoriteStocksData.size()-1);
+        });
     }
 }

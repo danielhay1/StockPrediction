@@ -15,6 +15,7 @@ import com.example.stockprediction.utils.MyPreference;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import co.ankurg.expressview.ExpressView;
@@ -22,17 +23,40 @@ import co.ankurg.expressview.OnCheckListener;
 
 public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecyclerViewAdapter.ViewHolder> {
     private List<Stock> stocksData;
+    private LinkedHashSet<Stock> likedStocks;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private Context context;
+    private OnStockLike_Callback onStockLikeCallback;
+    public interface OnStockLike_Callback {
+        void onStockLike(Stock stock);
+        void onStockDislike(Stock stock);
+    }
 
 
     // data is passed into the constructor
-    public StockRecyclerViewAdapter(Context context, List<Stock> stocksData) {
+    public StockRecyclerViewAdapter(Context context, List<Stock> stocksData, LinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
         this.mInflater = LayoutInflater.from(context);
         this.stocksData = stocksData;
         this.context = context;
+        this.likedStocks = likedStocks;
+        this.onStockLikeCallback = onStockLikeCallback;
     }
+    // data is passed into the constructor
+    public StockRecyclerViewAdapter(Context context, LinkedHashSet<Stock> stocksData, LinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
+        this.mInflater = LayoutInflater.from(context);
+        this.stocksData = stockSetToList(stocksData);
+        this.likedStocks = likedStocks;
+        this.context = context;
+        this.onStockLikeCallback = onStockLikeCallback;
+    }
+
+    private ArrayList<Stock> stockSetToList(LinkedHashSet<Stock> stockLinkedHashSet) {
+        ArrayList<Stock> stockList = new ArrayList<Stock>();
+        stockList.addAll(stockLinkedHashSet);
+        return stockList;
+    }
+
 
     @NonNull
     @Override
@@ -55,26 +79,25 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
         setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
         Log.d("pttt", "onBindViewHolder: "+ stock.getSymbol());
-        //markAsLiked(stock.getSymbol(),holder); // TODO: fix null pointer exception
+        markAsLiked(stock,holder); // TODO: fix null pointer exception
         holder.RVROW_EV_likeButton.setOnCheckListener(new OnCheckListener() {
             @Override
             public void onChecked(@Nullable ExpressView expressView) {
-                ArrayList<Stock> favStocks = MyPreference.getInstance().getUserFavStocks();
-                favStocks.add(stock);
-                MyPreference.getInstance().putFavStockArrayList(favStocks);
+                onStockLikeCallback.onStockLike(stock);
             }
 
             @Override
             public void onUnChecked(@Nullable ExpressView expressView) {
-                MyPreference.getInstance().removeFavStock(stock);
+                onStockLikeCallback.onStockDislike(stock);
             }
         });
     }
 
-    private void markAsLiked(String symbol,ViewHolder holder) {
-        ArrayList<Stock> favStocks = MyPreference.getInstance().getUserFavStocks();
-        if(favStocks != null) {
-            holder.RVROW_EV_likeButton.setChecked(true);
+    private void markAsLiked(Stock Stock,ViewHolder holder) {
+        if(likedStocks != null) {
+            if (likedStocks.contains(Stock)) {
+                holder.RVROW_EV_likeButton.setChecked(true);
+            }
         }
     }
 

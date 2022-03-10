@@ -15,31 +15,41 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.apis.RapidApi;
+import com.example.stockprediction.objects.BaseFragment;
 import com.example.stockprediction.objects.Stock;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
+import com.example.stockprediction.objects.User;
+import com.example.stockprediction.utils.MyAsyncTask;
+import com.example.stockprediction.utils.MyFireBaseServices;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
-interface DataReadyCallback
-{
-    void dataReady(ArrayList data, int position);
-}
-
-public class mainFragment extends Fragment {
+public class mainFragment extends BaseFragment {
     private StockRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
     private ArrayList<Stock> stocksData = new ArrayList<>();
     private Fragment stockFragment;
+
+
+    public interface DataReadyCallback
+    {
+        void dataReady(ArrayList data, int position);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         findViews(view);
-        initViews();
+        if(getUser()!=null) {
+            initViews();
+        }
+
         return view;
     }
 
@@ -53,7 +63,24 @@ public class mainFragment extends Fragment {
     }
 
     private StockRecyclerViewAdapter initAdapter(RecyclerView recyclerView, ArrayList<Stock> stocksData) {
-        adapter = new StockRecyclerViewAdapter(getContext(), stocksData);
+        Log.e("pttt", "initAdapter: favStocks = "+getUser().getFavStocks());
+        adapter = new StockRecyclerViewAdapter(getContext(), stocksData, getUser().getFavStocks(), new StockRecyclerViewAdapter.OnStockLike_Callback() {
+            @Override
+            public void onStockLike(Stock stock) {
+                LinkedHashSet<Stock> stocks = getUser().getFavStocks();
+                stocks.add(stock);
+                updateUser(getUser().setFavStocks(stocks));
+                MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
+            }
+
+            @Override
+            public void onStockDislike(Stock stock) {
+                LinkedHashSet<Stock> stocks = getUser().getFavStocks();
+                stocks.remove(stock);
+                updateUser(getUser().setFavStocks(stocks));
+                MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
+            }
+        });
         adapter.setClickListener(new StockRecyclerViewAdapter.ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -67,32 +94,32 @@ public class mainFragment extends Fragment {
     }
 
     private void initStockRecyclerView()  {
-        for (Map.Entry<String, String> entry : RapidApi.MY_STOCKS.entrySet()) {
-            stocksData.add(new Stock(entry.getKey(),entry.getValue()));
-        }
-        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        adapter = initAdapter(recyclerView, stocksData);
-
-        new Thread() {
-
-        };
-        for (int i = 0; i < stocksData.size(); i++) {
-            Stock stock = stocksData.get(i);
-            int finalI = i;
-            RapidApi.getInstance().httpGetJson(stock.getSymbol(), RapidApi.STOCK_OPERATIONS.GET_CHART, new RapidApi.CallBack_HttpTasks() {
-                @Override
-                public void onResponse(JSONObject json) {
-                    // it.remove(); // avoids a ConcurrentModificationException
-                    Log.e("pttt", "StockJson found: "+json);
-                    // TODO: figure out what data is needed for stock class and parse the relevant data.
-                    updateRecycleView(stocksData,finalI,adapter);
-                }
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("pttt", "StockJson error: "+error);
-                }
-            });
-        }
+        new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
+            for (Map.Entry<String, String> entry : RapidApi.MY_STOCKS.entrySet()) {
+                stocksData.add(new Stock(entry.getKey(),entry.getValue()));
+            }
+        },() -> { // Run on UI thread
+            recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+            adapter = initAdapter(recyclerView, stocksData);
+            for (int i = 0; i < stocksData.size(); i++) {
+                Stock stock = stocksData.get(i);
+                int finalI = i;
+                // TODO: set this code back to run
+               /* RapidApi.getInstance().httpGetJson(stock.getSymbol(), RapidApi.STOCK_OPERATIONS.GET_CHART, new RapidApi.CallBack_HttpTasks() {
+                    @Override
+                    public void onResponse(JSONObject json) {
+                        // it.remove(); // avoids a ConcurrentModificationException
+                        Log.e("pttt", "StockJson found: "+json);
+                        // TODO: figure out what data is needed for stock class and parse the relevant data.
+                        updateRecycleView(stocksData,finalI,adapter);
+                    }
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("pttt", "StockJson error: "+error);
+                    }
+                });*/
+            }
+        });
     }
 
     private void updateRecycleView(ArrayList<Stock> stockList, int position, StockRecyclerViewAdapter adapter) { // Fix method
@@ -105,12 +132,6 @@ public class mainFragment extends Fragment {
                 adapter.notifyItemChanged(position);
             }
         });
-    }
-
-    private void addDivider(){
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this.recyclerView.getContext(),
-                new LinearLayoutManager(this.getContext()).getOrientation());
-        this.recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
     public void goToStockFragment(Stock stock) {

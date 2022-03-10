@@ -3,29 +3,48 @@ package com.example.stockprediction.utils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.stockprediction.activites.SplashActivity;
 import com.example.stockprediction.objects.User;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 public class MyFireBaseServices {
 
     private final String DB_URL = "https://stockprediction-b3afb-default-rtdb.europe-west1.firebasedatabase.app/";
+    // ################# keys #################:
+    private final String MY_USERS = "users";
+    private final String FAV_STOCKS = "favorities_stocks";
+    private final String STOCKS_PREDICTION = "stocks_prediction";
+    private final String SETTINGS = "settings";
+    // ################# CallBacks #################:
+    public interface CallBack_LoadUser {
+        void OnSuccess(User result);
+        void OnFailure(Exception e);
+    }
+    public interface ImageReadyCallback {
+        void imageUriCallback(String imageUri);
+    }
+    // #############################################
     private FirebaseUser firebaseUser;   // Current login user
     private  static MyFireBaseServices instance;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase database;
+    private FirebaseStorage storage;
     public static MyFireBaseServices getInstance() {
         return instance;
     }
@@ -35,21 +54,6 @@ public class MyFireBaseServices {
         this.database = FirebaseDatabase.getInstance(DB_URL);
     }
 
-    // ################# keys #################:
-    private final String MY_USERS = "users";
-    private final String FAV_STOCKS = "favorities_stocks";
-    private final String STOCKS_PREDICTION = "stocks_prediction";
-    private final String SETTINGS = "settings";
-
-    // ########################################
-
-    // ################# CallBacks #################:
-    public interface CallBack_LoadUser {
-        void userDetailsUpdated(User result);
-        void loadFailed(Exception e);
-    }
-
-    // #############################################
     public static void Init(){
         if(instance == null) {
             Log.d("pttt", "Init: MyFireBaseServices");
@@ -57,6 +61,7 @@ public class MyFireBaseServices {
         }
     }
 
+    // AUTH AND USER METHODS:
     public boolean login() {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         boolean loginSuccess;
@@ -74,7 +79,6 @@ public class MyFireBaseServices {
         }
         return loginSuccess;
     }
-
 
     public void setFirebaseUser(FirebaseUser firebaseUser) {
         this.firebaseUser = firebaseUser;
@@ -96,31 +100,103 @@ public class MyFireBaseServices {
     }
 
     public void saveUserToFireBase(User user) {
-        DatabaseReference myRef = database.getReference(MY_USERS);
-        myRef.child(user.getUid()).setValue(user);
-        Log.d("pttt", "saveUserToFireBase: ");
+        if(firebaseUser.getUid()!=null){
+            saveObject(MY_USERS,user.getUid(),user);
+            Log.d("pttt", "saveUserToFireBase: ");
+        }
     }
 
-    public void loadUserFromFireBase(String userId, CallBack_LoadUser callBack_loadUser) {
+    private <T> void saveObject(String preferenceKey, String key, T obj) {
+        Gson gson = new Gson();
+        String objJson = gson.toJson(obj);
+        DatabaseReference myRef = database.getReference(preferenceKey);
+        myRef.child(key).setValue(objJson);
+    }
+
+    private <T> T loadObject(String preferenceKey, String key, String objJson, Class<T> obj) {
+        Gson gson = new Gson();
+        T object = gson.fromJson(objJson, (Class<T>) obj.getClass());
+
+        return object;
+    }
+    //
+
+    public void loadUserFromFireBase(CallBack_LoadUser callBack_loadUser) {
         DatabaseReference myRef = database.getReference(MY_USERS);
-        if(userId!=null){
-            myRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+        if(firebaseUser.getUid()!=null){
+            myRef.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if(snapshot != null) {
                         User value = snapshot.getValue(User.class);
                         Log.d("pttt", "Value is: "+ value);
-                        callBack_loadUser.userDetailsUpdated(value);
+                        callBack_loadUser.OnSuccess(value);
                     }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    callBack_loadUser.loadFailed(error.toException());
+                    callBack_loadUser.OnFailure(error.toException());
                 }
             });
         }
     }
 
+    // Image load\store methods:
+    public void savePhotoToStorage(String key, Uri uri, ImageReadyCallback imageReadyCallback) {
+        if(firebaseUser.getUid()!=null) {
+            StorageReference storageRef = storage.getInstance().getReference();
+            StorageReference mountainImagesRef = storageRef.child("image/" + key);
+            UploadTask uploadTask = mountainImagesRef.putFile(uri);
+            uploadTask.addOnFailureListener(e -> { }).addOnSuccessListener(taskSnapshot -> {
+                Log.d("pttt", "savePhotoToStorageUri: successed ");
+                getImageUri(taskSnapshot, imageReadyCallback);
+            });
+        }
+    }
+
+    private void getImageUri(UploadTask.TaskSnapshot taskSnapshot, ImageReadyCallback imageReadyCallback) {
+        if (taskSnapshot.getMetadata() != null) {
+            if (taskSnapshot.getMetadata().getReference() != null) {
+                Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
+                result.addOnSuccessListener(uri -> {
+                    String imageUrl = uri.toString();
+                    Log.d("pttt", "imageUrl= "+imageUrl);
+                    if (imageReadyCallback != null) {
+                        imageReadyCallback.imageUriCallback(imageUrl);
+                    }
+                });
+            }
+        }
+    }
+
+    public User updateUserPhotoInFireStore(String userPhoto, User user) {
+        user.setImageUrl(userPhoto);
+        saveUserToFireBase(user);
+        return user;
+    }
+
+    public User updateUserPhotoInFireStore(Uri uri, User user) {
+        String stringUri = uri.toString();
+        user.setImageUrl(stringUri);
+        saveUserToFireBase(user);
+        return user;
+    }
+
+    public void getUserPhotoFromFireStore(ImageReadyCallback imageReadyCallback) {
+        loadUserFromFireBase(new CallBack_LoadUser() {
+            @Override
+            public void OnSuccess(User result) {
+                if (imageReadyCallback != null && result != null) {
+                    imageReadyCallback.imageUriCallback(result.getImageUrl());
+                }
+            }
+
+            @Override
+            public void OnFailure(Exception e) {
+                Log.d("pttt", "OnFailure: exception: "+e);
+            }
+        });
+    }
 
 
     // ################# CallBacks #################:
