@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.stockprediction.R;
 import com.example.stockprediction.activites.MainActivity;
 import com.example.stockprediction.objects.BaseFragment;
+import com.example.stockprediction.objects.MyLinkedHashSet;
 import com.example.stockprediction.objects.Stock;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 import com.example.stockprediction.objects.User;
@@ -31,7 +32,7 @@ import java.util.LinkedHashSet;
 public class favoritiesFragment extends BaseFragment {
     private StockRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
-    private LinkedHashSet<Stock> favoriteStocksData;
+    private MyLinkedHashSet<Stock> favoriteStocksData;
 
     @Nullable
     @Override
@@ -54,20 +55,29 @@ public class favoritiesFragment extends BaseFragment {
     private void initStockRecyclerView() {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             //this.favoriteStocksData = loadStocksData(); // Loading stocks data
-            favoriteStocksData = (LinkedHashSet)getUser().getFavStocks();
+            favoriteStocksData = (MyLinkedHashSet<Stock>) getUser().getFavStocks();
         },() -> { // Run on UI thread
             this.recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
             adapter = new StockRecyclerViewAdapter(this.getContext(), favoriteStocksData, getUser().getFavStocks(), new StockRecyclerViewAdapter.OnStockLike_Callback() {
                 @Override
                 public void onStockLike(Stock stock) {
+                    Log.d("pttt", "onStockLike: favoriteStocks="+favoriteStocksData+",userFavStocks="+getUser().getFavStocks());
+
                 }
 
                 @Override
-                public void onStockDislike(Stock stock) {
-                    LinkedHashSet<Stock> stocks = getUser().getFavStocks();
-                    stocks.remove(stock);
-                    favoriteStocksData = stocks;
+                public void onStockDislike(Stock stock,int position) {
+                    // Find index of stock
+                    Log.d("pttt", "onStockDislike: favoriteStocks="+favoriteStocksData+"index="+position);
+                    // Update user favStocks Set
+                    MyLinkedHashSet<Stock> stocks = getUser().getFavStocks();
+                    stocks.remove(position);
                     updateUser(getUser().setFavStocks(stocks));
+                    // Update Adapter
+                    //favoriteStocksData.remove(index);
+                    //adapter.notifyItemChanged(index);
+                    adapter.removeAt(position);
+                    // Update user favStocks Set on firebase
                     MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
                 }
             });

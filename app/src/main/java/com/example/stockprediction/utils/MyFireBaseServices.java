@@ -101,25 +101,24 @@ public class MyFireBaseServices {
 
     public void saveUserToFireBase(User user) {
         if(firebaseUser.getUid()!=null){
-            saveObject(MY_USERS,user.getUid(),user);
+            saveJsonObject(MY_USERS,user.getUid(),user);
             Log.d("pttt", "saveUserToFireBase: ");
         }
     }
 
-    private <T> void saveObject(String preferenceKey, String key, T obj) {
+    private <T> void saveJsonObject(String preferenceKey, String key, T obj) {
         Gson gson = new Gson();
         String objJson = gson.toJson(obj);
         DatabaseReference myRef = database.getReference(preferenceKey);
         myRef.child(key).setValue(objJson);
     }
 
-    private <T> T loadObject(String preferenceKey, String key, String objJson, Class<T> obj) {
+    private <T> T loadJsonObject(String objJson, Class<T> classType) {
         Gson gson = new Gson();
-        T object = gson.fromJson(objJson, (Class<T>) obj.getClass());
+        T object = gson.fromJson(objJson, classType);
 
         return object;
     }
-    //
 
     public void loadUserFromFireBase(CallBack_LoadUser callBack_loadUser) {
         DatabaseReference myRef = database.getReference(MY_USERS);
@@ -128,7 +127,7 @@ public class MyFireBaseServices {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if(snapshot != null) {
-                        User value = snapshot.getValue(User.class);
+                        User value = loadJsonObject(snapshot.getValue(String.class),User.class);
                         Log.d("pttt", "Value is: "+ value);
                         callBack_loadUser.OnSuccess(value);
                     }

@@ -24,7 +24,7 @@
     <string name="invalid_email">Invalid email address</string>
     <string name="invalid_password">Invalid password</string>
     <string name="already_account">There is already a user with this email address</string>
-
+    <string name="action_search">Search</string>
 
 
 </resources>

@@ -1,24 +1,19 @@
 package com.example.stockprediction.objects;
 
-import com.example.stockprediction.utils.MyPreference;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-
 
 public class User {
     private String uid;
     private String email;
     private String name;
     private String imageUrl;
-    private LinkedHashSet<Stock> favStocks;
+    private MyLinkedHashSet<Stock> favStocks;
 
     public interface OnUserUpdate {
         public void onUserUpdate(User updatedUser);
     }
 
     public User() {
-        favStocks = new LinkedHashSet<Stock>();
+        favStocks = new MyLinkedHashSet<Stock>();
     }
 
     public String getUid() {
@@ -57,7 +52,7 @@ public class User {
         return this;
     }
 
-    public User setFavStocks(LinkedHashSet<Stock> favStocks) {
+    public User setFavStocks(MyLinkedHashSet<Stock> favStocks) {
         this.favStocks = favStocks;
         return this;
     }
@@ -77,7 +72,7 @@ public class User {
         //MyPreference.getInstance().putFavStockArrayList(this.favStocks);
     }
 
-    public LinkedHashSet<Stock> getFavStocks() {
+    public MyLinkedHashSet<Stock> getFavStocks() {
         return this.favStocks;
     }
 

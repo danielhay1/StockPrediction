@@ -10,12 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.stockprediction.R;
-import com.example.stockprediction.utils.MyPreference;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.List;
 
 import co.ankurg.expressview.ExpressView;
@@ -23,27 +22,29 @@ import co.ankurg.expressview.OnCheckListener;
 
 public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecyclerViewAdapter.ViewHolder> {
     private List<Stock> stocksData;
-    private LinkedHashSet<Stock> likedStocks;
+    private MyLinkedHashSet<Stock> likedStocks;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private Context context;
     private OnStockLike_Callback onStockLikeCallback;
+
     public interface OnStockLike_Callback {
         void onStockLike(Stock stock);
-        void onStockDislike(Stock stock);
+        void onStockDislike(Stock stock, int position);
     }
 
 
     // data is passed into the constructor
-    public StockRecyclerViewAdapter(Context context, List<Stock> stocksData, LinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
+    public StockRecyclerViewAdapter(Context context, List<Stock> stocksData, MyLinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
         this.mInflater = LayoutInflater.from(context);
         this.stocksData = stocksData;
         this.context = context;
         this.likedStocks = likedStocks;
         this.onStockLikeCallback = onStockLikeCallback;
     }
+
     // data is passed into the constructor
-    public StockRecyclerViewAdapter(Context context, LinkedHashSet<Stock> stocksData, LinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
+    public StockRecyclerViewAdapter(Context context, MyLinkedHashSet<Stock> stocksData, MyLinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
         this.mInflater = LayoutInflater.from(context);
         this.stocksData = stockSetToList(stocksData);
         this.likedStocks = likedStocks;
@@ -51,12 +52,21 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         this.onStockLikeCallback = onStockLikeCallback;
     }
 
-    private ArrayList<Stock> stockSetToList(LinkedHashSet<Stock> stockLinkedHashSet) {
+    private ArrayList<Stock> stockSetToList(MyLinkedHashSet<Stock> stockSet) {
         ArrayList<Stock> stockList = new ArrayList<Stock>();
-        stockList.addAll(stockLinkedHashSet);
+        stockList.addAll(stockSet);
         return stockList;
     }
 
+    public MyLinkedHashSet<Stock> getLikedStocks() {
+        return likedStocks;
+    }
+
+    public StockRecyclerViewAdapter setLikedStocks(MyLinkedHashSet<Stock> likedStocks) {
+        this.likedStocks = likedStocks;
+
+        return this;
+    }
 
     @NonNull
     @Override
@@ -79,24 +89,34 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
         setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
         Log.d("pttt", "onBindViewHolder: "+ stock.getSymbol());
-        markAsLiked(stock,holder); // TODO: fix null pointer exception
+        markLikedStocks(stock,holder); // TODO: fix null pointer exception
         holder.RVROW_EV_likeButton.setOnCheckListener(new OnCheckListener() {
             @Override
             public void onChecked(@Nullable ExpressView expressView) {
-                onStockLikeCallback.onStockLike(stock);
+                if(likedStocks.add(stock)) {
+                    onStockLikeCallback.onStockLike(stock);
+                }
             }
 
             @Override
             public void onUnChecked(@Nullable ExpressView expressView) {
-                onStockLikeCallback.onStockDislike(stock);
+                int position = likedStocks.indexOf(stock);
+                Log.e("pttt", "onUnChecked: "+position);
+                if(likedStocks.remove(stock)) {
+                    onStockLikeCallback.onStockDislike(stock,position);
+                }
             }
         });
     }
 
-    private void markAsLiked(Stock Stock,ViewHolder holder) {
+    private void markLikedStocks(Stock stock, ViewHolder holder) {
         if(likedStocks != null) {
-            if (likedStocks.contains(Stock)) {
-                holder.RVROW_EV_likeButton.setChecked(true);
+            if(!likedStocks.isEmpty()){
+                Log.e("pttt", "markLikedStocks: likedStocks = "+likedStocks+", current stock = "+stock);
+                if (likedStocks.contains(stock)) {
+                    Log.d("pttt", "markAsLiked: "+likedStocks);
+                    holder.RVROW_EV_likeButton.setChecked(true);
+                }
             }
         }
     }
@@ -186,8 +206,18 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         }
     }
     // convenience method for getting data at click position
-    Stock getItem(int id) {
+    public Stock getItem(int id) {
         return stocksData.get(id);
+    }
+
+    public void removeAt(int position) {
+        if(position >= 0) {
+            stocksData.remove(position);
+            notifyItemRemoved(position);
+            notifyItemChanged(position);
+        } else {
+            Log.d("pttt", "removeAt: no element found");
+        }
     }
 
     // allows clicks events to be caught

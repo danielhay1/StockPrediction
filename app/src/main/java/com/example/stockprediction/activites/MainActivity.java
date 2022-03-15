@@ -58,7 +58,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         // Open main fragment
 
-        nav_IMGVIEW_userImg.setOnClickListener(v -> navigationView.setCheckedItem(R.id.nav_main));
+        nav_IMGVIEW_userImg.setOnClickListener(v -> {
+            replaceFragment(new profileFragment());
+            drawer.closeDrawers();
+            navigationView.setCheckedItem(R.id.nav_profile);
+        });
     }
 
     private void findViews() {

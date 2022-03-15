@@ -16,18 +16,15 @@ import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.objects.BaseFragment;
+import com.example.stockprediction.objects.MyLinkedHashSet;
 import com.example.stockprediction.objects.Stock;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.MyAsyncTask;
 import com.example.stockprediction.utils.MyFireBaseServices;
-
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
+
 
 public class mainFragment extends BaseFragment {
     private StockRecyclerViewAdapter adapter;
@@ -67,15 +64,16 @@ public class mainFragment extends BaseFragment {
         adapter = new StockRecyclerViewAdapter(getContext(), stocksData, getUser().getFavStocks(), new StockRecyclerViewAdapter.OnStockLike_Callback() {
             @Override
             public void onStockLike(Stock stock) {
-                LinkedHashSet<Stock> stocks = getUser().getFavStocks();
+                MyLinkedHashSet<Stock> stocks = getUser().getFavStocks();
+                Log.d("pttt", "onStockLike: stocks = "+stocks);
                 stocks.add(stock);
                 updateUser(getUser().setFavStocks(stocks));
                 MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
             }
 
             @Override
-            public void onStockDislike(Stock stock) {
-                LinkedHashSet<Stock> stocks = getUser().getFavStocks();
+            public void onStockDislike(Stock stock, int position) {
+                MyLinkedHashSet<Stock> stocks = getUser().getFavStocks();
                 stocks.remove(stock);
                 updateUser(getUser().setFavStocks(stocks));
                 MyFireBaseServices.getInstance().saveUserToFireBase(getUser());

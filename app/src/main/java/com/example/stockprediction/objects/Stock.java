@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+
 public class Stock {
 
     /**
@@ -177,13 +179,18 @@ public class Stock {
         }
         else {
             final Stock stock = (Stock) obj;
-            return this.symbol == stock.symbol;
+            return this.symbol.equalsIgnoreCase(stock.symbol);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return symbol.hashCode();
     }
 
     @NonNull
     @Override
     public String toString() {
-        return super.toString();
+        return "Stock: symbol= " + symbol;
     }
 }

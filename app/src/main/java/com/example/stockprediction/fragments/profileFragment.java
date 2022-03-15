@@ -24,12 +24,15 @@ import android.widget.TextView;
 import com.example.stockprediction.R;
 import com.example.stockprediction.activites.MainActivity;
 import com.example.stockprediction.objects.BaseFragment;
+import com.example.stockprediction.objects.Stock;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
 import com.example.stockprediction.utils.MyFireBaseServices;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -140,7 +143,11 @@ public class profileFragment extends BaseFragment {
             profile_TV_username.setText("Username: " + user.getName());
             profile_TV_emails.setText("Email: " + user.getEmail());
             if(!user.getFavStocks().isEmpty()) {
-                profile_TV_favStocks.setText("Favorite stocks: " + user.getFavStocks());
+                ArrayList<String> symbolList = new ArrayList<String>();
+                for (Stock stock: user.getFavStocks()) {
+                    symbolList.add(stock.getSymbol());
+                }
+                profile_TV_favStocks.setText("Favorite stocks: " + symbolList.toString());
             }
             if(user.getImageUrl() != null) {
                 ImageTools.glideSetImageByStrUrl(getActivity(),user.getImageUrl(),imageview_account_profile);
