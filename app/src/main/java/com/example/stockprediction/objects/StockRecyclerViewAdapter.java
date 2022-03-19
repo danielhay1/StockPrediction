@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -14,13 +16,15 @@ import com.example.stockprediction.objects.stock.Stock;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.ankurg.expressview.ExpressView;
 import co.ankurg.expressview.OnCheckListener;
 
-public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Adapter<StockRecyclerViewAdapter<T>.ViewHolder> {
+public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Adapter<StockRecyclerViewAdapter<T>.ViewHolder> implements Filterable {
     private List<T> stocksData;
+    private List<T> filteredStockData;
     private List<T> likedStocks;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
@@ -34,12 +38,13 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
 
 
     // data is passed into the constructor
-    public StockRecyclerViewAdapter (Context context, List<T> stocksData, List<T> likedStocks, OnStockLike_Callback onStockLikeCallback) {
+    public StockRecyclerViewAdapter (Context context, List<T> filteredStockData, List<T> likedStocks, OnStockLike_Callback onStockLikeCallback) {
         this.mInflater = LayoutInflater.from(context);
-        this.stocksData = stocksData;
+        this.filteredStockData = filteredStockData;
         this.context = context;
         this.likedStocks = likedStocks;
         this.onStockLikeCallback = onStockLikeCallback;
+        this.stocksData = new ArrayList<T>(filteredStockData);
     }
 
     public List<T> getLikedStocks() {
@@ -61,7 +66,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String ValSign = "";
-        T stock = stocksData.get(position);
+        T stock = filteredStockData.get(position);
         setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
         setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
         holder.RVROW_LBL_StockName.setText(stock.getName());
@@ -84,6 +89,42 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
                 onStockLikeCallback.onStockDislike(stock,position);
             }
         });
+    }
+
+    @Override
+    public Filter getFilter() {
+        return stockFilter;
+    }
+
+    private Filter stockFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<T> filteredList = new ArrayList<T>();
+            if(constraint == null || constraint.length() == 0) {
+                filteredList.addAll(stocksData);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (T item: stocksData) {
+                    if(isMatchPrefix(item,filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            filteredStockData.clear();
+            filteredStockData.addAll((List<T>) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
+    private boolean isMatchPrefix(T stock, String prefix) {
+        return stock.getName().toLowerCase().startsWith(prefix) || stock.getSymbol().toLowerCase().startsWith(prefix);
     }
 
     private void markLikedStocks(T stock, ViewHolder holder) {
@@ -112,7 +153,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
 
     @Override
     public int getItemCount() {
-        return stocksData.size();
+        return filteredStockData.size();
     }
 
     private void setImg(String imgName,ImageView img) {
@@ -183,7 +224,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
     // convenience method for getting data at click position
     public T getItem(int id) {
-        return stocksData.get(id);
+        return filteredStockData.get(id);
     }
 
     public void removeAt(int position) {
@@ -196,8 +237,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
 
     public void addItem(int position) {
-        notifyItemInserted(stocksData.size()-1);
-        notifyItemChanged(stocksData.size()-1);
+        notifyItemInserted(filteredStockData.size()-1);
+        notifyItemChanged(filteredStockData.size()-1);
     }
 
     // allows clicks events to be caught

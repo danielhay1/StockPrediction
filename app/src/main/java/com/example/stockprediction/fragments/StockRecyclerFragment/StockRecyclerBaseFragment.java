@@ -21,11 +21,7 @@ import java.util.Comparator;
 public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     protected StockRecyclerViewAdapter<T> adapter;
     protected ArrayList<T> data;
-    protected ArrayList<T> filteredData;
-    protected StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback;
     private SearchViewModel searchViewModel;
-
-
 
     protected interface initStockRecyclerData_Callback<T extends Stock> {
         ArrayList<T> initRecyclerData();
@@ -45,28 +41,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
 
     private void updateFilteredData(String text) {
         Log.e("pttt", "onTextChanged: text:"+text);
-        if(!text.equalsIgnoreCase("")) {
-            /*
-                We need to run on data and check if there is item that contains text:
-                if it does:
-                    - Check if item already in filteredData
-                        if does:
-                            do nothing.
-                        if not:
-                            add item to filteredData and update recycler.
-             */
-            for (int i = 0; i < filteredData.size(); i++) {
-                T item = filteredData.get(i);
-                if (!item.getName().toLowerCase().startsWith(text.toLowerCase()) && (!item.getSymbol().toLowerCase().startsWith(text.toLowerCase()))) { //Check if Item not in filteredData
-                    filteredData.remove(item);
-                } else { // Item in data
-                }
-                adapter.removeAt(i);
-            }
-        } else {
-            filteredData = data;
-        }
-        // update recycler
+        adapter.getFilter().filter(text);
     }
 
     private void observeModelView() {
@@ -100,10 +75,9 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             data = initRecyclerData_callback.initRecyclerData();
             Log.e("pttt", "initStockRecyclerView: data="+data);
-            filteredData = data;
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-            adapter = initAdapter(recyclerView, filteredData, onStockLike_callback);
+            adapter = initAdapter(recyclerView, data, onStockLike_callback);
             // Get stock from FireBaser
             for (int i = 0; i < data.size(); i++) {
                 T stock = data.get(i);
