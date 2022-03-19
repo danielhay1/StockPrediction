@@ -10,19 +10,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.stockprediction.R;
+import com.example.stockprediction.objects.stock.Stock;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Set;
 import java.util.List;
 
 import co.ankurg.expressview.ExpressView;
 import co.ankurg.expressview.OnCheckListener;
 
-public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecyclerViewAdapter.ViewHolder> {
-    private List<Stock> stocksData;
-    private MyLinkedHashSet<Stock> likedStocks;
+public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Adapter<StockRecyclerViewAdapter<T>.ViewHolder> {
+    private List<T> stocksData;
+    private List<T> likedStocks;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private Context context;
@@ -35,7 +34,7 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
 
 
     // data is passed into the constructor
-    public StockRecyclerViewAdapter(Context context, List<Stock> stocksData, MyLinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
+    public StockRecyclerViewAdapter (Context context, List<T> stocksData, List<T> likedStocks, OnStockLike_Callback onStockLikeCallback) {
         this.mInflater = LayoutInflater.from(context);
         this.stocksData = stocksData;
         this.context = context;
@@ -43,28 +42,12 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         this.onStockLikeCallback = onStockLikeCallback;
     }
 
-    // data is passed into the constructor
-    public StockRecyclerViewAdapter(Context context, MyLinkedHashSet<Stock> stocksData, MyLinkedHashSet<Stock> likedStocks, OnStockLike_Callback onStockLikeCallback) {
-        this.mInflater = LayoutInflater.from(context);
-        this.stocksData = stockSetToList(stocksData);
-        this.likedStocks = likedStocks;
-        this.context = context;
-        this.onStockLikeCallback = onStockLikeCallback;
-    }
-
-    private ArrayList<Stock> stockSetToList(MyLinkedHashSet<Stock> stockSet) {
-        ArrayList<Stock> stockList = new ArrayList<Stock>();
-        stockList.addAll(stockSet);
-        return stockList;
-    }
-
-    public MyLinkedHashSet<Stock> getLikedStocks() {
+    public List<T> getLikedStocks() {
         return likedStocks;
     }
 
-    public StockRecyclerViewAdapter setLikedStocks(MyLinkedHashSet<Stock> likedStocks) {
+    public StockRecyclerViewAdapter setLikedStocks(List<T> likedStocks) {
         this.likedStocks = likedStocks;
-
         return this;
     }
 
@@ -78,7 +61,7 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String ValSign = "";
-        Stock stock = stocksData.get(position);
+        T stock = stocksData.get(position);
         setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
         setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
         holder.RVROW_LBL_StockName.setText(stock.getName());
@@ -93,26 +76,19 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         holder.RVROW_EV_likeButton.setOnCheckListener(new OnCheckListener() {
             @Override
             public void onChecked(@Nullable ExpressView expressView) {
-                if(likedStocks.add(stock)) {
-                    onStockLikeCallback.onStockLike(stock);
-                }
+                onStockLikeCallback.onStockLike(stock);
             }
 
             @Override
             public void onUnChecked(@Nullable ExpressView expressView) {
-                int position = likedStocks.indexOf(stock);
-                Log.e("pttt", "onUnChecked: "+position);
-                if(likedStocks.remove(stock)) {
-                    onStockLikeCallback.onStockDislike(stock,position);
-                }
+                onStockLikeCallback.onStockDislike(stock,position);
             }
         });
     }
 
-    private void markLikedStocks(Stock stock, ViewHolder holder) {
+    private void markLikedStocks(T stock, ViewHolder holder) {
         if(likedStocks != null) {
             if(!likedStocks.isEmpty()){
-                Log.e("pttt", "markLikedStocks: likedStocks = "+likedStocks+", current stock = "+stock);
                 if (likedStocks.contains(stock)) {
                     Log.d("pttt", "markAsLiked: "+likedStocks);
                     holder.RVROW_EV_likeButton.setChecked(true);
@@ -129,7 +105,7 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
             textView.setTextColor(context.getColor(R.color.green_200));
         }
     }
-    private String getStockChangeDetails(Stock stock,TextView textView){
+    private String getStockChangeDetails(T stock,TextView textView){
         String sign = (stock.getChangeAmount() > 0) ? "+" : (stock.getChangeAmount() < 0) ? "-" : "";
         return sign+stock.getChangeAmount() + "(" + stock.getChangePercent()+ ")";
     }
@@ -147,7 +123,7 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         }
     }
 
-    private void setStockStatusImg(ImageView img, Stock.StockStatus status, String type) {
+    private void setStockStatusImg(ImageView img, T.StockStatus status, String type) {
         String imgName = "";
         switch (status) {
             case INCREASE:
@@ -206,18 +182,22 @@ public class StockRecyclerViewAdapter extends RecyclerView.Adapter<StockRecycler
         }
     }
     // convenience method for getting data at click position
-    public Stock getItem(int id) {
+    public T getItem(int id) {
         return stocksData.get(id);
     }
 
     public void removeAt(int position) {
         if(position >= 0) {
-            stocksData.remove(position);
             notifyItemRemoved(position);
             notifyItemChanged(position);
         } else {
             Log.d("pttt", "removeAt: no element found");
         }
+    }
+
+    public void addItem(int position) {
+        notifyItemInserted(stocksData.size()-1);
+        notifyItemChanged(stocksData.size()-1);
     }
 
     // allows clicks events to be caught

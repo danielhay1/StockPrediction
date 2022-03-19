@@ -1,4 +1,4 @@
-package com.example.stockprediction.objects;
+package com.example.stockprediction.objects.stock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

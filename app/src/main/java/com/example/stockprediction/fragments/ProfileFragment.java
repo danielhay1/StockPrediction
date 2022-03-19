@@ -1,7 +1,6 @@
 package com.example.stockprediction.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,15 +21,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
-import com.example.stockprediction.activites.MainActivity;
 import com.example.stockprediction.objects.BaseFragment;
-import com.example.stockprediction.objects.Stock;
+import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
 import com.example.stockprediction.utils.MyFireBaseServices;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -38,7 +35,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
-public class profileFragment extends BaseFragment {
+public class ProfileFragment extends BaseFragment {
     private final int PERMISSION_CODE_READ = 20;
     private MaterialButton profile_BTN_edit;
     private MaterialButton profile_BTN_Settings;
@@ -149,7 +146,7 @@ public class profileFragment extends BaseFragment {
                 }
                 profile_TV_favStocks.setText("Favorite stocks: " + symbolList.toString());
             }
-            if(user.getImageUrl() != null) {
+            if(user.getImageUrl() != null && !user.getImageUrl().equalsIgnoreCase("")) {
                 ImageTools.glideSetImageByStrUrl(getActivity(),user.getImageUrl(),imageview_account_profile);
             }
         }

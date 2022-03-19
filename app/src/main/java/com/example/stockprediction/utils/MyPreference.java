@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.example.stockprediction.objects.Stock;
+import com.example.stockprediction.objects.stock.Stock;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

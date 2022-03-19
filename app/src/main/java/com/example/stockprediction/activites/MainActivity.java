@@ -11,15 +11,20 @@ import androidx.fragment.app.Fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
-import com.example.stockprediction.fragments.favoritiesFragment;
-import com.example.stockprediction.fragments.mainFragment;
+import com.example.stockprediction.fragments.StockRecyclerFragment.FavoritiesFragment;
+import com.example.stockprediction.fragments.StockRecyclerFragment.MainFragment;
+import com.example.stockprediction.fragments.StockRecyclerFragment.SearchViewModel;
 import com.example.stockprediction.fragments.SettingsFragment;
-import com.example.stockprediction.fragments.profileFragment;
+import com.example.stockprediction.fragments.ProfileFragment;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
 import com.example.stockprediction.utils.MyFireBaseServices;
@@ -29,6 +34,10 @@ import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, User.OnUserUpdate {
 
+    public interface SearchViewCallBack {
+        void onTextChanged(String text);
+    }
+
     public static final String USER = "user";
     private String currency = "USD";    // Will be enum currency and it would effect stock values.
     // Side menu
@@ -37,12 +46,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private de.hdodenhof.circleimageview.CircleImageView nav_IMGVIEW_userImg;
     private TextView nav_LBL_userName;
     private TextView nav_LBL_userInfo;
+    private SearchView searchView;
     // Fragments
-    private mainFragment mainFragment;
-    private favoritiesFragment favoritiesFragment;
+    private MainFragment mainFragment;
+    private FavoritiesFragment favoritiesFragment;
     private SettingsFragment SettingsFragment;
     // User
     private User user;
+
+    private SearchViewCallBack searchViewCallBack;
+    private SearchViewModel searchViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +72,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Open main fragment
 
         nav_IMGVIEW_userImg.setOnClickListener(v -> {
-            replaceFragment(new profileFragment());
+            replaceFragment(new ProfileFragment());
             drawer.closeDrawers();
             navigationView.setCheckedItem(R.id.nav_profile);
         });
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Make View Holder Object
+        searchViewModel= new ViewModelProvider(this).get(SearchViewModel.class);
+        searchViewModel.init();
+
+
+        getMenuInflater().inflate(R.menu.action_search,menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search_hint));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.e("pttt" ,"onQueryTextSubmit: textChanged");
+                searchViewModel.sendData(newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void findViews() {
@@ -82,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void OnSuccess(User result) {
                         setNavBar(result,isImgUpdated);
                         if(savedInstanceState == null) {
-                            replaceFragment(new mainFragment());
+                            replaceFragment(new MainFragment());
                             navigationView.setCheckedItem(R.id.nav_main);
                         }
                     }
@@ -100,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             nav_LBL_userName.setText(user.getName());
             nav_LBL_userInfo.setText(user.getEmail());
             if(!isImgUpdated) {
-                if(user.getImageUrl() != null) {
+                if(user.getImageUrl() != null && !user.getImageUrl().equalsIgnoreCase("")) {
                     ImageTools.glideSetImageByStrUrl(this,user.getImageUrl(),nav_IMGVIEW_userImg);
                 }
             }
@@ -140,6 +181,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 , fragment).commit();
     }
 
+    private void enableSearchView(boolean active) {
+        if(this.searchView != null) {
+            int visable;
+            searchView.setEnabled(false);
+            if(active)
+                visable = searchView.VISIBLE;
+            else
+                visable = searchView.INVISIBLE;
+            searchView.setVisibility(visable);
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if(drawer.isDrawerOpen(GravityCompat.START)) {
@@ -154,15 +207,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.nav_main:
                 Log.d("pttt", "Switch to mainFragment");
-                replaceFragment(new mainFragment());
+                enableSearchView(true);
+                replaceFragment(new MainFragment());
                 break;
             case R.id.nav_favorities:
                 Log.d("pttt", "Switch to favoritiesFragment");
-                replaceFragment(new favoritiesFragment());
+                enableSearchView(true);
+                replaceFragment(new FavoritiesFragment());
                 break;
             case R.id.nav_profile:
                 Log.d("pttt", "Switch to profileFragment");
-                replaceFragment(new profileFragment());
+                enableSearchView(false);
+                replaceFragment(new ProfileFragment());
                 break;
             case R.id.nav_share:
                 MySignal.getInstance().toast("Share");
@@ -184,6 +240,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             user.setImageUrl(updatedUser.getImageUrl());
         }
         setNavBar(updatedUser,isUpdatedImage);
+    }
+
+    public void setSearchViewCallBack(
+            SearchViewCallBack searchViewCallBack) {
+        this.searchViewCallBack = searchViewCallBack;
     }
 
     // CONNECT USER:

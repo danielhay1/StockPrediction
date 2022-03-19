@@ -1,18 +1,11 @@
-package com.example.stockprediction.objects;
-
-import android.util.Log;
+package com.example.stockprediction.objects.stock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.stockprediction.apis.RapidApi;
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 
 public class Stock {
 

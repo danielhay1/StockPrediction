@@ -101,10 +101,17 @@ public class MyFireBaseServices {
 
     public void saveUserToFireBase(User user) {
         if(firebaseUser.getUid()!=null){
-            saveJsonObject(MY_USERS,user.getUid(),user);
+            saveObject(MY_USERS,user.getUid(),user);
             Log.d("pttt", "saveUserToFireBase: ");
         }
     }
+
+
+    private <T> void saveObject(String preferenceKey, String key, T obj) {
+        DatabaseReference myRef = database.getReference(preferenceKey);
+        myRef.child(key).setValue(obj);
+    }
+
 
     private <T> void saveJsonObject(String preferenceKey, String key, T obj) {
         Gson gson = new Gson();
@@ -120,24 +127,48 @@ public class MyFireBaseServices {
         return object;
     }
 
+    private  <T> void loadObjectFromFireBase(String preferenceKey, String key, ValueEventListener valueEventListener) {
+        DatabaseReference myRef = database.getReference(preferenceKey);
+        myRef.child(key).addListenerForSingleValueEvent(valueEventListener);
+    }
+
+//    public void loadUserFromFireBase(CallBack_LoadUser callBack_loadUser) {
+//        DatabaseReference myRef = database.getReference(MY_USERS);
+//        if(firebaseUser.getUid()!=null){
+//            myRef.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    if(snapshot != null) {
+//                        User value = loadJsonObject(snapshot.getValue(String.class),User.class);
+//                        Log.d("pttt", "Value is: "+ value);
+//                        callBack_loadUser.OnSuccess(value);
+//                    }
+//                }
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//                    callBack_loadUser.OnFailure(error.toException());
+//                }
+//            });
+//        }
+//    }
+
     public void loadUserFromFireBase(CallBack_LoadUser callBack_loadUser) {
-        DatabaseReference myRef = database.getReference(MY_USERS);
-        if(firebaseUser.getUid()!=null){
-            myRef.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(snapshot != null) {
-                        User value = loadJsonObject(snapshot.getValue(String.class),User.class);
-                        Log.d("pttt", "Value is: "+ value);
-                        callBack_loadUser.OnSuccess(value);
-                    }
+        loadObjectFromFireBase(MY_USERS, firebaseUser.getUid(), new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot != null) {
+                    User value = snapshot.getValue(User.class);
+                    Log.d("pttt", "Value is: "+ value);
+                    callBack_loadUser.OnSuccess(value);
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    callBack_loadUser.OnFailure(error.toException());
-                }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callBack_loadUser.OnFailure(error.toException());
+
+            }
+        });
     }
 
     // Image load\store methods:
