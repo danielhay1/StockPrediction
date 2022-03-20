@@ -46,7 +46,8 @@
                 android:layout_alignEnd="@+id/imageview_account_profile"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="40dp"
-                android:backgroundTint="@color/white"
+                android:background="@color/white"
+                app:backgroundTint="@color/white"
                 android:src="@drawable/edit_icon"
                 app:maxImageSize="35dp" />
 

@@ -41,7 +41,9 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
 
     private void updateFilteredData(String text) {
         Log.e("pttt", "onTextChanged: text:"+text);
-        adapter.getFilter().filter(text);
+        if(adapter != null) {
+            adapter.getFilter().filter(text);
+        }
     }
 
     private void observeModelView() {

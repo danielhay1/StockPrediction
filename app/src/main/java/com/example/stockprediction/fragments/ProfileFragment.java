@@ -52,15 +52,17 @@ public class ProfileFragment extends BaseFragment {
             new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
                 @Override
                 public void onActivityResult(Uri result) {
-                    Log.d("profile_fragment", "uploadImage: uri= "+result);
-                    ImageTools.glideSetImageByStrUrl(getActivity(),result,imageview_account_profile);
-                    MyFireBaseServices.getInstance().savePhotoToStorage("profile-pic_"+getUser().getUid(), result, imageUri -> {
-                        if(imageUri!=null) {
-                            MyFireBaseServices.getInstance().updateUserPhotoInFireStore(imageUri,getUser());
-                            // TODO: invoke mainActivity to update image on toolbar
-                            updateUser(getUser());
-                        }
-                    });
+                    if(result != null) {
+                        Log.d("profile_fragment", "uploadImage: uri= "+result);
+                        ImageTools.glideSetImageByStrUrl(getActivity(),result,imageview_account_profile);
+                        MyFireBaseServices.getInstance().savePhotoToStorage("profile-pic_"+getUser().getUid(), result, imageUri -> {
+                            if(imageUri!=null) {
+                                MyFireBaseServices.getInstance().updateUserPhotoInFireStore(imageUri,getUser());
+                                // TODO: invoke mainActivity to update image on toolbar
+                                updateUser(getUser());
+                            }
+                        });
+                    }
                 }
             });
 

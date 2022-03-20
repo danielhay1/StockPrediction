@@ -5,6 +5,7 @@
         android:title="Search stock name or symbol"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView"
+        android:icon="@drawable/search_icon"
         />
 
 </menu>
