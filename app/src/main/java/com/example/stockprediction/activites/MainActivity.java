@@ -9,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.view.View;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
@@ -30,6 +32,7 @@ import com.example.stockprediction.utils.ImageTools;
 import com.example.stockprediction.utils.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, User.OnUserUpdate {
@@ -39,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public static final String USER = "user";
+    public static final String FRAGMENT_TO_LOAD = "frgToLoad";
+    private final int NULL_FRAGMENT_TO_LOAD = -1;
+
     private String currency = "USD";    // Will be enum currency and it would effect stock values.
     // Side menu
     private DrawerLayout drawer;
@@ -47,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView nav_LBL_userName;
     private TextView nav_LBL_userInfo;
     private SearchView searchView;
+    private ProgressBar progress;
     // Fragments
     private MainFragment mainFragment;
     private FavoritiesFragment favoritiesFragment;
@@ -62,29 +69,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViews();
+        progress.setVisibility(View.VISIBLE);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        loadAndSetNavBar(false,savedInstanceState);
-        initListeners();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        // Open main fragment
 
-        nav_IMGVIEW_userImg.setOnClickListener(v -> {
-            replaceFragment(new ProfileFragment());
-            drawer.closeDrawers();
-            navigationView.setCheckedItem(R.id.nav_profile);
-        });
+        initListeners();
+        initFragment(false,savedInstanceState);
     }
 
+    private void loadFragment() {
+        Intent intent = getIntent();
+        int fragmentToLoad;
+        if (intent.hasExtra(FRAGMENT_TO_LOAD)) {
+            fragmentToLoad = getIntent().getExtras().getInt(FRAGMENT_TO_LOAD, NULL_FRAGMENT_TO_LOAD);
+            if (fragmentToLoad != NULL_FRAGMENT_TO_LOAD) {
+                Log.e("pttt", "loadFragment: loading fragment: "+fragmentToLoad);
+            }  else {   // Fragment to load not found -> open default fragment - MainFragment
+                fragmentToLoad = R.id.nav_main;
+            }
+        } else { // No fragment to load sent -> open default fragment - MainFragment
+            fragmentToLoad = R.id.nav_main;
+        }
+        navigateById(fragmentToLoad);
+        navigationView.setCheckedItem(fragmentToLoad);
+        progress.setVisibility(View.GONE);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        initSearchView(menu);
+        //loadFragment();
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void initSearchView(Menu menu) {
         //Make View Holder Object
         searchViewModel= new ViewModelProvider(this).get(SearchViewModel.class);
         searchViewModel.init();
-
 
         getMenuInflater().inflate(R.menu.action_search,menu);
         MenuItem menuItem = menu.findItem(R.id.search);
@@ -103,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return false;
             }
         });
-        return super.onCreateOptionsMenu(menu);
     }
 
     private void findViews() {
@@ -111,20 +134,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // nav header layout
 
         navigationView = findViewById(R.id.nav_view);
+        progress = findViewById(R.id.progress);
         View headerLayout = navigationView.getHeaderView(0);
         nav_IMGVIEW_userImg = headerLayout.findViewById(R.id.nav_IMGVIEW_userImg);
         nav_LBL_userName = headerLayout.findViewById(R.id.nav_LBL_userName);
         nav_LBL_userInfo = headerLayout.findViewById(R.id.nav_LBL_userInfo);
     }
 
-    private void loadAndSetNavBar(boolean isImgUpdated,Bundle savedInstanceState) {
+    private void initFragment(boolean isImgUpdated, Bundle savedInstanceState) {
         MyFireBaseServices.getInstance().loadUserFromFireBase(new MyFireBaseServices.CallBack_LoadUser() {
                     @Override
                     public void OnSuccess(User result) {
                         setNavBar(result,isImgUpdated);
                         if(savedInstanceState == null) {
-                            replaceFragment(new MainFragment());
-                            navigationView.setCheckedItem(R.id.nav_main);
+                            loadFragment();
                         }
                     }
 
@@ -150,6 +173,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initListeners() {
         navigationView.setNavigationItemSelectedListener(this);
+        nav_IMGVIEW_userImg.setOnClickListener(v -> {
+            replaceFragment(new  ProfileFragment());
+            drawer.closeDrawers();
+            navigationView.setCheckedItem(R.id.nav_profile);
+        });
     }
 
     private void setUserDetails() {
@@ -204,7 +232,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
+        navigateById(item.getItemId());
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void navigateById(int itemId) {
+        switch (itemId) {
             case R.id.nav_main:
                 Log.d("pttt", "Switch to mainFragment");
                 enableSearchView(true);
@@ -212,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_favorities:
                 Log.d("pttt", "Switch to favoritiesFragment");
-                enableSearchView(true);
+                //enableSearchView(true);
                 replaceFragment(new FavoritiesFragment());
                 break;
             case R.id.nav_profile:
@@ -228,9 +262,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 MySignal.getInstance().toast("Send");
                 break;
         }
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
+
 
     @Override
     public void onUserUpdate(User updatedUser) {
@@ -247,5 +280,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.searchViewCallBack = searchViewCallBack;
     }
 
-    // CONNECT USER:
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Open fragment -> if not specified load main fragment.
+        //loadFragment(); //-> TODO: FIX CRASH
+        // navigateById(R.id.nav_favorities);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    // CONNECT USER:s
 }

@@ -21,11 +21,22 @@
             android:background="@color/navHeaderColor"
             android:elevation="8dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight" />
-
-        <FrameLayout
-            android:id="@+id/fragment_container"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible"
+                />
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
