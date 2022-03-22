@@ -212,12 +212,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void enableSearchView(boolean active) {
         if(this.searchView != null) {
             int visable;
-            searchView.setEnabled(false);
-            if(active)
+            if(active) {
                 visable = searchView.VISIBLE;
-            else
+                searchView.setQuery("", false);
+                searchView.setIconified(active);
+            } else
                 visable = searchView.INVISIBLE;
             searchView.setVisibility(visable);
+            searchView.setEnabled(active);
+
         }
     }
 
@@ -246,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_favorities:
                 Log.d("pttt", "Switch to favoritiesFragment");
-                //enableSearchView(true);
+                enableSearchView(true);
                 replaceFragment(new FavoritiesFragment());
                 break;
             case R.id.nav_profile:
