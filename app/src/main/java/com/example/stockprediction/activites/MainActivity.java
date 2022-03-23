@@ -22,17 +22,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.fragments.PreferencesFragment;
 import com.example.stockprediction.fragments.StockRecyclerFragment.FavoritiesFragment;
 import com.example.stockprediction.fragments.StockRecyclerFragment.MainFragment;
 import com.example.stockprediction.fragments.StockRecyclerFragment.SearchViewModel;
-import com.example.stockprediction.fragments.SettingsFragment;
 import com.example.stockprediction.fragments.ProfileFragment;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
 import com.example.stockprediction.utils.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, User.OnUserUpdate {
@@ -54,10 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView nav_LBL_userInfo;
     private SearchView searchView;
     private ProgressBar progress;
-    // Fragments
-    private MainFragment mainFragment;
-    private FavoritiesFragment favoritiesFragment;
-    private SettingsFragment SettingsFragment;
+    private int displayingFragmentId;
     // User
     private User user;
 
@@ -174,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initListeners() {
         navigationView.setNavigationItemSelectedListener(this);
         nav_IMGVIEW_userImg.setOnClickListener(v -> {
+            navigateById(R.id.nav_profile);
             replaceFragment(new  ProfileFragment());
             drawer.closeDrawers();
             navigationView.setCheckedItem(R.id.nav_profile);
@@ -220,16 +217,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 visable = searchView.INVISIBLE;
             searchView.setVisibility(visable);
             searchView.setEnabled(active);
-
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
         }
     }
 
@@ -240,7 +227,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    public void openPreferenceFragment() {
+        navigateById(R.xml.preferences);
+        navigationView.setCheckedItem(R.id.nav_profile);
+    }
+
+
     private void navigateById(int itemId) {
+        displayingFragmentId = itemId;
         switch (itemId) {
             case R.id.nav_main:
                 Log.d("pttt", "Switch to mainFragment");
@@ -256,6 +250,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.d("pttt", "Switch to profileFragment");
                 enableSearchView(false);
                 replaceFragment(new ProfileFragment());
+                break;
+            case R.xml.preferences:
+                Log.d("pttt", "Switch to preferenceFragment");
+                enableSearchView(false);
+                replaceFragment(new PreferencesFragment());
                 break;
             case R.id.nav_share:
                 MySignal.getInstance().toast("Share");
@@ -294,6 +293,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START)) {  // If drawer is open close it.
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            if(displayingFragmentId == R.xml.preferences) { // If displaying fragment is preference fragment open profile fragment.
+                navigateById(R.id.nav_profile);
+                navigationView.setCheckedItem(R.id.nav_profile);
+            } else {
+                if(displayingFragmentId != R.id.nav_main) { // If displaying fragment isn't main fragment open main fragment.
+                    navigateById(R.id.nav_main);
+                    navigationView.setCheckedItem(R.id.nav_main);
+                } else {
+                    super.onBackPressed();
+                }
+            }
+        }
     }
 
     // CONNECT USER:s

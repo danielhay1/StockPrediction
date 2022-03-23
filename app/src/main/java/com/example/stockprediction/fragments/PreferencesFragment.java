@@ -1,5 +1,6 @@
 package com.example.stockprediction.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +12,27 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import com.example.stockprediction.R;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
-    private Preference myPerf;
-    public static final String SETTINGS = "settings";
+public class PreferencesFragment extends PreferenceFragmentCompat {
+    private PreferenceManager myPerf;
+    // Constants
+    private final static String TAG = PreferencesFragment.class.getName().toLowerCase();
+    public final static String SETTINGS_SHARED_PREFERENCES = TAG + ".settings";
+
+    /*
+     - To access shared preference inside this fragment use -> myPerf.
+     - To access shared preference outside this fragment use :
+             SharedPreferences preferences = getActivity().getSharedPreferences(
+             PreferencesFragment.SETTINGS_SHARED_PREFERENCES,
+             Context.MODE_PRIVATE);
+     */
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
         //setPreferencesFromResource(R.xml.preferences,rootKey);
 //        myPerf = (ListPreference) findPreference("settings");
@@ -29,6 +43,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 //                return false;
 //            }
 //        });
+
+        // Define the settings file to use by this settings fragment
+        myPerf = getPreferenceManager();
+        myPerf.setSharedPreferencesName(SETTINGS_SHARED_PREFERENCES);
     }
 
     @Override
@@ -36,13 +54,5 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         //view.setBackgroundColor(getContext().getResources().getDrawable(R.drawable.round_corners_bg));
         return view;
-    }
-
-    private void findViews(View view) {
-
-    }
-
-    private void initViews() {
-
     }
 }

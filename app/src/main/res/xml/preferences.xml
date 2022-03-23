@@ -3,6 +3,7 @@
     <PreferenceCategory
         android:title="@string/general_title">
         <ListPreference
+            id
             android:key="theme"
             android:title="@string/notfication_title"
             android:dialogTitle="@string/notfication_title"

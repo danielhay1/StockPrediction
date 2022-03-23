@@ -22,6 +22,7 @@ public class BaseFragment extends Fragment {
         return gson.fromJson(jsonUser,User.class);
     }
 
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -40,6 +41,4 @@ public class BaseFragment extends Fragment {
         setUser(user);
         onUserUpdate.onUserUpdate(user);
     }
-
-
 }

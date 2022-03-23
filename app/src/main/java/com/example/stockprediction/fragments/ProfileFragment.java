@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.activites.MainActivity;
 import com.example.stockprediction.objects.BaseFragment;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.objects.User;
@@ -102,6 +103,7 @@ public class ProfileFragment extends BaseFragment {
         });
         profile_FAB_editImage.setOnClickListener(v -> uploadImage());
         profile_BTN_Logout.setOnClickListener(v-> MyFireBaseServices.getInstance().signOut(getActivity()));
+        profile_BTN_Settings.setOnClickListener(v-> ((MainActivity)getActivity()).openPreferenceFragment());
     }
 
     private void uploadImage() {
