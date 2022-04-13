@@ -5,18 +5,18 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.example.stockprediction.R;
+import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.HttpServices.HttpRequestQueue;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
+import java.util.StringJoiner;
 
 
 public class RapidApi {
@@ -42,7 +42,8 @@ public class RapidApi {
     public enum STOCK_OPERATIONS {
         GET_HISTORICAL_DATA,
         GET_SUMMARY,
-        GET_CHART
+        GET_CHART,
+        GET_QUOTES
     }
 
 
@@ -65,48 +66,60 @@ public class RapidApi {
 
     public static void Init(Context context){
         if(instance == null) {
-            Log.d("pttt", "Init: RapidApi");
+            Log.d("rapid_api", "Init: RapidApi");
             instance = new RapidApi(context);
         }
     }
 
     private String getOperationStringVal(STOCK_OPERATIONS operation) {
         String operationStringVal = "";
+        String strParams = "";
         switch (operation) {
             case GET_HISTORICAL_DATA:
                 operationStringVal = "/stock/v2/get-summary";
+                break;
             case GET_SUMMARY:
                 operationStringVal = "/stock/v3/get-historical-data";
+                break;
             case GET_CHART:
                 operationStringVal = "/market/get-charts";
+                break;
+            case GET_QUOTES:
+                operationStringVal = "/market/v2/get-quotes";
+                break;
         }
         return operationStringVal;
     }
+
 
     private void getDataFromCache(String key) {
 
     }
 
+    private void storeJsonInCache(String key,JSONObject json) {
+
+    }
+
     private void getHistoricalData(String symbol) {
-        httpGetJson(symbol, STOCK_OPERATIONS.GET_HISTORICAL_DATA, new CallBack_HttpTasks() {
+        httpGetRequest(symbol, STOCK_OPERATIONS.GET_HISTORICAL_DATA, new CallBack_HttpTasks() {
             @Override
             public void onResponse(JSONObject json) {
                 /**
                  * send response to activity
                  */
-                Log.d("pttt", "onResponse: "+ json);
+                Log.d("rapid_api", "onResponse: "+ json);
             }
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("pttt", "httpGetRequest: VolleyError: "+error);
+                Log.e("rapid_api", "httpGetRequest: VolleyError: "+error);
                 error.printStackTrace();
             }
         });
         // TODO: Convert json to stock
     }
 
-    private String rapidUrlBuilder(String operation, String symbol, String interval, String range, String region) {
+    private String buildURL(String operation, String symbol, String interval, String range, String region) {
         /**
          *  Optional symbols -> this.MY_STOCKS
          *  Optional operations -> this.STOCK_OPERATIONS
@@ -119,26 +132,51 @@ public class RapidApi {
         return url;
     }
 
+    private String buildURL(String operation, String symbol, String region) {
+        /**
+         *  Optional symbols -> this.MY_STOCKS
+         *  Optional operations -> this.STOCK_OPERATIONS
+         *  Optional regions -> US|
+         *  Optional intervals -> intValue m=min|h=hour|d=day|w=week
+         *  Optional range -> intValue m=min|h=hour|d=day|w=week
+         */
+        String apiUrl = "https://yh-finance.p.rapidapi.com";
+        String url = apiUrl + operation + "?region=" + region+ "&symbols=" + symbol;
+        return url;
+    }
 
-    public void httpGetJson(String symbol, STOCK_OPERATIONS operation, CallBack_HttpTasks callBack_httpTasks) {
-        String url = this.rapidUrlBuilder(getOperationStringVal(operation),symbol,"10m","5d","US");
+    public void getQuotesRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
+        StringJoiner strSymbols = new StringJoiner("%2C");
+        for (Stock stock: stocks) {
+            strSymbols.add(stock.getSymbol().toUpperCase());
+        }
+        httpGetRequest(strSymbols.toString(), STOCK_OPERATIONS.GET_QUOTES, callBack_httpTasks);
+    }
+
+    public void getChartRequest(String symbol,  CallBack_HttpTasks callBack_httpTasks) {
+        httpGetRequest(symbol, STOCK_OPERATIONS.GET_CHART, callBack_httpTasks);
+    }
+
+    private void httpGetRequest(String symbol, STOCK_OPERATIONS operation, CallBack_HttpTasks callBack_httpTasks) {
+        String url = "";
+        switch (operation) {
+            case GET_CHART:
+                url = this.buildURL(getOperationStringVal(operation),symbol,"1d","5d","US");
+                break;
+            case GET_QUOTES:
+                url = this.buildURL(getOperationStringVal(operation),symbol,"US");
+                break;
+        }
         Log.d("rapid_api", "httpGetJson: url= "+url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (com.android.volley.Request.Method.GET, url, null, new com.android.volley.Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("pttt", "onResponse: "+ response);
-                        callBack_httpTasks.onResponse(response);
+                (com.android.volley.Request.Method.GET, url, null, response -> {
+                    Log.d("rapid_api", "onResponse: "+ response);
+                    callBack_httpTasks.onResponse(response);
 
-                    }
-                }, new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-                        Log.d("pttt", "onResponse: VolleyError: "+ error);
-                        callBack_httpTasks.onErrorResponse(error);
-
-                    }
+                }, error -> {
+                    // TODO: Handle error
+                    Log.d("rapid_api", "onResponse: VolleyError: "+ error);
+                    callBack_httpTasks.onErrorResponse(error);
                 })  {
             /**
              * Passing some request headers
@@ -146,9 +184,8 @@ public class RapidApi {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("x-rapidapi-host", HOST);
-                headers.put("x-rapidapi-key", api_key);
-                headers.put("key", "Value");
+                headers.put("X-RapidAPI-Host", HOST);
+                headers.put("X-RapidAPI-Key", api_key);
                 return headers;
             }
         };

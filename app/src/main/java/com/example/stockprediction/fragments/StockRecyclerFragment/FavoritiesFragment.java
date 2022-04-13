@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.stockprediction.R;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
-import com.example.stockprediction.utils.MyFireBaseServices;
+import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 
 import java.util.ArrayList;
 

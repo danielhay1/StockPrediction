@@ -58,7 +58,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database' // Realtime DB
     implementation 'com.google.firebase:firebase-storage'
-
+    implementation 'com.google.firebase:firebase-messaging' // Using for data changed notifications
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'

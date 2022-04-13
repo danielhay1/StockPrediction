@@ -29,8 +29,10 @@ import com.example.stockprediction.fragments.StockRecyclerFragment.SearchViewMod
 import com.example.stockprediction.fragments.ProfileFragment;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
-import com.example.stockprediction.utils.MyFireBaseServices;
+import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 
@@ -59,11 +61,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private SearchViewCallBack searchViewCallBack;
     private SearchViewModel searchViewModel;
-
+    private Bundle state;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        state = savedInstanceState;
         setContentView(R.layout.activity_main);
+        
         findViews();
         progress.setVisibility(View.VISIBLE);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -71,9 +75,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         initListeners();
         initFragment(false,savedInstanceState);
+
     }
 
     private void loadFragment() {
@@ -138,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initFragment(boolean isImgUpdated, Bundle savedInstanceState) {
-        MyFireBaseServices.getInstance().loadUserFromFireBase(new MyFireBaseServices.CallBack_LoadUser() {
+        MyFireBaseServices.getInstance().loadUserFromFireBase(new MyFireBaseServices.FB_Request_Callback<User>() {
                     @Override
                     public void OnSuccess(User result) {
                         setNavBar(result,isImgUpdated);
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setUserDetails() {
         Activity activity = this;
-        MyFireBaseServices.getInstance().loadUserFromFireBase(new MyFireBaseServices.CallBack_LoadUser() {
+        MyFireBaseServices.getInstance().loadUserFromFireBase(new MyFireBaseServices.FB_Request_Callback<User>() {
             @Override
             public void OnSuccess(User result) {
                 nav_LBL_userName.setText(result.getName());
@@ -187,6 +191,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(result.getImageUrl() != null) {
                     ImageTools.glideSetImageByStrUrl(activity,result.getImageUrl(),nav_IMGVIEW_userImg);
                 }
+                MyFireBaseServices.getInstance().registerPredictionTopic(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+
+                    }
+                });
             }
 
             @Override
@@ -282,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.searchViewCallBack = searchViewCallBack;
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -314,5 +325,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    // CONNECT USER:s
+    // CONNECT USER:
 }

@@ -11,9 +11,13 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import com.example.stockprediction.R;
 
 public class MySignal {
     private  static MySignal instance;
@@ -78,31 +82,37 @@ public class MySignal {
         int reqCode = 1;
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra(MainActivity.FRAGMENT_TO_LOAD, R.id.nav_favorities); // -> In case of calling MainActivity, I can specify the fragment to load.
-        MySignal.getInstance().showNotification(this, "Title", "This is the message to display", intent, reqCode, R.mipmap.ic_launcher);
+        MySignal.getInstance().showNotification(this, "channel_id", "Title", "This is the message to display", intent, reqCode, R.mipmap.ic_launcher);
 
      */
 
-    public void showNotification(Context context, String title, String message, Intent intent, int reqCode, int iconId) {
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, PendingIntent.FLAG_ONE_SHOT);
-        String CHANNEL_ID = "channel_name";// The id of the channel.
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(iconId)
-                .setContentTitle(title)
-                .setContentText(message)
+    public void showNotification(Context context, String channelId, String channelName,String title, String message, Intent intent, int iconId, int layoutId) {
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
                 .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentIntent(pendingIntent);
 
-
+        notificationBuilder = notificationBuilder.setContent(getRemoteView(channelName,title,message,iconId,layoutId));
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Channel Name";// The user-visible name of the channel.
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            NotificationChannel mChannel = new NotificationChannel(channelId, name, importance);
             notificationManager.createNotificationChannel(mChannel);
         }
-        notificationManager.notify(reqCode, notificationBuilder.build()); // 0 is the request code, it should be unique id
+        notificationManager.notify(0, notificationBuilder.build()); // 0 is the request code, it should be unique id
+        Log.d("pttt", "showNotification:");
+    }
 
-        Log.d("pttt", "showNotification: " + reqCode);
+    private RemoteViews getRemoteView(String channgelName,String title,String body,int iconId, int layoutId) {
+        RemoteViews remoteViews = new RemoteViews(channgelName, layoutId);
+        remoteViews.setTextViewText(R.id.notification_TV_title,title);
+        remoteViews.setTextViewText(R.id.notification_TV_body,body);
+        remoteViews.setImageViewResource(R.id.notification_IMG_icon, iconId);
+        return remoteViews;
     }
 }

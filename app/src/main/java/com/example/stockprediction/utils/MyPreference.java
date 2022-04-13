@@ -2,12 +2,16 @@ package com.example.stockprediction.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.util.Log;
 
+import com.example.stockprediction.R;
 import com.example.stockprediction.objects.stock.Stock;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+
+import static com.example.stockprediction.fragments.PreferencesFragment.SETTINGS_SHARED_PREFERENCES;
 
 public class MyPreference {
     private static MyPreference instance;
@@ -138,5 +142,41 @@ public class MyPreference {
         SharedPreferences.Editor editor = this.sharedPreferences.edit();
         editor.clear();
         editor.apply();
+    }
+    // Preference fragment - Preferences:
+    public SettingsInspector getSettingsInspector(Context context) {
+        return new SettingsInspector(context);
+    }
+
+    private static class SettingsInspector {
+        private Context context;
+        SharedPreferences sharedPreferences;
+        private final int PRIVATE_MODE = 0;
+        private final String FIRST_RUN = "first_run";
+        // Preference Keys:
+        private String notification_mode;
+        private String theme_mode;
+
+        public SettingsInspector(Context context) {
+            this.context = context;
+            notification_mode = context.getString( R.string.settings_notification_key);
+            theme_mode = context.getString(R.string.settings_theme_key);
+            sharedPreferences  = context.getSharedPreferences(SETTINGS_SHARED_PREFERENCES, PRIVATE_MODE);
+        }
+
+        //Function returns if the app was run for the first time or not
+        public boolean firstRun(){
+            return checkPref(FIRST_RUN);
+        }
+        private boolean checkPref(String preferenceName) {
+            return sharedPreferences.getBoolean(preferenceName, false);
+        }
+        public String getTheme_mode() {
+            return sharedPreferences.getString(notification_mode,context.getString(R.string.settings_notification_default));
+        }
+        public String getNotification_mode() {
+            return sharedPreferences.getString(theme_mode,context.getString(R.string.settings_theme_default));
+        }
+
     }
 }

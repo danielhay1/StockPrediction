@@ -1,15 +1,19 @@
-package com.example.stockprediction.utils;
+package com.example.stockprediction.apis.firebase;
 
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.stockprediction.activites.SplashActivity;
+import com.example.stockprediction.objects.Prediction;
 import com.example.stockprediction.objects.User;
+import com.example.stockprediction.utils.MyAsyncTask;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -26,17 +31,21 @@ import com.google.gson.Gson;
 public class MyFireBaseServices {
 
     private final String DB_URL = "https://stockprediction-b3afb-default-rtdb.europe-west1.firebasedatabase.app/";
-    // ################# keys #################:
+    // ################# Firebase keys #################:
     private final String MY_USERS = "users";
     private final String FAV_STOCKS = "favorities_stocks";
-    private final String STOCKS_PREDICTION = "stocks_prediction";
+    private final String PREDICTIONS = "predictions";
     private final String SETTINGS = "settings";
+    // ################# Firebase cloud messaging keys #################:
+    private final String PREDICTION_NOTIFICATIONS_TOPIC = "settings";
+
     // ################# CallBacks #################:
-    public interface CallBack_LoadUser {
-        void OnSuccess(User result);
+    public interface FB_Request_Callback <T> {
+        void OnSuccess(T result);
         void OnFailure(Exception e);
     }
-    public interface ImageReadyCallback {
+
+    public interface FBImageReady_Callback {
         void imageUriCallback(String imageUri);
     }
     // #############################################
@@ -45,6 +54,8 @@ public class MyFireBaseServices {
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase database;
     private FirebaseStorage storage;
+
+
     public static MyFireBaseServices getInstance() {
         return instance;
     }
@@ -106,7 +117,6 @@ public class MyFireBaseServices {
         }
     }
 
-
     private <T> void saveObject(String preferenceKey, String key, T obj) {
         DatabaseReference myRef = database.getReference(preferenceKey);
         myRef.child(key).setValue(obj);
@@ -123,76 +133,51 @@ public class MyFireBaseServices {
     private <T> T loadJsonObject(String objJson, Class<T> classType) {
         Gson gson = new Gson();
         T object = gson.fromJson(objJson, classType);
-
         return object;
     }
 
-    private  <T> void loadObjectFromFireBase(String preferenceKey, String key, ValueEventListener valueEventListener) {
+    private void loadObjectFromFireBase(String preferenceKey, String key, ValueEventListener valueEventListener) {
         DatabaseReference myRef = database.getReference(preferenceKey);
         myRef.child(key).addListenerForSingleValueEvent(valueEventListener);
     }
 
-//    public void loadUserFromFireBase(CallBack_LoadUser callBack_loadUser) {
-//        DatabaseReference myRef = database.getReference(MY_USERS);
-//        if(firebaseUser.getUid()!=null){
-//            myRef.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    if(snapshot != null) {
-//                        User value = loadJsonObject(snapshot.getValue(String.class),User.class);
-//                        Log.d("pttt", "Value is: "+ value);
-//                        callBack_loadUser.OnSuccess(value);
-//                    }
-//                }
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//                    callBack_loadUser.OnFailure(error.toException());
-//                }
-//            });
-//        }
-//    }
+    private void listenObjectFromFireBase(String preferenceKey, String key, ValueEventListener valueEventListener) {
+        DatabaseReference myRef = database.getReference(preferenceKey);
+        myRef.child(key).addValueEventListener(valueEventListener);
+    }
 
-    public void loadUserFromFireBase(CallBack_LoadUser callBack_loadUser) {
-        loadObjectFromFireBase(MY_USERS, firebaseUser.getUid(), new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot != null) {
-                    User value = snapshot.getValue(User.class);
-                    Log.d("pttt", "Value is: "+ value);
-                    callBack_loadUser.OnSuccess(value);
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                callBack_loadUser.OnFailure(error.toException());
+    public void listenPredictions(String preferenceKey,FB_Request_Callback<Prediction> valueEventListener) {
+        listenObjectFromFireBase(PREDICTIONS, preferenceKey, new MyValueEventListener<Prediction>(Prediction.class,valueEventListener));
+    }
 
-            }
-        });
+
+    public void loadUserFromFireBase(FB_Request_Callback<User> valueEventListener) {
+        loadObjectFromFireBase(MY_USERS, firebaseUser.getUid(), new MyValueEventListener<User>(User.class,valueEventListener));
     }
 
     // Image load\store methods:
-    public void savePhotoToStorage(String key, Uri uri, ImageReadyCallback imageReadyCallback) {
+    public void savePhotoToStorage(String key, Uri uri, FBImageReady_Callback FBImageReady_Callback) {
         if(firebaseUser.getUid()!=null) {
             StorageReference storageRef = storage.getInstance().getReference();
             StorageReference mountainImagesRef = storageRef.child("image/" + key);
             UploadTask uploadTask = mountainImagesRef.putFile(uri);
             uploadTask.addOnFailureListener(e -> { }).addOnSuccessListener(taskSnapshot -> {
                 Log.d("pttt", "savePhotoToStorageUri: successed ");
-                getImageUri(taskSnapshot, imageReadyCallback);
+                getImageUri(taskSnapshot, FBImageReady_Callback);
             });
         }
     }
 
-    private void getImageUri(UploadTask.TaskSnapshot taskSnapshot, ImageReadyCallback imageReadyCallback) {
+    private void getImageUri(UploadTask.TaskSnapshot taskSnapshot, FBImageReady_Callback FBImageReady_Callback) {
         if (taskSnapshot.getMetadata() != null) {
             if (taskSnapshot.getMetadata().getReference() != null) {
                 Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
                 result.addOnSuccessListener(uri -> {
                     String imageUrl = uri.toString();
                     Log.d("pttt", "imageUrl= "+imageUrl);
-                    if (imageReadyCallback != null) {
-                        imageReadyCallback.imageUriCallback(imageUrl);
+                    if (FBImageReady_Callback != null) {
+                        FBImageReady_Callback.imageUriCallback(imageUrl);
                     }
                 });
             }
@@ -212,12 +197,12 @@ public class MyFireBaseServices {
         return user;
     }
 
-    public void getUserPhotoFromFireStore(ImageReadyCallback imageReadyCallback) {
-        loadUserFromFireBase(new CallBack_LoadUser() {
+    public void getUserPhotoFromFireStore(FBImageReady_Callback FBImageReady_Callback) {
+        loadUserFromFireBase(new FB_Request_Callback<User>() {
             @Override
             public void OnSuccess(User result) {
-                if (imageReadyCallback != null && result != null) {
-                    imageReadyCallback.imageUriCallback(result.getImageUrl());
+                if (FBImageReady_Callback != null && result != null) {
+                    FBImageReady_Callback.imageUriCallback(result.getImageUrl());
                 }
             }
 
@@ -410,4 +395,61 @@ public class MyFireBaseServices {
             }
         });
     }*/
+
+    // Cloud messaging:
+    public void registerPredictionTopic(OnCompleteListener onCompleteListener) {
+        if(onCompleteListener != null) {
+            registerTopic(PREDICTION_NOTIFICATIONS_TOPIC,onCompleteListener);
+        } else {
+            registerTopic(PREDICTION_NOTIFICATIONS_TOPIC);
+        }
+    }
+
+    private void registerTopic(String topic, OnCompleteListener onCompleteListener) {
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                .addOnCompleteListener(onCompleteListener);
+    }
+    private void registerTopic(String topic) {
+        FirebaseMessaging.getInstance().subscribeToTopic(topic);
+    }
+    private void sendMessage(String topic, OnCompleteListener onCompleteListener) {
+//        Message message = Message.builder()
+//                .putData("score", "850")
+//                .putData("time", "2:45")
+//                .setTopic(topic)
+//                .build();
+    }
+
+
+    private class MyValueEventListener<T> implements com.google.firebase.database.ValueEventListener {
+        private final Class<T> classType;
+        private FB_Request_Callback fb_request_callback;
+        public MyValueEventListener(Class<T> classType,FB_Request_Callback fb_request_callback) {
+            this.classType = classType;
+            this.fb_request_callback = fb_request_callback;
+        }
+
+        public Class<T> getType() {
+            return classType;
+        }
+
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            if(snapshot != null) {
+                try {
+                    T value = snapshot.getValue(classType);
+                    Log.d("pttt", "Value is: "+ value);
+                    fb_request_callback.OnSuccess(value);
+                } catch (Exception exception) {
+                    Log.e("pttt", "Failed to get value!, snapshot: " + snapshot + "\nException = "+exception);
+                    fb_request_callback.OnFailure(exception);
+                }
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            fb_request_callback.OnFailure(error.toException());
+        }
+    }
 }

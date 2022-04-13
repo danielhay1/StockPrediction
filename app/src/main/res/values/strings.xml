@@ -18,6 +18,17 @@
     <string name="notfication_all_predictions">all prediction</string>
     <string name="enter_code">Enter code</string>
     <string name="login">Login</string>
+
+    <!--Settings preferences keys-->
+    <string name="settings_notification_key">settings_notification</string>
+    <string name="settings_theme_key">settings_theme</string>
+
+    <!--Settings preferences default values-->
+    <string name="settings_notification_default">Favorite stocks</string>
+    <string name="settings_theme_default">Same as system</string>
+
+
+
     <!--User login\creation-->
     <string name="password_constraint">Password must contain at least 6 characters</string>
     <string name="name_constraint">No name inserted</string>

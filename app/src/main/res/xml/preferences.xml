@@ -3,17 +3,18 @@
     <PreferenceCategory
         android:title="@string/general_title">
         <ListPreference
-            id
-            android:key="theme"
+            android:key="@string/settings_notification_key"
             android:title="@string/notfication_title"
             android:dialogTitle="@string/notfication_title"
             android:entries="@array/notfication_values"
+            android:defaultValue="@string/settings_notification_default"
             android:entryValues="@array/notfication_values"/>
         <ListPreference
-            android:key="theme"
+            android:key="@string/settings_theme_key"
             android:title="@string/theme_title"
             android:dialogTitle="@string/theme_title"
             android:entries="@array/theme_array"
+            android:defaultValue="@string/settings_theme_default"
             android:entryValues="@array/theme_array"/>
     </PreferenceCategory>
 
