@@ -8,6 +8,10 @@ import android.util.Log;
 import com.example.stockprediction.R;
 import com.example.stockprediction.objects.stock.Stock;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -16,19 +20,22 @@ import static com.example.stockprediction.fragments.PreferencesFragment.SETTINGS
 public class MyPreference {
     private static MyPreference instance;
     private SharedPreferences sharedPreferences;
+    private static final Object lock = new Object();
+
 
     private final String PREFERENCE_ROOT = "preferences_root";
     // Application Preference Public Keys:
     public interface KEYS {
         public final String CACHED_STOCKS = "cached_stocks";
         public final String FAV_STOCKS = "favorities_stocks";
-        public final String STOCKS_DATA = "stocks_data";
+        public final String STOCKS_DATA_JSON = "stocks_data_json";
         public final String  SETTINGS = "settings";
         public final String  USER_DETAILS = "user_details";
     }
 
-    public static MyPreference getInstance() {
+    public static MyPreference getInstance(Context appContext) {
         //Singleton design pattern
+        Init(appContext);
         return instance;
     }
 
@@ -38,9 +45,11 @@ public class MyPreference {
 
     public static void Init(Context appContext) {
         if (instance == null) {
-            Log.d("pttt", "Init: MyPreference");
-            instance = new MyPreference(appContext);
-            instance.putFavStockArrayList(new ArrayList<Stock>());
+            synchronized (lock) {
+                Log.d("pttt", "Init: MyPreference");
+                instance = new MyPreference(appContext);
+                instance.putFavStockArrayList(new ArrayList<Stock>());
+            }
         }
     }
 
@@ -86,6 +95,19 @@ public class MyPreference {
         Log.d("pttt", "getStock, key= "+key);
         Gson gson = new Gson();
         return gson.fromJson(getString(key), Stock.class);
+    }
+
+    private void putJsonObject(String key, JSONObject jsonObject) {
+        this.putString(key,jsonObject.toString());
+    }
+
+    public JSONObject getJsonObject(String key) {
+        try {
+            return new JSONObject(getString(key));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     // Favorite stocks methods:
@@ -148,6 +170,17 @@ public class MyPreference {
         return new SettingsInspector(context);
     }
 
+    // RapidAPI cache store & load:
+    public void putStocksDetails(JSONObject jsonObject) {
+        this.putJsonObject(KEYS.STOCKS_DATA_JSON,jsonObject);
+    }
+
+    public JSONObject getStocksDetails() {
+        return this.getJsonObject(KEYS.STOCKS_DATA_JSON);
+    }
+
+
+
     private static class SettingsInspector {
         private Context context;
         SharedPreferences sharedPreferences;
@@ -177,6 +210,5 @@ public class MyPreference {
         public String getNotification_mode() {
             return sharedPreferences.getString(theme_mode,context.getString(R.string.settings_theme_default));
         }
-
     }
 }

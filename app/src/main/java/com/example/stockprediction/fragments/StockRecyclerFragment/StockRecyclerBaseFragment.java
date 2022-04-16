@@ -1,3 +1,4 @@
+
 package com.example.stockprediction.fragments.StockRecyclerFragment;
 
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.MyAsyncTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.stockprediction.apis.RapidApi.*;
 
 public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     protected StockRecyclerViewAdapter<T> adapter;
@@ -86,11 +90,17 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             adapter = initAdapter(recyclerView, data, onStockLike_callback);
             // Get stock from FireBaser
 
-            RapidApi.getInstance().getQuotesRequest((List<Stock>) data, new RapidApi.CallBack_HttpTasks() {
+            getInstance().getQuotesRequest((List<Stock>) data, new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
                         Log.e("pttt", "StockJson found: "+json);
-
+                    for (int position = 0; position < data.size(); position++) {
+                        try {
+                            parseQuotesResponse(position,adapter,json);
+                        } catch (JSONException e) {
+                            Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
+                        }
+                    }
                 }
 
                 @Override
@@ -125,10 +135,30 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
 //            }
         });
     }
+    private void parseQuotesResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {
+        Stock stock = data.get(position);
+        JSONObject result = json.getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(position);
+        String symbol = result.getString("symbol");
+        Log.e("rapid_api", "parseQuotesResponse: symbol = " + symbol);
+        if(stock.getSymbol().equalsIgnoreCase(symbol)) {
+            stock.setValue(Double.parseDouble(result.getString("regularMarketPrice")));
+            stock.setChangeAmount(Double.parseDouble(result.getString("regularMarketChange")));
+            stock.setChangePercent(Double.parseDouble(result.getString("regularMarketChangePercent")));
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyItemChanged(position);
+                }
+            });
+        } else {
+            Log.e("rapid_api", "parseQuotesResponse: symbol not match: stock.symbol= "+stock.getSymbol()+ ",symbol= " + symbol);
+        }
+    }
 
     private void updateRecycleView(ArrayList<T> stockList, int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException { // Fix method
         // consider using "Historic Stock Prices" api
-        String price = json.getString("");
+        String price = json.getString("quotes");
         stockList.get(position)
                 .setPredictionStatus()
                 .setValue(10.0);

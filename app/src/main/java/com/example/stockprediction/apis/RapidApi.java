@@ -10,9 +10,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.stockprediction.R;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.HttpServices.HttpRequestQueue;
+import com.example.stockprediction.utils.MyAsyncTask;
+import com.example.stockprediction.utils.MyPreference;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +24,13 @@ import java.util.StringJoiner;
 
 
 public class RapidApi {
-    private  static RapidApi instance;  // Singleton Class
+    private static RapidApi instance;  // Singleton Class
     private Context appContext;
     private final String HOST = "yh-finance.p.rapidapi.com";
     private static String api_key;
     private HttpRequestQueue httpRequestQueue;
+    private final int CACHE_UPDATE_INTERVAL = 24 * 30; // In hours // TODO: change to 1 hour
+    private static final Object lock = new Object();
 
 
     //private OkHttpClient client;
@@ -35,7 +41,7 @@ public class RapidApi {
         MY_STOCKS.put("Intel", "INTC");
         MY_STOCKS.put("AMD", "AMD");
         MY_STOCKS.put("Siemens", "SIEGY");
-        MY_STOCKS.put("TSMC", "TSMC");
+        //MY_STOCKS.put("TSMC", "TSMC");
     }
 
 
@@ -66,8 +72,10 @@ public class RapidApi {
 
     public static void Init(Context context){
         if(instance == null) {
-            Log.d("rapid_api", "Init: RapidApi");
-            instance = new RapidApi(context);
+            synchronized (lock) {
+                Log.d("rapid_api", "Init: RapidApi");
+                instance = new RapidApi(context);
+            }
         }
     }
 
@@ -91,13 +99,18 @@ public class RapidApi {
         return operationStringVal;
     }
 
-
-    private void getDataFromCache(String key) {
+    private Boolean shouldRefreshCache(JSONObject json) throws JSONException {
+        long hourInSec = 60 * 60;
+        Long currentTimeStamp = System.currentTimeMillis()/1000;
+        Long refreshTimeStamp = currentTimeStamp - (hourInSec * CACHE_UPDATE_INTERVAL);
+        Long cacheTimeStamp = json.getLong("request_timestamp");
+        Log.e("rapid_api", "shouldRefreshCache: "+(cacheTimeStamp < refreshTimeStamp));
+        return cacheTimeStamp < refreshTimeStamp;
 
     }
 
-    private void storeJsonInCache(String key,JSONObject json) {
-
+    private void storeJsonInCache(JSONObject json) {
+        MyPreference.getInstance(appContext).putStocksDetails(json);
     }
 
     private void getHistoricalData(String symbol) {
@@ -145,12 +158,28 @@ public class RapidApi {
         return url;
     }
 
-    public void getQuotesRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
+    private void  generateQuotesHttpRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
         StringJoiner strSymbols = new StringJoiner("%2C");
         for (Stock stock: stocks) {
             strSymbols.add(stock.getSymbol().toUpperCase());
         }
+        Log.d("rapid_api", "strSymbols= "+strSymbols.toString());
         httpGetRequest(strSymbols.toString(), STOCK_OPERATIONS.GET_QUOTES, callBack_httpTasks);
+    }
+
+    public void getQuotesRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
+        try {
+            JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksDetails(); // could throw null pointer exception in case of no data in cache
+            if(!shouldRefreshCache(jsonObject)) {
+                Log.d("rapid_api", "getting json from cache: json= "+jsonObject);
+                callBack_httpTasks.onResponse(jsonObject);
+            } else {
+                generateQuotesHttpRequest(stocks,callBack_httpTasks);
+            }
+        } catch (JSONException|NullPointerException e) {
+            Log.e("rapid_api", "getQuotesRequest:  error= "+e.getLocalizedMessage());
+            generateQuotesHttpRequest(stocks,callBack_httpTasks);
+        }
     }
 
     public void getChartRequest(String symbol,  CallBack_HttpTasks callBack_httpTasks) {
@@ -170,9 +199,15 @@ public class RapidApi {
         Log.d("rapid_api", "httpGetJson: url= "+url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (com.android.volley.Request.Method.GET, url, null, response -> {
-                    Log.d("rapid_api", "onResponse: "+ response);
-                    callBack_httpTasks.onResponse(response);
-
+                    JSONObject myResponse = response;
+                    try {
+                        myResponse.put("request_timestamp",System.currentTimeMillis()/1000);
+                        Log.d("rapid_api", "onResponse: "+ myResponse);
+                        MyPreference.getInstance(appContext).putStocksDetails(myResponse);
+                        callBack_httpTasks.onResponse(myResponse);
+                    } catch (JSONException e) {
+                        Log.e("rapid_api", "httpGetRequest:  error= "+e.getLocalizedMessage());
+                    }
                 }, error -> {
                     // TODO: Handle error
                     Log.d("rapid_api", "onResponse: VolleyError: "+ error);

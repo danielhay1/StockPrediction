@@ -148,7 +148,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
     private String getStockChangeDetails(T stock,TextView textView){
         String sign = (stock.getChangeAmount() > 0) ? "+" : (stock.getChangeAmount() < 0) ? "-" : "";
-        return sign+stock.getChangeAmount() + "(" + stock.getChangePercent()+ ")";
+        return sign+String.format("%.2f", stock.getChangeAmount()) + "(" + String.format("%.2f", stock.getChangePercent())+ "%)";
     }
 
     @Override
