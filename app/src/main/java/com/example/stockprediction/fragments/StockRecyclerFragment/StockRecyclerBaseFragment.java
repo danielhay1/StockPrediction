@@ -144,7 +144,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             stock.setValue(Double.parseDouble(result.getString("regularMarketPrice")));
             stock.setChangeAmount(Double.parseDouble(result.getString("regularMarketChange")));
             stock.setChangePercent(Double.parseDouble(result.getString("regularMarketChangePercent")));
-
+            stock.setPredictionStatus();
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

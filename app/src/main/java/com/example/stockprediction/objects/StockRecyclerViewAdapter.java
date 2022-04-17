@@ -110,6 +110,9 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
                 setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
                 holder.RVROW_LBL_StockName.setText(stock.getName());
                 holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
+                if(stock.getPredictionStatus() == Stock.StockStatus.NO_DATA) {
+                    //holder.
+                }
 
             } else {
                 Log.e("stock_recycler", "parseQuotesResponse: symbol not match: stock.symbol= "+stock.getSymbol()+ ",symbol= " + symbol);
@@ -218,14 +221,10 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
                     imgName="prediction_status_decrease";
                 }
                 break;
+            case NO_DATA:
             case UNCHANGED:
                 if(type.equalsIgnoreCase("prediction_status")) {
                     imgName="prediction_status_unchanged";
-                }
-                break;
-            case NO_DATA:
-                if(type.equalsIgnoreCase("prediction_status")) {
-                    imgName="";
                 }
                 break;
         }

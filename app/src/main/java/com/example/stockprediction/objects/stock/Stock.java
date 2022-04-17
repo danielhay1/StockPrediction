@@ -108,6 +108,7 @@ public class Stock {
 
     public Stock setPredictionValue(double predictionValue) {
         this.predictionValue = predictionValue;
+        this.setPredictionStatus();
         return this;
     }
 
