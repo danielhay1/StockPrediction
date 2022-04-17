@@ -13,8 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.stockprediction.R;
 import com.example.stockprediction.objects.stock.Stock;
+import com.example.stockprediction.utils.MyPreference;
 
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     private ItemClickListener mClickListener;
     private Context context;
     private OnStockLike_Callback onStockLikeCallback;
+    private  JSONObject jsonStockData;
 
     public interface OnStockLike_Callback {
         void onStockLike(Stock stock);
@@ -45,6 +49,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         this.likedStocks = likedStocks;
         this.onStockLikeCallback = onStockLikeCallback;
         this.stocksData = new ArrayList<T>(filteredStockData);
+        jsonStockData = MyPreference.getInstance(context).getStocksData();
     }
 
     public List<T> getLikedStocks() {
@@ -67,16 +72,14 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String ValSign = "";
         T stock = filteredStockData.get(position);
-        setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
-        setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
-        holder.RVROW_LBL_StockName.setText(stock.getName());
-        holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
-        holder.RVROW_LBL_StockValue.setText("$" + String.valueOf(stock.getValue()));
-        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
-        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
+        if(jsonStockData != null) {
+            setDataFromCache(stock,holder,position);
+        } else {
+            initStubData(stock,holder);
+        }
+        Log.d("stock_recycler", "onBindViewHolder: "+ stock.getSymbol());
         setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
         setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
-        Log.d("pttt", "onBindViewHolder: "+ stock.getSymbol());
         markLikedStocks(stock,holder); // TODO: fix null pointer exception
         holder.RVROW_EV_likeButton.setOnCheckListener(new OnCheckListener() {
             @Override
@@ -89,6 +92,43 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
                 onStockLikeCallback.onStockDislike(stock,position);
             }
         });
+    }
+
+    private void setDataFromCache(T stock, ViewHolder holder, int position){
+        JSONObject cacheStock;
+        try {
+            cacheStock = jsonStockData.getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(position);
+            String symbol = cacheStock.getString("symbol");
+            Log.e("stock_recycler", "parseQuotesResponse: symbol = " + symbol);
+            if(stock.getSymbol().equalsIgnoreCase(symbol)) {
+                stock.setChangeAmount(Double.parseDouble(cacheStock.getString("regularMarketChange")));
+                stock.setChangePercent(Double.parseDouble(cacheStock.getString("regularMarketChangePercent")));
+                holder.RVROW_LBL_StockValue.setText("$" + Double.parseDouble(cacheStock.getString("regularMarketPrice")));
+                holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
+                holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
+                setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
+                setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
+                holder.RVROW_LBL_StockName.setText(stock.getName());
+                holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
+
+            } else {
+                Log.e("stock_recycler", "parseQuotesResponse: symbol not match: stock.symbol= "+stock.getSymbol()+ ",symbol= " + symbol);
+                initStubData(stock,holder);
+            }
+        } catch (JSONException e) {
+            Log.e("stock_recycler", "parseQuotesResponse: jsonException = "+e);
+            initStubData(stock,holder);
+        }
+    }
+
+    private void initStubData(T stock, ViewHolder holder) {
+        setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
+        setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
+        holder.RVROW_LBL_StockName.setText(stock.getName());
+        holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
+        holder.RVROW_LBL_StockValue.setText("$" + String.valueOf(stock.getValue()));
+        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
+        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
     }
 
     @Override
@@ -131,7 +171,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         if(likedStocks != null) {
             if(!likedStocks.isEmpty()){
                 if (likedStocks.contains(stock)) {
-                    Log.d("pttt", "markAsLiked: "+likedStocks);
+                    Log.d("stock_recycler", "markAsLiked: "+likedStocks);
                     holder.RVROW_EV_likeButton.setChecked(true);
                 }
             }
@@ -147,7 +187,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         }
     }
     private String getStockChangeDetails(T stock,TextView textView){
-        String sign = (stock.getChangeAmount() > 0) ? "+" : (stock.getChangeAmount() < 0) ? "-" : "";
+        //String sign = (stock.getChangeAmount() > 0) ? "+" : (stock.getChangeAmount() < 0) ? "-" : "";
+        String sign = (stock.getChangeAmount() > 0) ? "+" : "";
         return sign+String.format("%.2f", stock.getChangeAmount()) + "(" + String.format("%.2f", stock.getChangePercent())+ "%)";
     }
 
@@ -232,7 +273,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
             notifyItemRemoved(position);
             notifyItemChanged(position);
         } else {
-            Log.d("pttt", "removeAt: no element found");
+            Log.d("stock_recycler", "removeAt: no element found");
         }
     }
 

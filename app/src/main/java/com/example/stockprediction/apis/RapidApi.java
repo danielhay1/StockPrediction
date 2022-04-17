@@ -10,13 +10,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.stockprediction.R;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.HttpServices.HttpRequestQueue;
-import com.example.stockprediction.utils.MyAsyncTask;
 import com.example.stockprediction.utils.MyPreference;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,10 +107,6 @@ public class RapidApi {
 
     }
 
-    private void storeJsonInCache(JSONObject json) {
-        MyPreference.getInstance(appContext).putStocksDetails(json);
-    }
-
     private void getHistoricalData(String symbol) {
         httpGetRequest(symbol, STOCK_OPERATIONS.GET_HISTORICAL_DATA, new CallBack_HttpTasks() {
             @Override
@@ -169,7 +163,7 @@ public class RapidApi {
 
     public void getQuotesRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
         try {
-            JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksDetails(); // could throw null pointer exception in case of no data in cache
+            JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(); // could throw null pointer exception in case of no data in cache
             if(!shouldRefreshCache(jsonObject)) {
                 Log.d("rapid_api", "getting json from cache: json= "+jsonObject);
                 callBack_httpTasks.onResponse(jsonObject);

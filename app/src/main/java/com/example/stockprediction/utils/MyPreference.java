@@ -175,7 +175,7 @@ public class MyPreference {
         this.putJsonObject(KEYS.STOCKS_DATA_JSON,jsonObject);
     }
 
-    public JSONObject getStocksDetails() {
+    public JSONObject getStocksData() {
         return this.getJsonObject(KEYS.STOCKS_DATA_JSON);
     }
 
