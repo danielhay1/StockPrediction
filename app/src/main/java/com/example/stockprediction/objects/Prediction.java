@@ -7,28 +7,28 @@ import java.util.HashMap;
 
 
 public class Prediction {
-    private String date;
+    private String day;
     private String stockSymbol;
-    private HashMap<String,Integer> stockScenario = new HashMap<String,Integer>();  // ("appl",0) , ("nvda",0) , ("symbol",1)   // not mandatory yet
-    private double chance;  // not mandatory yet
-    private double predictionValue;
-    private double actualValue;
+    private Dependency[] dependencies;
+    //private HashMap<String,Integer> dependencies = new HashMap<String,Integer>();  // ("appl",0) , ("nvda",0) , ("symbol",1)   // not mandatory yet
+    private double points;  // not mandatory yet
+    private long precision;
+    private double actualValue = -1;
 
-    public Prediction(String date, String stockSymbol, HashMap<String, Integer> stockScenario, double chance, double predictionValue, double actualValue) {
-        this.date = java.text.DateFormat.getDateTimeInstance().format(new Date());
+    public Prediction(String day, String stockSymbol, Dependency[] dependencies, double chance, long precision) {
+        this.day = day;
         this.stockSymbol = stockSymbol;
-        this.stockScenario = stockScenario;
-        this.chance = chance;
-        this.predictionValue = predictionValue;
-        this.actualValue = actualValue;
+        this.dependencies = dependencies;
+        this.points = chance;
+        this.precision = precision;
     }
 
-    public String getDate() {
-        return date;
+    public String getDay() {
+        return day;
     }
 
-    public Prediction setDate(String date) {
-        this.date = date;
+    public Prediction setDay(String day) {
+        this.day = day;
         return this;
     }
 
@@ -41,30 +41,30 @@ public class Prediction {
         return this;
     }
 
-    public HashMap<String, Integer> getStockScenario() {
-        return stockScenario;
+    public Dependency[] getDependencies() {
+        return dependencies;
     }
 
-    public Prediction setStockScenario(HashMap<String, Integer> stockScenario) {
-        this.stockScenario = stockScenario;
+    public Prediction setDependencies(Dependency[] dependencies) {
+        this.dependencies = dependencies;
         return this;
     }
 
-    public double getChance() {
-        return chance;
+    public double getPoints() {
+        return points;
     }
 
-    public Prediction setChance(double chance) {
-        this.chance = chance;
+    public Prediction setPoints(double chance) {
+        this.points = chance;
         return this;
     }
 
-    public double getPredictionValue() {
-        return predictionValue;
+    public double getPrecisionValue() {
+        return precision;
     }
 
-    public Prediction setPredictionValue(double predictionValue) {
-        this.predictionValue = predictionValue;
+    public Prediction setPrecisionValue(double precisionValue) {
+        this.precision = precision;
         return this;
     }
 
@@ -80,6 +80,24 @@ public class Prediction {
     @NonNull
     @Override
     public String toString() {
-        return "Prediction:\n-------------\ndate: "+this.date+"\nstockSymbol: "+this.stockScenario+"\nchance: "+this.chance+"\npredictionValue: "+this.predictionValue+"\nactualValue: "+this.actualValue;
+        return "Prediction:\n-------------\ndate: "+this.day+"\nstockSymbol: "+this.dependencies +"\nchance: "+this.points+"\npredictionValue: "+this.precision+"\nactualValue: "+this.actualValue;
+    }
+
+    public class Dependency {
+        private int is_profit;
+        private String name;
+        private String symbol;
+
+        public Dependency(int is_profit, String name, String symbol) {
+            this.is_profit = is_profit;
+            this.name = name;
+            this.symbol = symbol;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "Dependency: (Is_profit= "+is_profit+",Name= "+name+",Symbol= "+symbol+")";
+        }
     }
 }

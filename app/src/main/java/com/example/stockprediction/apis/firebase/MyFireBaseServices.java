@@ -148,6 +148,7 @@ public class MyFireBaseServices {
 
 
     public void listenPredictions(String preferenceKey,FB_Request_Callback<Prediction> valueEventListener) {
+
         listenObjectFromFireBase(PREDICTIONS, preferenceKey, new MyValueEventListener<Prediction>(Prediction.class,valueEventListener));
     }
 
