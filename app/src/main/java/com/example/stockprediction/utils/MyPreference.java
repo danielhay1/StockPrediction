@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.CacheRequest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -101,8 +102,10 @@ public class MyPreference {
         return gson.fromJson(getString(key), Stock.class);
     }
 
-    private void putJsonObject(String key, JSONObject jsonObject) {
-        this.putString(key,jsonObject.toString());
+    private JSONObject putJsonObject(String key, JSONObject jsonObject, String jsonKey) {
+        JSONObject customJsonObject = StockCache.generateCustomObject(jsonObject,jsonKey);
+        this.putString(key,customJsonObject.toString());
+        return customJsonObject;
     }
 
     public JSONObject getJsonObject(String key) {
@@ -175,18 +178,17 @@ public class MyPreference {
     }
 
     // RapidAPI cache store & load:
-    public void putStocksDetails(JSONObject jsonObject) {
-
-        this.putJsonObject(KEYS.STOCKS_DATA_JSON,jsonObject);
+    public JSONObject putStocksDetails(JSONObject jsonObject,String jsonKey) {
+        return this.putJsonObject(KEYS.STOCKS_DATA_JSON,jsonObject,jsonKey);
     }
 
     public JSONObject getStocksData() {
         return this.getJsonObject(KEYS.STOCKS_DATA_JSON);
     }
-    private static class StockCache {
-        private final int CACHE_UPDATE_INTERVAL = 24 * 30; // In hours // TODO: change to 1 hour
+    public static class StockCache {
+        private final static int CACHE_UPDATE_INTERVAL = 24*30; // In hours // TODO: change to 1 hour
 
-        private Boolean shouldRefreshCache(JSONObject json) throws JSONException {
+        public static Boolean shouldRefreshCache(JSONObject json) throws JSONException {
             long hourInSec = 60 * 60;
             Long currentTimeStamp = System.currentTimeMillis()/1000;
             Long refreshTimeStamp = currentTimeStamp - (hourInSec * CACHE_UPDATE_INTERVAL);
@@ -195,16 +197,28 @@ public class MyPreference {
             return cacheTimeStamp < refreshTimeStamp;
         }
 
-        private String getCurrentDay() {
+        private static String getCurrentDay() {
             Calendar calendar = Calendar.getInstance();
             Date date = calendar.getTime();
             // full name form of the day
             return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
         }
 
+        private static JSONObject generateCustomObject(JSONObject json, String jsonKey) {
+            JSONObject customJson = new JSONObject();
+            try {
+                customJson.put("request_day",getCurrentDay());
+                customJson.put("request_timestamp",System.currentTimeMillis()/1000);
+                //customJson.put("stocks",json);
+                customJson.put(jsonKey,json);
+            } catch (JSONException e) {
+                Log.e("MyPreference", "Cache: putJson error: "+ e.getLocalizedMessage());
+            }
+            return customJson;
+        }
+
 
     }
-
 
     private static class SettingsInspector {
         private Context context;

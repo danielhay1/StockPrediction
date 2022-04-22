@@ -37,13 +37,7 @@ public class FavoritiesFragment extends StockRecyclerBaseFragment<Stock> {
     }
 
     private void initViews() {
-        //initStockRecyclerView();
-        super.initStockRecyclerView(recyclerView, new initStockRecyclerData_Callback<Stock>() {
-            @Override
-            public ArrayList<Stock> initRecyclerData() {
-                return getUser().getFavStocks();
-            }
-        }, new StockRecyclerViewAdapter.OnStockLike_Callback() {
+        super.initStockRecyclerViewFromCache(recyclerView, () -> getUser().getFavStocks(), new StockRecyclerViewAdapter.OnStockLike_Callback() {
             @Override
             public void onStockLike(Stock stock) { }
 

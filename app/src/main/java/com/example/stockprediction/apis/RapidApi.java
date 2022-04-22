@@ -32,7 +32,6 @@ public class RapidApi {
     private final String HOST = "yh-finance.p.rapidapi.com";
     private static String api_key;
     private HttpRequestQueue httpRequestQueue;
-    private final int CACHE_UPDATE_INTERVAL = 24*30; // In hours // TODO: change to 1 hour
     private static final Object lock = new Object();
 
 
@@ -107,16 +106,6 @@ public class RapidApi {
         return operationStringVal;
     }
 
-    private Boolean shouldRefreshCache(JSONObject json) throws JSONException {
-        long hourInSec = 60 * 60;
-        Long currentTimeStamp = System.currentTimeMillis()/1000;
-        Long refreshTimeStamp = currentTimeStamp - (hourInSec * CACHE_UPDATE_INTERVAL);
-        Long cacheTimeStamp = json.getLong("request_timestamp");
-        Log.e("rapid_api", "shouldRefreshCache: "+(cacheTimeStamp < refreshTimeStamp));
-        return cacheTimeStamp < refreshTimeStamp;
-
-    }
-
     private void getHistoricalData(String symbol) {
         httpGetRequest(symbol, STOCK_OPERATIONS.GET_HISTORICAL_DATA, new CallBack_HttpTasks() {
             @Override
@@ -174,7 +163,7 @@ public class RapidApi {
     public void getQuotesRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
         try {
             JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(); // could throw null pointer exception in case of no data in cache
-            if(!shouldRefreshCache(jsonObject)) {
+            if(!MyPreference.StockCache.shouldRefreshCache(jsonObject)) {
                 Log.d("rapid_api", "getting json from cache: json= "+jsonObject);
                 callBack_httpTasks.onResponse(jsonObject);
             } else {
@@ -183,6 +172,15 @@ public class RapidApi {
         } catch (JSONException|NullPointerException e) {
             Log.e("rapid_api", "getQuotesRequest:  error= "+e.getLocalizedMessage());
             generateQuotesHttpRequest(stocks,callBack_httpTasks);
+        }
+    }
+    public void getQuotesRequestCacheOnly(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
+        try {
+            JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(); // could throw null pointer exception in case of no data in cache
+            Log.d("rapid_api", "getting json from cache: json= "+jsonObject);
+            callBack_httpTasks.onResponse(jsonObject);
+        } catch (NullPointerException e) {
+            Log.e("rapid_api", "getQuotesRequest:  error= "+e.getLocalizedMessage());
         }
     }
 
@@ -204,10 +202,9 @@ public class RapidApi {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (com.android.volley.Request.Method.GET, url, null, response -> {
                     try {
-                        Log.d("rapid_api", "onResponse: "+ response);
                         JSONObject myResponse = generateCustomJsonQuotes(response);
+                        myResponse = MyPreference.getInstance(appContext).putStocksDetails(myResponse,"stocks");
                         Log.d("rapid_api", "onResponse: "+ myResponse);
-                        MyPreference.getInstance(appContext).putStocksDetails(myResponse);
                         callBack_httpTasks.onResponse(myResponse);
                     } catch (JSONException e) {
                         Log.e("rapid_api", "httpGetRequest:  error= "+e.getLocalizedMessage());
@@ -243,16 +240,7 @@ public class RapidApi {
             stock.put("regularMarketChangePercent",result.getString("regularMarketChangePercent"));
             stocks.put(result.getString("symbol"),stock);
         }
-        JSONObject customJson = new JSONObject();
-        customJson.put("request_day",getCurrentDay());
-        customJson.put("request_timestamp",System.currentTimeMillis()/1000);
-        customJson.put("stocks",stocks);
-        return customJson;
+        return stocks;
     }
-    private String getCurrentDay() {
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        // full name form of the day
-        return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
-    }
+
 }

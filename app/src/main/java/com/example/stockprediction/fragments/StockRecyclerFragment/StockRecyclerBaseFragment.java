@@ -102,39 +102,42 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                         }
                     }
                 }
-
                 @Override
                 public void onErrorResponse(VolleyError error) {
                         Log.e("pttt", "StockJson error: "+error);
-
                 }
             });
-//            for (int i = 0; i < data.size(); i++) {
-//                T stock = data.get(i);
-//                int finalI = i;
-//                // Download stock details from YahooAPI
-//                // TODO: set this code back to run
-//                RapidApi.getInstance().getChartRequest(stock.getSymbol(), new RapidApi.CallBack_HttpTasks() {
-//                    @Override
-//                    public void onResponse(JSONObject json) {
-//                        // it.remove(); // avoids a ConcurrentModificationException
-//                        Log.e("pttt", "StockJson found: "+json);
-//                        // TODO: figure out what data is needed for stock class and parse the relevant data.
-//                        try {
-//                            updateRecycleView(data,finalI,adapter,json);
-//                        } catch (JSONException e) {
-//                            Log.e("pttt", "initStockRecyclerView: jsonParsingError, error: "+e);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.e("pttt", "StockJson error: "+error);
-//                    }
-//                });
-//            }
         });
     }
+
+    public void initStockRecyclerViewFromCache(RecyclerView recyclerView,initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
+        new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
+            data = initRecyclerData_callback.initRecyclerData();
+            Log.e("pttt", "initStockRecyclerView: data="+data);
+        },() -> { // Run on UI thread
+            recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+            adapter = initAdapter(recyclerView, data, onStockLike_callback);
+            // Get stock from FireBaser
+            getInstance().getQuotesRequestCacheOnly((List<Stock>) data, new CallBack_HttpTasks() {
+                @Override
+                public void onResponse(JSONObject json) {
+                    Log.e("pttt", "StockJson found: "+json);
+                    for (int position = 0; position < data.size(); position++) {
+                        try {
+                            parseQuotesResponse(position,adapter,json);
+                        } catch (JSONException e) {
+                            Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
+                        }
+                    }
+                }
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("pttt", "StockJson error: "+error);
+                }
+            });
+        });
+    }
+
     private void parseQuotesResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {
         Stock stock = data.get(position);
         JSONObject result = json.getJSONObject("stocks").getJSONObject(stock.getSymbol().toUpperCase());
@@ -142,20 +145,6 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         stock.setChangeAmount(Double.parseDouble(result.getString("regularMarketChange")));
         stock.setChangePercent(Double.parseDouble(result.getString("regularMarketChangePercent")));
         stock.setPredictionStatus();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyItemChanged(position);
-            }
-        });
-    }
-
-    private void updateRecycleView(ArrayList<T> stockList, int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException { // Fix method
-        // consider using "Historic Stock Prices" api
-        String price = json.getString("quotes");
-        stockList.get(position)
-                .setPredictionStatus()
-                .setValue(10.0);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
