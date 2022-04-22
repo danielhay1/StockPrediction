@@ -97,27 +97,20 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     private void setDataFromCache(T stock, ViewHolder holder, int position){
         JSONObject cacheStock;
         try {
-            cacheStock = jsonStockData.getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(position);
-            String symbol = cacheStock.getString("symbol");
-            Log.e("stock_recycler", "parseQuotesResponse: symbol = " + symbol);
-            if(stock.getSymbol().equalsIgnoreCase(symbol)) {
-                stock.setChangeAmount(Double.parseDouble(cacheStock.getString("regularMarketChange")));
-                stock.setChangePercent(Double.parseDouble(cacheStock.getString("regularMarketChangePercent")));
-                holder.RVROW_LBL_StockValue.setText("$" + Double.parseDouble(cacheStock.getString("regularMarketPrice")));
-                holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
-                holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
-                setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
-                setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
-                holder.RVROW_LBL_StockName.setText(stock.getName());
-                holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
-                if(stock.getPredictionStatus() == Stock.StockStatus.NO_DATA) {
-                    //holder.
-                }
-
-            } else {
-                Log.e("stock_recycler", "parseQuotesResponse: symbol not match: stock.symbol= "+stock.getSymbol()+ ",symbol= " + symbol);
-                initStubData(stock,holder);
+            cacheStock = jsonStockData.getJSONObject("stocks").getJSONObject(stock.getSymbol());
+            stock.setChangeAmount(Double.parseDouble(cacheStock.getString("regularMarketChange")));
+            stock.setChangePercent(Double.parseDouble(cacheStock.getString("regularMarketChangePercent")));
+            holder.RVROW_LBL_StockValue.setText("$" + Double.parseDouble(cacheStock.getString("regularMarketPrice")));
+            holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
+            holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
+            setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
+            setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
+            holder.RVROW_LBL_StockName.setText(stock.getName());
+            holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
+            if(stock.getPredictionStatus() == Stock.StockStatus.NO_DATA) {
+                //holder.
             }
+
         } catch (JSONException e) {
             Log.e("stock_recycler", "parseQuotesResponse: jsonException = "+e);
             initStubData(stock,holder);

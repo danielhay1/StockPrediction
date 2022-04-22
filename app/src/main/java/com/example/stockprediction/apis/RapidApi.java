@@ -15,8 +15,13 @@ import com.example.stockprediction.utils.MyPreference;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -27,7 +32,7 @@ public class RapidApi {
     private final String HOST = "yh-finance.p.rapidapi.com";
     private static String api_key;
     private HttpRequestQueue httpRequestQueue;
-    private final int CACHE_UPDATE_INTERVAL = 24 * 30; // In hours // TODO: change to 1 hour
+    private final int CACHE_UPDATE_INTERVAL = 24*30; // In hours // TODO: change to 1 hour
     private static final Object lock = new Object();
 
 
@@ -198,9 +203,9 @@ public class RapidApi {
         Log.d("rapid_api", "httpGetJson: url= "+url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (com.android.volley.Request.Method.GET, url, null, response -> {
-                    JSONObject myResponse = response;
                     try {
-                        myResponse.put("request_timestamp",System.currentTimeMillis()/1000);
+                        Log.d("rapid_api", "onResponse: "+ response);
+                        JSONObject myResponse = generateCustomJsonQuotes(response);
                         Log.d("rapid_api", "onResponse: "+ myResponse);
                         MyPreference.getInstance(appContext).putStocksDetails(myResponse);
                         callBack_httpTasks.onResponse(myResponse);
@@ -224,5 +229,30 @@ public class RapidApi {
             }
         };
         httpRequestQueue.addToRequestQueue(jsonObjectRequest);
+    }
+
+    private JSONObject generateCustomJsonQuotes(JSONObject apiResponse) throws JSONException {
+
+        JSONObject stocks = new JSONObject();
+        Iterator it = RapidApi.MY_STOCKS.entrySet().iterator();
+        for (int i = 0; i < RapidApi.MY_STOCKS.size(); i++) {
+            JSONObject result = apiResponse.getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(i);
+            JSONObject stock = new JSONObject(); // create stock json
+            stock.put("regularMarketChange",result.getString("regularMarketChange"));
+            stock.put("regularMarketPrice",result.getString("regularMarketPrice"));
+            stock.put("regularMarketChangePercent",result.getString("regularMarketChangePercent"));
+            stocks.put(result.getString("symbol"),stock);
+        }
+        JSONObject customJson = new JSONObject();
+        customJson.put("request_day",getCurrentDay());
+        customJson.put("request_timestamp",System.currentTimeMillis()/1000);
+        customJson.put("stocks",stocks);
+        return customJson;
+    }
+    private String getCurrentDay() {
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        // full name form of the day
+        return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
     }
 }

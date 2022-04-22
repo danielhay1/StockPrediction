@@ -13,7 +13,11 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import static com.example.stockprediction.fragments.PreferencesFragment.SETTINGS_SHARED_PREFERENCES;
 
@@ -172,13 +176,34 @@ public class MyPreference {
 
     // RapidAPI cache store & load:
     public void putStocksDetails(JSONObject jsonObject) {
+
         this.putJsonObject(KEYS.STOCKS_DATA_JSON,jsonObject);
     }
 
     public JSONObject getStocksData() {
         return this.getJsonObject(KEYS.STOCKS_DATA_JSON);
     }
+    private static class StockCache {
+        private final int CACHE_UPDATE_INTERVAL = 24 * 30; // In hours // TODO: change to 1 hour
 
+        private Boolean shouldRefreshCache(JSONObject json) throws JSONException {
+            long hourInSec = 60 * 60;
+            Long currentTimeStamp = System.currentTimeMillis()/1000;
+            Long refreshTimeStamp = currentTimeStamp - (hourInSec * CACHE_UPDATE_INTERVAL);
+            Long cacheTimeStamp = json.getLong("request_timestamp");
+            Log.e("rapid_api", "shouldRefreshCache: "+(cacheTimeStamp < refreshTimeStamp));
+            return cacheTimeStamp < refreshTimeStamp;
+        }
+
+        private String getCurrentDay() {
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            // full name form of the day
+            return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
+        }
+
+
+    }
 
 
     private static class SettingsInspector {

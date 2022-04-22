@@ -137,23 +137,17 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     }
     private void parseQuotesResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {
         Stock stock = data.get(position);
-        JSONObject result = json.getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(position);
-        String symbol = result.getString("symbol");
-        Log.e("rapid_api", "parseQuotesResponse: symbol = " + symbol);
-        if(stock.getSymbol().equalsIgnoreCase(symbol)) {
-            stock.setValue(Double.parseDouble(result.getString("regularMarketPrice")));
-            stock.setChangeAmount(Double.parseDouble(result.getString("regularMarketChange")));
-            stock.setChangePercent(Double.parseDouble(result.getString("regularMarketChangePercent")));
-            stock.setPredictionStatus();
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyItemChanged(position);
-                }
-            });
-        } else {
-            Log.e("rapid_api", "parseQuotesResponse: symbol not match: stock.symbol= "+stock.getSymbol()+ ",symbol= " + symbol);
-        }
+        JSONObject result = json.getJSONObject("stocks").getJSONObject(stock.getSymbol().toUpperCase());
+        stock.setValue(Double.parseDouble(result.getString("regularMarketPrice")));
+        stock.setChangeAmount(Double.parseDouble(result.getString("regularMarketChange")));
+        stock.setChangePercent(Double.parseDouble(result.getString("regularMarketChangePercent")));
+        stock.setPredictionStatus();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyItemChanged(position);
+            }
+        });
     }
 
     private void updateRecycleView(ArrayList<T> stockList, int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException { // Fix method
