@@ -44,5 +44,18 @@ public class MyAsyncTask {
         });
     }
 
-
+    public void executeDelayBgTask(Runnable runOnBackground,long delay) {
+        /**
+         * Usage example:
+         *         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
+         *             user = getUserFromActivity();
+         *         });
+         */
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(runOnBackground,delay);
+            }
+        });
+    }
 }

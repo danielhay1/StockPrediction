@@ -1,6 +1,7 @@
 
 package com.example.stockprediction.fragments.StockRecyclerFragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.VolleyError;
+import com.example.stockprediction.R;
+import com.example.stockprediction.activites.MainActivity;
 import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.fragments.StockFragment;
 import com.example.stockprediction.objects.BaseFragment;
@@ -107,6 +110,17 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                         Log.e("pttt", "StockJson error: "+error);
                 }
             });
+            getInstance().getChartRequestCahceOnly((List<Stock>) data, new CallBack_HttpTasks() {
+                @Override
+                public void onResponse(JSONObject json) {
+                    Log.e("xop", "StockJson found: " + json);
+                }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("xop", "StockJson error: " + error);
+                }
+            });
         });
     }
 
@@ -118,7 +132,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
             adapter = initAdapter(recyclerView, data, onStockLike_callback);
             // Get stock from FireBaser
-            getInstance().getQuotesRequestCacheOnly((List<Stock>) data, new CallBack_HttpTasks() {
+            getInstance().getQuotesRequestCacheOnly(new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
                     Log.e("pttt", "StockJson found: "+json);
@@ -155,10 +169,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
 
     public void goToStockFragment(Stock stock) {
         String jsonStock = stock.stockToJson();
-        StockFragment stockFragment = new StockFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(stockFragment.ARG_PARAM, jsonStock);
-        stockFragment.setArguments(bundle);
+        ((MainActivity)getActivity()).openStockFragment(StockFragment.ARG_PARAM,jsonStock);
     }
 }
 

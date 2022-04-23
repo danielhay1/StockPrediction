@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.stockprediction.R;
 import com.example.stockprediction.fragments.PreferencesFragment;
+import com.example.stockprediction.fragments.StockFragment;
 import com.example.stockprediction.fragments.StockRecyclerFragment.FavoritiesFragment;
 import com.example.stockprediction.fragments.StockRecyclerFragment.MainFragment;
 import com.example.stockprediction.fragments.StockRecyclerFragment.SearchViewModel;
@@ -216,6 +217,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 , fragment).commit();
     }
 
+    private void replaceFragment(Fragment fragment, String argKey, String arg) {
+        Bundle bundle = new Bundle();
+        Gson gson = new Gson();
+        String jsonUser = gson.toJson(user,User.class);
+        bundle.putString(USER, jsonUser);
+        bundle.putString(argKey, arg);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container
+                , fragment).commit();
+    }
+
     private void enableSearchView(boolean active) {
         if(this.searchView != null) {
             int visable;
@@ -242,6 +254,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setCheckedItem(R.id.nav_profile);
     }
 
+    public void openStockFragment(String argKey, String arg) {
+        navigateById(R.layout.fragment_stock,argKey,arg);
+    }
+
+    private void navigateById(int itemId, String argKey, String arg) {
+        displayingFragmentId = itemId;
+        Fragment fragment;
+        switch (itemId) {
+            case R.id.nav_main:
+                Log.d("pttt", "Switch to MainFragment");
+                enableSearchView(true);
+                fragment = new MainFragment();
+                replaceFragment(fragment,argKey,arg);
+                break;
+            case R.id.nav_favorities:
+                Log.d("pttt", "Switch to FavoritiesFragment");
+                enableSearchView(true);
+                fragment = new FavoritiesFragment();
+                replaceFragment(fragment,argKey,arg);
+                break;
+            case R.id.nav_profile:
+                Log.d("pttt", "Switch to ProfileFragment");
+                enableSearchView(false);
+                fragment = new ProfileFragment();
+                replaceFragment(fragment,argKey,arg);
+                break;
+            case R.xml.preferences:
+                Log.d("pttt", "Switch to PreferenceFragment");
+                enableSearchView(false);
+                fragment = new PreferencesFragment();
+                replaceFragment(fragment,argKey,arg);
+                break;
+            case R.layout.fragment_stock:
+                Log.d("pttt", "Switch to StockFragment");
+                enableSearchView(false);
+                fragment = new StockFragment();
+                replaceFragment(fragment,argKey,arg);
+                break;
+
+            case R.id.nav_share:
+                MySignal.getInstance().toast("Share");
+                break;
+
+            case R.id.nav_send:
+                MySignal.getInstance().toast("Send");
+                break;
+        }
+    }
 
     private void navigateById(int itemId) {
         displayingFragmentId = itemId;
@@ -258,14 +318,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_profile:
                 Log.d("pttt", "Switch to profileFragment");
-                enableSearchView(false);
-                replaceFragment(new ProfileFragment());
-                break;
+            enableSearchView(false);
+            replaceFragment(new ProfileFragment());
+            break;
             case R.xml.preferences:
                 Log.d("pttt", "Switch to preferenceFragment");
                 enableSearchView(false);
                 replaceFragment(new PreferencesFragment());
                 break;
+            case R.layout.fragment_stock:
+                Log.d("pttt", "Switch to preferenceFragment");
+                enableSearchView(false);
+                replaceFragment(new StockFragment());
+                break;
+
             case R.id.nav_share:
                 MySignal.getInstance().toast("Share");
                 break;
@@ -275,7 +341,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
     }
-
 
     @Override
     public void onUserUpdate(User updatedUser) {
@@ -314,6 +379,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(displayingFragmentId == R.xml.preferences) { // If displaying fragment is preference fragment open profile fragment.
                 navigateById(R.id.nav_profile);
                 navigationView.setCheckedItem(R.id.nav_profile);
+            } else if (displayingFragmentId == R.layout.fragment_stock) {
+                if(navigationView.getCheckedItem().getItemId() == R.id.nav_favorities) {
+                    navigateById(R.id.nav_favorities);
+                    navigationView.setCheckedItem(R.id.nav_favorities);
+                } else {
+                    navigateById(R.id.nav_main);
+                    navigationView.setCheckedItem(R.id.nav_main);
+                }
             } else {
                 if(displayingFragmentId != R.id.nav_main) { // If displaying fragment isn't main fragment open main fragment.
                     navigateById(R.id.nav_main);

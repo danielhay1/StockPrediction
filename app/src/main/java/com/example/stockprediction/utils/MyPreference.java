@@ -2,7 +2,6 @@ package com.example.stockprediction.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.util.Log;
 
 import com.example.stockprediction.R;
@@ -13,7 +12,6 @@ import com.google.gson.JsonObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.CacheRequest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,7 +31,6 @@ public class MyPreference {
     public interface KEYS {
         public final String CACHED_STOCKS = "cached_stocks";
         public final String FAV_STOCKS = "favorities_stocks";
-        public final String STOCKS_DATA_JSON = "stocks_data_json";
         public final String  SETTINGS = "settings";
         public final String  USER_DETAILS = "user_details";
     }
@@ -103,7 +100,7 @@ public class MyPreference {
     }
 
     private JSONObject putJsonObject(String key, JSONObject jsonObject, String jsonKey) {
-        JSONObject customJsonObject = StockCache.generateCustomObject(jsonObject,jsonKey);
+        JSONObject customJsonObject = StockCacheManager.generateCustomObject(jsonObject,jsonKey);
         this.putString(key,customJsonObject.toString());
         return customJsonObject;
     }
@@ -178,22 +175,45 @@ public class MyPreference {
     }
 
     // RapidAPI cache store & load:
-    public JSONObject putStocksDetails(JSONObject jsonObject,String jsonKey) {
-        return this.putJsonObject(KEYS.STOCKS_DATA_JSON,jsonObject,jsonKey);
+    public JSONObject putStocksData(JSONObject jsonObject, String jsonKey, String cacheKey) {
+        return this.putJsonObject(cacheKey,jsonObject,jsonKey);
     }
 
-    public JSONObject getStocksData() {
-        return this.getJsonObject(KEYS.STOCKS_DATA_JSON);
+    public JSONObject getStocksData(String cacheKey) {
+        return this.getJsonObject(cacheKey);
     }
-    public static class StockCache {
-        private final static int CACHE_UPDATE_INTERVAL = 24*30; // In hours // TODO: change to 1 hour
 
-        public static Boolean shouldRefreshCache(JSONObject json) throws JSONException {
+    public JSONObject addJsonToStocksData(JSONObject jsonObject, String jsonKey, String cacheKey) throws JSONException {
+        JSONObject json;
+        try{
+            json = this.getJsonObject(cacheKey);
+        } catch (NullPointerException e) {
+            json = new JSONObject();
+        }
+        Log.e("pttt", "addJsonToStocksData: run after catch");
+        this.putJsonObject(cacheKey,jsonObject,jsonKey);
+        return json;
+    }
+
+    public static class StockCacheManager {
+        public interface CACHE_KEYS {
+            public final String STOCKS_DATA_JSON = "stocks_data_json";
+            public final String HISTORICAL_DATA_JSON = "historical_data_json";
+            public final String CHARTS_DATA_JSON = "CHARTS_data_json";
+
+        }
+        public interface REFRESH_INTERVAL {
+            public final static int STOCK_DATA = 24 * 30; // In hours // TODO: change to 1 hour
+            public final static int HISTORICAL_DATA = 24 * 30; // In hours // TODO: change to 24 hour
+            public final static int CHARTS_DATA = 24 * 30; // In hours // TODO: change to 24 hour
+        }
+
+        public static Boolean shouldRefreshCache(JSONObject json,int refreshInterval) throws JSONException {
             long hourInSec = 60 * 60;
             Long currentTimeStamp = System.currentTimeMillis()/1000;
-            Long refreshTimeStamp = currentTimeStamp - (hourInSec * CACHE_UPDATE_INTERVAL);
+            Long refreshTimeStamp = currentTimeStamp - (hourInSec * refreshInterval);
             Long cacheTimeStamp = json.getLong("request_timestamp");
-            Log.e("rapid_api", "shouldRefreshCache: "+(cacheTimeStamp < refreshTimeStamp));
+            Log.d("rapid_api", "shouldRefreshCache: "+(cacheTimeStamp < refreshTimeStamp));
             return cacheTimeStamp < refreshTimeStamp;
         }
 
@@ -216,8 +236,6 @@ public class MyPreference {
             }
             return customJson;
         }
-
-
     }
 
     private static class SettingsInspector {

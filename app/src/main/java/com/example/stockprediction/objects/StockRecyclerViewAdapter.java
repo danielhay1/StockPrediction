@@ -49,7 +49,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         this.likedStocks = likedStocks;
         this.onStockLikeCallback = onStockLikeCallback;
         this.stocksData = new ArrayList<T>(filteredStockData);
-        jsonStockData = MyPreference.getInstance(context).getStocksData();
+        jsonStockData = MyPreference.getInstance(context).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON);
     }
 
     public List<T> getLikedStocks() {
