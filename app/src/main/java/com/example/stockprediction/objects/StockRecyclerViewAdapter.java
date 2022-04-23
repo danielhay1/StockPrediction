@@ -201,14 +201,6 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         }
     }
 
-    private void setXmlImg(String imgName,ImageView img) {
-        if(!imgName.equalsIgnoreCase("")) {
-            Context context = mInflater.getContext();
-            int resourceId = context.getResources().getIdentifier(imgName, "drawable",context.getPackageName());//initialize res and context in adapter's contructor
-            img.setImageResource(resourceId);
-        }
-    }
-
     private void setStockStatusImg(ImageView img, T.StockStatus status, String type) {
         String imgName = "";
         switch (status) {

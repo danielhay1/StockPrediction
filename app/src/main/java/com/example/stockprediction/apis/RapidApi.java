@@ -43,7 +43,7 @@ public class RapidApi {
     static  {
         MY_STOCKS.put("Nvidia", "NVDA");
         MY_STOCKS.put("Intel", "INTC");
-        MY_STOCKS.put("Advanced Micro Devices", "AMD");
+        //MY_STOCKS.put("Advanced Micro Devices", "AMD");
         MY_STOCKS.put("Siemens", "SIEGY");
         MY_STOCKS.put("Alphabet", "GOOG");
         MY_STOCKS.put("Meta Platform", "FB");
