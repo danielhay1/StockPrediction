@@ -54,15 +54,16 @@ public class Stock {
     public Stock(String name, String symbol) {
         this.name = name;
         this.symbol = symbol;
+        this.stockImg = symbol.toLowerCase()+"_icon";
     }
 
-    public Stock(String name, String symbol, double value, double previousValue, double predictionValue, StockStatus predictionStatus, String stockImg) {
+    public Stock(String name, String symbol, double value, double previousValue, double predictionValue, StockStatus predictionStatus) {
         this.name = name;
         this.symbol = symbol;
         this.value = value;
         this.predictionStatus = (predictionStatus != null) ? predictionStatus : StockStatus.NO_DATA;
         this.predictionValue = predictionValue;
-        this.stockImg = stockImg;
+        this.stockImg = symbol.toLowerCase()+"_icon";
         this.changeAmount = calcStockChangeAmount(previousValue);
         this.changePercent = calcStockChangePercent(previousValue);
     }
