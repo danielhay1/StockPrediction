@@ -1,6 +1,7 @@
 package com.example.stockprediction.objects;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +15,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.stockprediction.R;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.MyPreference;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import co.ankurg.expressview.ExpressView;
@@ -29,11 +46,12 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     private List<T> stocksData;
     private List<T> filteredStockData;
     private List<T> likedStocks;
+    private HashMap<String,Integer> symbolIndexMap = new HashMap<String, Integer>();
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private Context context;
     private OnStockLike_Callback onStockLikeCallback;
-    private  JSONObject jsonStockData;
+    private JSONObject jsonStockData;
 
     public interface OnStockLike_Callback {
         void onStockLike(Stock stock);
@@ -49,7 +67,15 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         this.likedStocks = likedStocks;
         this.onStockLikeCallback = onStockLikeCallback;
         this.stocksData = new ArrayList<T>(filteredStockData);
+        Collections.sort(stocksData); // TODO: check it
+        initSymbolIndexMap(stocksData);
         jsonStockData = MyPreference.getInstance(context).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON);
+    }
+
+    private void initSymbolIndexMap(List<T> stockList) {
+        for (int i = 0; i < stockList.size() ; i++) {
+            this.symbolIndexMap.put(stockList.get(i).getSymbol(),i);
+        }
     }
 
     public List<T> getLikedStocks() {
@@ -110,6 +136,11 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
             if(stock.getPredictionStatus() == Stock.StockStatus.NO_DATA) {
                 //holder.
             }
+            JSONObject jsonObject = MyPreference.getInstance(context).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+stock.getSymbol()); // trying to get stock chart from cache
+            if(jsonObject != null) {
+                stock.setChartData(jsonObject);
+                initChart(stock,holder.RVROW_CHART);
+            }
 
         } catch (JSONException e) {
             Log.e("stock_recycler", "parseQuotesResponse: jsonException = "+e);
@@ -154,7 +185,12 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             filteredStockData.clear();
-            filteredStockData.addAll((List<T>) results.values);
+            symbolIndexMap.clear();
+            List<T> res = (List<T>) results.values;
+            for (int i = 0; i < res.size(); i++) {
+                filteredStockData.add(res.get(i));
+                symbolIndexMap.put(res.get(i).getSymbol(),i);
+            }
             notifyDataSetChanged();
         }
     };
@@ -224,6 +260,71 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         setImg(imgName,img);
     }
 
+    private void initChart(T stock, com.github.mikephil.charting.charts.LineChart chart) {
+        // no description text
+        chart.getDescription().setEnabled(false);
+        // enable touch gestures
+        chart.setTouchEnabled(false);
+        //chart.setDragDecelerationFrictionCoef(0.9f);
+        // if disabled, scaling can be done on x- and y-axis separately
+        //chart.setPinchZoom(true);
+        // enable scaling and dragging
+        chart.setDragEnabled(false);
+        chart.setScaleEnabled(true);
+        chart.setDrawGridBackground(false);
+        chart.setHighlightPerDragEnabled(true);
+        setData(chart,stock.getChartData());
+    }
+
+    private void setData(com.github.mikephil.charting.charts.LineChart chart, List<Float> data) {
+
+        ArrayList<Entry> lineEntries = new ArrayList<Entry>();
+        for (int i = 0; i < data.size() ; i++) {
+            lineEntries.add(new Entry(i, data.get(i)));
+        }
+//        lineEntries.add(new Entry(0, 422.5f));
+//        lineEntries.add(new Entry(1, 400.52f));
+//        lineEntries.add(new Entry(2, 413.354f));
+//        lineEntries.add(new Entry(3, 489.2f));
+//        lineEntries.add(new Entry(4, 499.52f));
+
+
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, "Stock Price");
+        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        lineDataSet.setHighlightEnabled(true);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setColor(context.getColor(R.color.purple_500));
+        lineDataSet.setCircleColor(context.getColor(R.color.purple_500));
+        lineDataSet.setCircleRadius(3);
+        lineDataSet.setCircleHoleRadius(2);
+        lineDataSet.setDrawHighlightIndicators(true);
+        lineDataSet.setHighLightColor(Color.RED);
+        lineDataSet.setValueTextSize(8);
+        lineDataSet.setValueTextColor(context.getColor(R.color.black));
+
+        LineData lineData = new LineData(lineDataSet);
+// usage on whole data object
+        lineData.setValueFormatter(new MyValueFormatter());
+
+// usage on individual dataset object
+        lineDataSet.setValueFormatter(new MyValueFormatter());
+        //chart.setDrawMarkers(true);
+        //chart.setMarker(markerView(context));
+        //chart.getAxisLeft().addLimitLine(lowerLimitLine(2,"Lower Limit",2,12,getColor("defaultOrange"),getColor("defaultOrange")));
+        //chart.getAxisLeft().addLimitLine(upperLimitLine(5,"Upper Limit",2,12,getColor("defaultGreen"),getColor("defaultGreen")));
+        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        chart.animateY(1000);
+        chart.getXAxis().setGranularityEnabled(true);
+        chart.getXAxis().setGranularity(1.0f);
+        chart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
+        chart.getAxisRight().setEnabled(false);
+        chart.getAxisLeft().setEnabled(false);
+        chart.getXAxis().setEnabled(false);
+        chart.setData(lineData);
+    }
+
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
         private ImageView RVROW_IMG_StockImg;
         private ImageView RVROW_IMG_currentStatus;
@@ -234,6 +335,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         private TextView RVROW_LBL_StockStatusDetails;
         private TextView RVROW_LBL_StockPredictionDetails;
         private ExpressView RVROW_EV_likeButton;
+        private com.github.mikephil.charting.charts.LineChart RVROW_CHART;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -246,6 +348,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
             RVROW_LBL_StockStatusDetails = itemView.findViewById(R.id.RVROW_LBL_StockStatusDetails);
             RVROW_LBL_StockPredictionDetails = itemView.findViewById(R.id.RVROW_LBL_StockPredictionDetails);
             RVROW_EV_likeButton = itemView.findViewById(R.id.RVROW_EV_likeButton);
+            RVROW_CHART = itemView.findViewById(R.id.RVROW_CHART);
             itemView.setOnClickListener(this);
         }
 
@@ -255,10 +358,23 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
                 mClickListener.onItemClick(view, getBindingAdapterPosition());
         }
     }
+
+    private void sortBy(Comparator<T> comparator) {
+        this.filteredStockData.sort(comparator);
+        this.symbolIndexMap.clear();
+        for (int i = 0; i <filteredStockData.size() ; i++) {
+            symbolIndexMap.put(filteredStockData.get(i).getSymbol(), i);
+        }
+        notifyDataSetChanged();
+    }
+
+
     // convenience method for getting data at click position
     public T getItem(int id) {
         return filteredStockData.get(id);
     }
+
+    public int getItemIndex(String symbol) { return symbolIndexMap.get(symbol); }
 
     public void removeAt(int position) {
         if(position >= 0) {
@@ -283,4 +399,20 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }
+
+    public class MyValueFormatter extends ValueFormatter implements IValueFormatter {
+
+        private DecimalFormat mFormat;
+
+        public MyValueFormatter() {
+            mFormat = new DecimalFormat("###,###,##0.000"); // use one decimal
+        }
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            // write your logic here
+            return mFormat.format(value) + " $"; // e.g. append a dollar-sign
+        }
+    }
+
 }

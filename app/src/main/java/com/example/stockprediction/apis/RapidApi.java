@@ -41,21 +41,41 @@ public class RapidApi {
     // Stock hash collection
     public static final HashMap<String,String> MY_STOCKS =  new HashMap<String,String>();
     static  {
-        MY_STOCKS.put("Nvidia", "NVDA");
-        MY_STOCKS.put("Intel", "INTC");
-        //MY_STOCKS.put("Advanced Micro Devices", "AMD");
-        MY_STOCKS.put("Siemens", "SIEGY");
-        MY_STOCKS.put("Alphabet", "GOOG");
-        MY_STOCKS.put("Meta Platform", "FB");
-        MY_STOCKS.put("Microsoft Corporation", "MSFT");
         MY_STOCKS.put("Apple", "AAPL");
+        MY_STOCKS.put("Google", "GOOG");
+        MY_STOCKS.put("Microsoft", "MSFT");
+        MY_STOCKS.put("Meta", "FB");
+        MY_STOCKS.put("Nvidia", "NVDA");
+        MY_STOCKS.put("Amazon", "AMZN");
+        MY_STOCKS.put("Verizon", "VZ");
+        MY_STOCKS.put("Cisco", "CSCO");
+        MY_STOCKS.put("Intel", "INTC");
+        MY_STOCKS.put("T-Mobile", "TMUS");
+        MY_STOCKS.put("Qualcomm", "QCOM");
+        MY_STOCKS.put("at&t", "T");
+        MY_STOCKS.put("Sony", "SONY");
+        MY_STOCKS.put("Hp", "HPQ");
+        MY_STOCKS.put("Motorola", "MSI");
+        MY_STOCKS.put("Twitter", "TWTR");
+        MY_STOCKS.put("Dell", "DELL");
+        MY_STOCKS.put("Amdocs", "DOX");
+
+
+
+
+
+
+
+
+        //MY_STOCKS.put("Advanced Micro Devices", "AMD");
+        //MY_STOCKS.put("Siemens", "SIEGY");
+
 
         //MY_STOCKS.put("TSMC", "TSMC");
     }
 
 
     public enum STOCK_OPERATION {
-        GET_HISTORICAL_DATA,
         GET_CHART,
         GET_QUOTES
     }
@@ -91,11 +111,8 @@ public class RapidApi {
         String operationStringVal = "";
         String strParams = "";
         switch (operation) {
-            case GET_HISTORICAL_DATA:
-                operationStringVal = "/stock/v3/get-historical-data";
-                break;
             case GET_CHART:
-                operationStringVal = "/market/get-charts";
+                operationStringVal = "/stock/v3/get-chart";
                 break;
             case GET_QUOTES:
                 operationStringVal = "/market/v2/get-quotes";
@@ -130,7 +147,7 @@ public class RapidApi {
         return url;
     }
 
-    private void  generateQuotesHttpRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
+    private void generateQuotesHttpRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
         StringJoiner strSymbols = new StringJoiner("%2C");
         for (Stock stock: stocks) {
             strSymbols.add(stock.getSymbol().toUpperCase());
@@ -139,93 +156,31 @@ public class RapidApi {
         httpGetRequest(strSymbols.toString(), STOCK_OPERATION.GET_QUOTES, MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON, callBack_httpTasks);
     }
 
-    private void intervalHTTPRequest(List<String> symbols, STOCK_OPERATION operation, String cacheKey, CallBack_HttpTasks callBack_httpTasks) {
-        /**
-         * Method Requests ALLOWED_REQUEST_PER_SEC API requests then sleep for 1 sec.
-         * Method handles API constraints.
-         */
-        final int ALLOWED_REQUEST_PER_SEC = 5;
-        for (int i = 0; i <symbols.size() ; i+=ALLOWED_REQUEST_PER_SEC) {
-            int finalI = i;
-            new MyAsyncTask().executeDelayBgTask(() -> { // Sleep 1 sec then generate 5 API requests per sec
-                int index = finalI;
-                String stockSymbol = symbols.get(index);
-                int requestCounter = 0;
-                while (requestCounter<ALLOWED_REQUEST_PER_SEC && index < symbols.size()) { // Generates 5 API requests
-                    httpGetRequest(stockSymbol, operation, cacheKey, new CallBack_HttpTasks() {
-                        @Override
-                        public void onResponse(JSONObject json) {
-                        }
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e("rapid_api", "intervalHTTPRequest: error= "+error);
-                        }
+    public synchronized void getChartRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
+        //TODO: fix run for each stock
+        int refreshInterval = MyPreference.StockCacheManager.REFRESH_INTERVAL.CHARTS_DATA;
+        String cacheKey = MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON;
+        for (int i = 0; i < stocks.size(); i ++) {
+            int index = i;
+            String stockSymbol = stocks.get(index).getSymbol();
+            try {
+                JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(cacheKey + stockSymbol); // could throw null pointer exception in case of no data in cache
+                if (!MyPreference.StockCacheManager.shouldRefreshCache(jsonObject, refreshInterval)) {
+                    Log.d("rapid_api", "getting json from cache: json= " + jsonObject);
+                    callBack_httpTasks.onResponse(jsonObject);
+                } else {
+                    new MyAsyncTask().executeBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
+                        httpGetRequest(stockSymbol, STOCK_OPERATION.GET_CHART, cacheKey + stockSymbol, callBack_httpTasks);
                     });
-                    requestCounter++;
-                    index++;
                 }
-            }, (long) 1.0);
-        }
-    }
-
-    public void getChartRequestCahceOnly(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
-        try {
-            JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON); // could throw null pointer exception in case of no data in cache
-            Log.d("rapid_api", "getting json from cache: json= "+jsonObject);
-            callBack_httpTasks.onResponse(jsonObject);
-        } catch (NullPointerException e) {
-            Log.e("rapid_api", "getQuotesRequest:  error= "+e.getLocalizedMessage());
-        }
-    }
-
-    public void getChartRequest(List<String> symbols, CallBack_HttpTasks callBack_httpTasks) {
-        intervalRequest(symbols, STOCK_OPERATION.GET_CHART, callBack_httpTasks);
-    }
-
-    public void getHistoricalDataRequest(List<String> symbols, CallBack_HttpTasks callBack_httpTasks) {
-        intervalRequest(symbols, STOCK_OPERATION.GET_HISTORICAL_DATA, callBack_httpTasks);
-        // TODO: Convert json to stock
-    }
-
-    private synchronized void intervalRequest(List<String> symbols, STOCK_OPERATION operation, CallBack_HttpTasks callBack_httpTasks) {
-        int refreshInterval = 0;
-        String cacheKey = "";
-        switch (operation) {
-            case GET_HISTORICAL_DATA:
-                refreshInterval = MyPreference.StockCacheManager.REFRESH_INTERVAL.HISTORICAL_DATA;
-                cacheKey = MyPreference.StockCacheManager.CACHE_KEYS.HISTORICAL_DATA_JSON;
-                break;
-            case GET_CHART:
-                refreshInterval = MyPreference.StockCacheManager.REFRESH_INTERVAL.CHARTS_DATA;
-                cacheKey = MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON;
-                break;
-        }
-        try {
-            JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(cacheKey); // could throw null pointer exception in case of no data in cache
-            if(!MyPreference.StockCacheManager.shouldRefreshCache(jsonObject,refreshInterval)) {
-                Log.d("rapid_api", "getting json from cache: json= "+jsonObject);
-                callBack_httpTasks.onResponse(jsonObject);
-            } else {
-                intervalHTTPRequest(symbols, operation, cacheKey, new CallBack_HttpTasks() {
-                    @Override
-                    public void onResponse(JSONObject json) {
-                        //MyPreference.getInstance(appContext).addJsonToStocksData()
-                    }
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("rapid_api", "intervalRequest:  error= "+error.getLocalizedMessage());
-
-                    }
+            } catch (NullPointerException e) {
+                Log.e("rapid_api", "intervalRequest:  error= " + e.getLocalizedMessage());
+                new MyAsyncTask().executeBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
+                    httpGetRequest(stockSymbol, STOCK_OPERATION.GET_CHART, cacheKey + stockSymbol, callBack_httpTasks);
                 });
-
+            } catch (JSONException e) {
+                Log.e("rapid_api", "intervalRequest:  symbol: " + stockSymbol + "not exists in cache");
             }
-        } catch (NullPointerException e) {
-            Log.e("rapid_api", "intervalRequest:  error= "+e.getLocalizedMessage());
-            intervalHTTPRequest(symbols, operation,cacheKey,callBack_httpTasks);
-        } catch (JSONException e) {
-            Log.e("rapid_api", "intervalRequest:  error= "+e.getLocalizedMessage());
         }
     }
 
@@ -261,7 +216,6 @@ public class RapidApi {
             case GET_CHART:
                 url = this.buildURL(getOperationStringVal(operation),symbol,"1d","5d","US");
                 break;
-            case GET_HISTORICAL_DATA:
             case GET_QUOTES:
                 url = this.buildURL(getOperationStringVal(operation),symbol,"US");
                 break;
@@ -271,12 +225,6 @@ public class RapidApi {
                 (com.android.volley.Request.Method.GET, url, null, response -> {
                     try {
                         JSONObject myResponse =  generateCustomJsonQuotes(response,operation);
-                        if(operation == STOCK_OPERATION.GET_QUOTES) {
-                            myResponse = MyPreference.getInstance(appContext).putStocksData(myResponse,"stocks",cacheKey);
-                        } else {
-                            myResponse = MyPreference.getInstance(appContext).addJsonToStocksData(myResponse,"stocks",cacheKey);
-
-                        }
                         Log.d("rapid_api", "onResponse: "+ myResponse);
                         callBack_httpTasks.onResponse(myResponse);
                     } catch (JSONException e) {
@@ -284,8 +232,15 @@ public class RapidApi {
                     }
                 }, error -> {
                     // TODO: Handle error
-                    Log.d("rapid_api", "onResponse: VolleyError: "+ error);
-                    callBack_httpTasks.onErrorResponse(error);
+                    if(error.networkResponse.statusCode == 429 && operation == STOCK_OPERATION.GET_CHART) {
+                        Log.d("rapid_api", "onResponse: VolleyError = 429, retrying request");
+                        new MyAsyncTask().executeDelayBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
+                            httpGetRequest(symbol, STOCK_OPERATION.GET_CHART, cacheKey + symbol, callBack_httpTasks);
+                        }, 1000);
+                    } else {
+                        Log.d("rapid_api", "onResponse: VolleyError: "+ error);
+                        callBack_httpTasks.onErrorResponse(error);
+                    }
                 })  {
             /**
              * Passing some request headers
@@ -303,21 +258,14 @@ public class RapidApi {
 
     private JSONObject generateCustomJsonQuotes(JSONObject apiResponse, STOCK_OPERATION operation) throws JSONException {
         JSONObject stocks = new JSONObject();
-
         switch (operation) {
             case GET_CHART:
-                // TODO: IMPLEMENT CUSTOM JSON
                 JSONObject result = apiResponse.getJSONObject("chart").getJSONArray("result").getJSONObject(0);
                 JSONObject stock = new JSONObject(); // create stock json
                 stock.put("timestamp", result.getJSONArray("timestamp"));
                 stock.put("values", result.getJSONObject("indicators").getJSONArray("quote").getJSONObject(0).getJSONArray("close"));
+                stocks.put("symbol",result.getJSONObject("meta").getString("symbol"));
                 stocks.put(result.getJSONObject("meta").getString("symbol"),stock);
-
-                break;
-                // TODO: IMPLEMENT CUSTOM JSON
-            case GET_HISTORICAL_DATA:
-
-                // TODO: IMPLEMENT CUSTOM JSON
                 break;
             case GET_QUOTES:
                 for (int i = 0; i < RapidApi.MY_STOCKS.size(); i++) {
@@ -330,8 +278,6 @@ public class RapidApi {
                 }
                 break;
         }
-
-
         return stocks;
     }
 

@@ -198,13 +198,11 @@ public class MyPreference {
     public static class StockCacheManager {
         public interface CACHE_KEYS {
             public final String STOCKS_DATA_JSON = "stocks_data_json";
-            public final String HISTORICAL_DATA_JSON = "historical_data_json";
-            public final String CHARTS_DATA_JSON = "CHARTS_data_json";
+            public final String CHARTS_DATA_JSON = "_CHART";
 
         }
         public interface REFRESH_INTERVAL {
-            public final static int STOCK_DATA = 24 * 30; // In hours // TODO: change to 1 hour
-            public final static int HISTORICAL_DATA = 24 * 30; // In hours // TODO: change to 24 hour
+            public final static int STOCK_DATA = 24 * 30; // In hours // TODO: change to 24 hour
             public final static int CHARTS_DATA = 24 * 30; // In hours // TODO: change to 24 hour
         }
 

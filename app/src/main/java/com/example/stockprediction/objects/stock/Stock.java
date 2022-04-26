@@ -1,36 +1,37 @@
 package com.example.stockprediction.objects.stock;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-public class Stock {
+public class Stock implements Comparable<Stock>{
 
-    /**
-     *  YH stock(single day):
-     *  "chart" : "result":
-     *  0 :
-     *  - "meta" : "regularMarketPrice" -> will bring current price
-     *  - "timestamp" : time in long
-     *  - "indicators" : "quote"[0]:
-     *  - open: long value
-     *  - close: Long value
-     *
-     *  YH stock(multiple day):
-     *  "chart" : "result"[0]:
-     *  - "timestamp" : time in long
-     *  - "indicators" : "quote"[0]:
-     *  - open: long value
-     *  - close: Long value
-     */
+    @Override
+    public int compareTo(Stock o) {
+        if(StockStatus.valueOf(this.getPredictionStatus().toString()) != StockStatus.valueOf(o.getPredictionStatus().toString())) {
+            return StockStatus.valueOf(this.getPredictionStatus().toString()).compareTo(StockStatus.valueOf(o.getPredictionStatus().toString()));
+        } else {
+            return this.name.compareTo(o.name);
+        }
+    }
+
     public enum StockStatus {
-        INCREASE,
-        DECREASE,
+        NO_DATA,
         UNCHANGED,
-        NO_DATA
+        INCREASE,
+        DECREASE
     }
     private String name = "";
     private String symbol = ""; // Use also as stock identifier
@@ -40,6 +41,9 @@ public class Stock {
     private double changeAmount = 0.0;
     private double changePercent = 0.0;
     private String stockImg = "";
+    private List<Float> chartData;
+
+
 
     public Stock() {
 
@@ -54,7 +58,7 @@ public class Stock {
     public Stock(String name, String symbol) {
         this.name = name;
         this.symbol = symbol;
-        this.stockImg = symbol.toLowerCase()+"_icon";
+        this.stockImg = generateImgName(symbol);
     }
 
     public Stock(String name, String symbol, double value, double previousValue, double predictionValue, StockStatus predictionStatus) {
@@ -68,8 +72,11 @@ public class Stock {
         this.changePercent = calcStockChangePercent(previousValue);
     }
 
-    private void setValueFromAPI() {
-
+    private String generateImgName(String name) {
+        String returnName = name.toLowerCase()+"_icon";
+        returnName = returnName.replace("&","_and_");
+        returnName = returnName.replace("-","_");
+        return returnName;
     }
 
     private String timeMillisToDate(long timeMillis) {
@@ -156,6 +163,31 @@ public class Stock {
         this.stockImg = stockImg;
         return this;
     }
+
+    public List<Float> getChartData() {
+        return chartData;
+    }
+
+    public Stock setChartData(List<Float> chartData) {
+        this.chartData = chartData;
+        return this;
+    }
+    public Stock setChartData(JSONObject json) {
+        ArrayList<Float> resultList = new ArrayList<>();
+        JSONArray values = new JSONArray();
+        try {
+            values = json.getJSONObject("stocks").getJSONObject(getSymbol().toUpperCase()).getJSONArray("values");
+            for(int i = 0; i < values.length(); i++){
+                resultList.add(BigDecimal.valueOf(values.getDouble(i)).floatValue());
+            }
+        } catch (JSONException e) {
+            Log.e("stock", "setChartData: error= "+e.getLocalizedMessage());
+        }
+        this.chartData = resultList;
+        return this;
+    }
+
+
 
     public Stock JsonToStock(String jsonStock) {
         Gson gson = new Gson();

@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,9 @@ import static com.example.stockprediction.apis.RapidApi.*;
 public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     protected StockRecyclerViewAdapter<T> adapter;
     protected ArrayList<T> data;
+    protected HashMap<String,T> symbolStockMap;
+    private HashMap<String, Integer> symbolMap = new HashMap<String, Integer>();
+
     private SearchViewModel searchViewModel;
 
     protected interface initStockRecyclerData_Callback<T extends Stock> {
@@ -110,10 +114,26 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                         Log.e("pttt", "StockJson error: "+error);
                 }
             });
-            getInstance().getChartRequestCahceOnly((List<Stock>) data, new CallBack_HttpTasks() {
+            getInstance().getChartRequest((List<Stock>) data, new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
-                    Log.e("xop", "StockJson found: " + json);
+                    String symbol = null;
+                    try {
+                        symbol = json.getJSONObject("stocks").getString("symbol");
+                        JSONArray values = json.getJSONObject("stocks").getJSONObject("stock_data").getJSONArray("values");
+                        int index  = adapter.getItemIndex(symbol);
+                        T stock = data.get(index);
+                        stock.setChartData(json);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyItemChanged(index);
+                            }
+                        });
+                        Log.e("xop", "StockJson found: " + json);
+                    } catch (JSONException e) {
+                        Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
+                    }
                 }
 
                 @Override
@@ -149,6 +169,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                     Log.e("pttt", "StockJson error: "+error);
                 }
             });
+
         });
     }
 
@@ -166,6 +187,18 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             }
         });
     }
+
+    private void parseChartResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) {
+        Stock stock = data.get(position);
+        stock.setChartData(json);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyItemChanged(position);
+            }
+        });
+    }
+
 
     public void goToStockFragment(Stock stock) {
         String jsonStock = stock.stockToJson();

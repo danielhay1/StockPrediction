@@ -21,14 +21,14 @@ public class App extends Application {
         MySignal.Init(this);
         RapidApi.Init(this);
         MyFireBaseServices.getInstance().Init();
-        List<String> list = new ArrayList<String>(RapidApi.MY_STOCKS.values());
-        RapidApi.getInstance().getChartRequest(list, new RapidApi.CallBack_HttpTasks() {
+        //List<String> list = new ArrayList<String>(RapidApi.MY_STOCKS.values());
+        /*RapidApi.getInstance().getChartRequest(list, new RapidApi.CallBack_HttpTasks() {
             @Override
             public void onResponse(JSONObject json) {
             }
             @Override
             public void onErrorResponse(VolleyError error) {
             }
-        });
+        });*/
     }
 }
