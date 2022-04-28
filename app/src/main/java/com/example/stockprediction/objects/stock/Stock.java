@@ -180,6 +180,8 @@ public class Stock implements Comparable<Stock>{
             for(int i = 0; i < values.length(); i++){
                 resultList.add(BigDecimal.valueOf(values.getDouble(i)).floatValue());
             }
+            Log.d("stock", "setChartData: ="+resultList);
+
         } catch (JSONException e) {
             Log.e("stock", "setChartData: error= "+e.getLocalizedMessage());
         }

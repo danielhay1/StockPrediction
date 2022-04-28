@@ -225,6 +225,7 @@ public class RapidApi {
                 (com.android.volley.Request.Method.GET, url, null, response -> {
                     try {
                         JSONObject myResponse =  generateCustomJsonQuotes(response,operation);
+                        myResponse = MyPreference.getInstance(appContext).putStocksData(myResponse,"stocks",cacheKey);
                         Log.d("rapid_api", "onResponse: "+ myResponse);
                         callBack_httpTasks.onResponse(myResponse);
                     } catch (JSONException e) {

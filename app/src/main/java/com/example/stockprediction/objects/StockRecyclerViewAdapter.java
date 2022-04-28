@@ -67,7 +67,6 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         this.likedStocks = likedStocks;
         this.onStockLikeCallback = onStockLikeCallback;
         this.stocksData = new ArrayList<T>(filteredStockData);
-        Collections.sort(stocksData); // TODO: check it
         initSymbolIndexMap(stocksData);
         jsonStockData = MyPreference.getInstance(context).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON);
     }
@@ -98,15 +97,19 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String ValSign = "";
         T stock = filteredStockData.get(position);
+        Log.d("tag-test", "notifyItemChanged adapter:, stockSymbol= " + stock.getSymbol() + ",index="+position+", chart= "+stock.getChartData());
+
         if(jsonStockData != null) {
-            setDataFromCache(stock,holder,position);
+            setDataFromCache(stock,holder);
+            Log.d("tag-test", "onBindViewHolder:  "+ stock.getChartData());
+
         } else {
             initStubData(stock,holder);
         }
-        Log.d("stock_recycler", "onBindViewHolder: "+ stock.getSymbol());
+        setStockChart(stock,holder);
         setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
         setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
-        markLikedStocks(stock,holder); // TODO: fix null pointer exception
+        markLikedStocks(stock,holder);
         holder.RVROW_EV_likeButton.setOnCheckListener(new OnCheckListener() {
             @Override
             public void onChecked(@Nullable ExpressView expressView) {
@@ -120,7 +123,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         });
     }
 
-    private void setDataFromCache(T stock, ViewHolder holder, int position){
+    private void setDataFromCache(T stock, ViewHolder holder){
         JSONObject cacheStock;
         try {
             cacheStock = jsonStockData.getJSONObject("stocks").getJSONObject(stock.getSymbol());
@@ -135,11 +138,6 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
             holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
             if(stock.getPredictionStatus() == Stock.StockStatus.NO_DATA) {
                 //holder.
-            }
-            JSONObject jsonObject = MyPreference.getInstance(context).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+stock.getSymbol()); // trying to get stock chart from cache
-            if(jsonObject != null) {
-                stock.setChartData(jsonObject);
-                initChart(stock,holder.RVROW_CHART);
             }
 
         } catch (JSONException e) {
@@ -156,6 +154,18 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         holder.RVROW_LBL_StockValue.setText("$" + String.valueOf(stock.getValue()));
         holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
         holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
+    }
+
+    private void setStockChart(T stock, ViewHolder holder) {
+        if(stock.getChartData() == null) {
+            JSONObject jsonObject = MyPreference.getInstance(context).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+stock.getSymbol()); // trying to get stock chart from cache
+            if(jsonObject != null) {
+                stock.setChartData(jsonObject);
+                initChart(stock,holder.RVROW_CHART);
+            }
+        } else {
+            initChart(stock,holder.RVROW_CHART);
+        }
     }
 
     @Override
@@ -261,6 +271,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
 
     private void initChart(T stock, com.github.mikephil.charting.charts.LineChart chart) {
+        Log.d("tag-test", "setStockChart:, stockSymbol= " + stock.getSymbol());
+
         // no description text
         chart.getDescription().setEnabled(false);
         // enable touch gestures
@@ -277,6 +289,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
 
     private void setData(com.github.mikephil.charting.charts.LineChart chart, List<Float> data) {
+        Log.d("tag-test", "setStockChart:, data= " + data);
 
         ArrayList<Entry> lineEntries = new ArrayList<Entry>();
         for (int i = 0; i < data.size() ; i++) {
@@ -314,7 +327,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         //chart.getAxisLeft().addLimitLine(upperLimitLine(5,"Upper Limit",2,12,getColor("defaultGreen"),getColor("defaultGreen")));
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
 
-        chart.animateY(1000);
+        //chart.animateX(200);
         chart.getXAxis().setGranularityEnabled(true);
         chart.getXAxis().setGranularity(1.0f);
         chart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
@@ -322,6 +335,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         chart.getAxisLeft().setEnabled(false);
         chart.getXAxis().setEnabled(false);
         chart.setData(lineData);
+        chart.invalidate();
     }
 
 

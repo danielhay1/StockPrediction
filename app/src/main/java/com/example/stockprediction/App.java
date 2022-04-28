@@ -2,16 +2,10 @@ package com.example.stockprediction;
 
 import android.app.Application;
 
-import com.android.volley.VolleyError;
 import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.apis.firebase.MyFireBaseServices;
-import com.example.stockprediction.objects.stock.Stock;
+import com.example.stockprediction.utils.MyPreference;
 import com.example.stockprediction.utils.MySignal;
-
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class App extends Application {
     @Override
@@ -21,6 +15,7 @@ public class App extends Application {
         MySignal.Init(this);
         RapidApi.Init(this);
         MyFireBaseServices.getInstance().Init();
+        MyPreference.getInstance(this).clearStockCache();
         //List<String> list = new ArrayList<String>(RapidApi.MY_STOCKS.values());
         /*RapidApi.getInstance().getChartRequest(list, new RapidApi.CallBack_HttpTasks() {
             @Override

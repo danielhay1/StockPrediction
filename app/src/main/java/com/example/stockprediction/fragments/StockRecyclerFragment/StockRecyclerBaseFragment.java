@@ -26,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,6 @@ import static com.example.stockprediction.apis.RapidApi.*;
 public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     protected StockRecyclerViewAdapter<T> adapter;
     protected ArrayList<T> data;
-    protected HashMap<String,T> symbolStockMap;
     private HashMap<String, Integer> symbolMap = new HashMap<String, Integer>();
 
     private SearchViewModel searchViewModel;
@@ -72,8 +73,10 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         });
     }
 
-    private void sortBy(Comparator<T> comparator) {
 
+    private void sortBy(Comparator<T> comparator) {
+        Collections.sort(this.data,comparator); // TODO: check it
+        adapter.notifyDataSetChanged();
     }
 
     private StockRecyclerViewAdapter initAdapter(RecyclerView recyclerView, ArrayList<T> stocksData, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback) {
@@ -91,6 +94,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     public void initStockRecyclerView(RecyclerView recyclerView,initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             data = initRecyclerData_callback.initRecyclerData();
+            Collections.sort(this.data); // TODO: check it
             Log.e("pttt", "initStockRecyclerView: data="+data);
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
@@ -103,7 +107,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                         Log.e("pttt", "StockJson found: "+json);
                     for (int position = 0; position < data.size(); position++) {
                         try {
-                            parseQuotesResponse(position,adapter,json);
+                            parseQuotesResponse(adapter.getItemIndex(data.get(position).getSymbol()),adapter,json);
                         } catch (JSONException e) {
                             Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
                         }
@@ -117,20 +121,18 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             getInstance().getChartRequest((List<Stock>) data, new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
-                    String symbol = null;
+                    String symbol;
                     try {
                         symbol = json.getJSONObject("stocks").getString("symbol");
-                        JSONArray values = json.getJSONObject("stocks").getJSONObject("stock_data").getJSONArray("values");
                         int index  = adapter.getItemIndex(symbol);
                         T stock = data.get(index);
                         stock.setChartData(json);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyItemChanged(index);
-                            }
+                        new MyAsyncTask().executeBgTask(()->{},()->{ // run on ui thread
+                            Log.d("tag-test", "notifyItemChanged, stockSymbol="+stock.getSymbol()+", index="+index);
+                            adapter.notifyItemChanged(index);
                         });
-                        Log.e("xop", "StockJson found: " + json);
+
+                        Log.d("stock_recycler_base_fragment", "StockJson found: " + symbol + ",stock to update: "+stock.getSymbol());
                     } catch (JSONException e) {
                         Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
                     }
@@ -158,7 +160,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                     Log.e("pttt", "StockJson found: "+json);
                     for (int position = 0; position < data.size(); position++) {
                         try {
-                            parseQuotesResponse(position,adapter,json);
+                            parseQuotesResponse(adapter.getItemIndex(data.get(position).getSymbol()),adapter,json);
                         } catch (JSONException e) {
                             Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
                         }

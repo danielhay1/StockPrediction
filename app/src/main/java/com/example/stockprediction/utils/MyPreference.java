@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.objects.stock.Stock;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -51,6 +52,7 @@ public class MyPreference {
                 Log.d("pttt", "Init: MyPreference");
                 instance = new MyPreference(appContext);
                 instance.putFavStockArrayList(new ArrayList<Stock>());
+                Log.d("my_preference", "json= "+instance.getStocksData(StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON));
             }
         }
     }
@@ -159,12 +161,21 @@ public class MyPreference {
         Log.d("pttt", "putObject: show all " + prefernceToString());
     }
 
+    public void clearStockCache() {
+        Log.d("pttt", "clearStockCache()");
+        for (String symbol: RapidApi.MY_STOCKS.values()) {
+            deleteKey(StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+symbol);
+        }
+        deleteKey(StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON);
+    }
+
     public String prefernceToString() {
         return this.sharedPreferences.getAll().toString();
     }
 
     public void deleteAllData() {
-        Log.d("pttt", "deleteAllData");
+        Log.d("pttt", "deleteAll" +
+                "Data");
         SharedPreferences.Editor editor = this.sharedPreferences.edit();
         editor.clear();
         editor.apply();
@@ -197,8 +208,8 @@ public class MyPreference {
 
     public static class StockCacheManager {
         public interface CACHE_KEYS {
-            public final String STOCKS_DATA_JSON = "stocks_data_json";
-            public final String CHARTS_DATA_JSON = "_CHART";
+            public final String STOCKS_DATA_JSON = "x_stocks_data_json";
+            public final String CHARTS_DATA_JSON = "X_CHART_";
 
         }
         public interface REFRESH_INTERVAL {
