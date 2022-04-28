@@ -15,7 +15,7 @@ public class App extends Application {
         MySignal.Init(this);
         RapidApi.Init(this);
         MyFireBaseServices.getInstance().Init();
-        MyPreference.getInstance(this).clearStockCache();
+        //MyPreference.getInstance(this).clearStockCache();
         //List<String> list = new ArrayList<String>(RapidApi.MY_STOCKS.values());
         /*RapidApi.getInstance().getChartRequest(list, new RapidApi.CallBack_HttpTasks() {
             @Override

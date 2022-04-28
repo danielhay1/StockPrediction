@@ -208,8 +208,8 @@ public class MyPreference {
 
     public static class StockCacheManager {
         public interface CACHE_KEYS {
-            public final String STOCKS_DATA_JSON = "x_stocks_data_json";
-            public final String CHARTS_DATA_JSON = "X_CHART_";
+            public final String STOCKS_DATA_JSON = "stocks_data_json";
+            public final String CHARTS_DATA_JSON = "CHART_";
 
         }
         public interface REFRESH_INTERVAL {
