@@ -3,10 +3,7 @@
     android:viewportHeight="192.744"
     android:width="2500dp"
     android:height="2500dp">
-    <path
-        android:pathData="M0 0h192.744v192.744H0V0z"
-        android:fillType="evenOdd"
-        android:fillColor="#FFFFFF" />
+
     <path
         android:pathData="M187.035 106.442a2.852 2.852 0 1 0 0 5.703 2.847 2.847 0 0 0 2.844 -2.858 2.844 2.844 0 0 0 -2.844 -2.845zm0 5.36a2.505 2.505 0 0 1 -2.508 -2.515 2.502 2.502 0 0 1 2.508 -2.501 2.5 2.5 0 0 1 2.5 2.501 2.503 2.503 0 0 1 -2.5 2.515z"
         android:fillType="evenOdd"

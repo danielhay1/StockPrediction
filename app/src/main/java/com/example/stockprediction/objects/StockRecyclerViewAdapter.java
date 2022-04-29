@@ -210,11 +210,16 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
 
     private void markLikedStocks(T stock, ViewHolder holder) {
+
         if(likedStocks != null) {
             if(!likedStocks.isEmpty()){
                 if (likedStocks.contains(stock)) {
-                    Log.d("stock_recycler", "markAsLiked: "+likedStocks);
-                    holder.RVROW_EV_likeButton.setChecked(true);
+                    if(!holder.RVROW_EV_likeButton.isChecked()) {
+                        holder.RVROW_EV_likeButton.setChecked(true);
+                        Log.d("stock_recycler", "markAsLiked: symbol="+likedStocks + ", likedStocks="+likedStocks);
+                    }
+                } else {
+                    holder.RVROW_EV_likeButton.setChecked(false);
                 }
             }
         }
@@ -373,14 +378,14 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         }
     }
 
-    private void sortBy(Comparator<T> comparator) {
+/*    private void sortBy(Comparator<T> comparator) {
         this.filteredStockData.sort(comparator);
         this.symbolIndexMap.clear();
         for (int i = 0; i <filteredStockData.size() ; i++) {
             symbolIndexMap.put(filteredStockData.get(i).getSymbol(), i);
         }
         notifyDataSetChanged();
-    }
+    }*/
 
 
     // convenience method for getting data at click position

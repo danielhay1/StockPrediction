@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 
 public class FavoritiesFragment extends StockRecyclerBaseFragment<Stock> {
     private RecyclerView recyclerView;
+    private TextView favorities_TV_noStocks;
+    private ImageView favorities_IMG_noStocks; //nodata_icon
 
     @Nullable
     @Override
@@ -34,26 +38,40 @@ public class FavoritiesFragment extends StockRecyclerBaseFragment<Stock> {
 
     private void findViews(View view) {
         this.recyclerView = view.findViewById(R.id.favorities_RV_stocks);
+        this.favorities_TV_noStocks = view.findViewById(R.id.favorities_TV_noStocks);
+        this.favorities_IMG_noStocks = view.findViewById(R.id.favorities_IMG_noStocks);
     }
 
     private void initViews() {
-        super.initStockRecyclerViewFromCache(recyclerView, () -> getUser().getFavStocks(), new StockRecyclerViewAdapter.OnStockLike_Callback() {
-            @Override
-            public void onStockLike(Stock stock) { }
+        if(!getUser().getFavStocks().isEmpty()) {
+            super.initStockRecyclerViewFromCache(recyclerView, () -> getUser().getFavStocks(), new StockRecyclerViewAdapter.OnStockLike_Callback() {
+                @Override
+                public void onStockLike(Stock stock) {
+                    if(favorities_TV_noStocks.getVisibility() == View.VISIBLE) { favorities_TV_noStocks.setVisibility(View.INVISIBLE); }
+                }
 
-            @Override
-            public void onStockDislike(Stock stock, int position) {
-                Log.d("pttt", "onStockDislike: favoriteStocks="+ FavoritiesFragment.super.data+"index="+position);
-                // Update user stock list
-                ArrayList<Stock> stocks = getUser().getFavStocks();
-                stocks.remove(position);
-                updateUser(getUser().setFavStocks(stocks));
-                Log.e("pttt", "FavStocks: onStockDislike: "+stocks);
-                // Update Adapter
-                FavoritiesFragment.super.adapter.removeAt(position);
-                // Update user favStocks Set on firebase
-                MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
-            }
-        });
+                @Override
+                public void onStockDislike(Stock stock, int position) {
+                    Log.d("FavStock", "onStockDislike: favoriteStocks="+ FavoritiesFragment.super.data+"index="+position);
+                    // Update user stock list
+                    ArrayList<Stock> stocks = getUser().getFavStocks();
+                    stocks.remove(position);
+                    updateUser(getUser().setFavStocks(stocks));
+                    Log.e("FavStock", "sonStockDislike: onStockDislike: "+stocks);
+                    // Update Adapter
+                    FavoritiesFragment.super.adapter.removeAt(position);
+                    // Update user favStocks Set on firebase
+                    MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
+                    if(stocks.isEmpty()) {
+                        favorities_TV_noStocks.setVisibility(View.VISIBLE);
+                        favorities_IMG_noStocks.setVisibility(View.VISIBLE);
+                    }
+
+                }
+            });
+        } else {
+            favorities_TV_noStocks.setVisibility(View.VISIBLE);
+            favorities_IMG_noStocks.setVisibility(View.VISIBLE);
+        }
     }
 }

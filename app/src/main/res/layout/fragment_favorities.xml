@@ -2,10 +2,42 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/favorities_RV_stocks"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        >
+        <TextView
+            android:id="@+id/favorities_TV_noStocks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No stocks added."
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="30dp"
+            android:textSize="16sp"
+            android:textColor="#887CF1"
+            android:visibility="invisible"
+            />
+        <ImageView
+            android:id="@+id/favorities_IMG_noStocks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="No stocks added."
+            android:layout_above="@+id/favorities_TV_noStocks"
+            android:layout_centerInParent="true"
+            android:src="@drawable/nodata_icon"
+            android:alpha="0.1"
+            android:visibility="invisible"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favorities_RV_stocks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
 
 </LinearLayout>

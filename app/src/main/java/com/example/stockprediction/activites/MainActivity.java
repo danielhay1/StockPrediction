@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView nav_LBL_userName;
     private TextView nav_LBL_userInfo;
     private SearchView searchView;
-    private ProgressBar progress;
+    private com.google.android.material.progressindicator.CircularProgressIndicator progress;
     private int displayingFragmentId;
     // User
     private User user;

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -146,7 +147,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         });
     }
 
-    public void initStockRecyclerViewFromCache(RecyclerView recyclerView,initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
+    public void initStockRecyclerViewFromCache(RecyclerView recyclerView, initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             data = initRecyclerData_callback.initRecyclerData();
             Log.e("pttt", "initStockRecyclerView: data="+data);
@@ -171,8 +172,11 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                     Log.e("pttt", "StockJson error: "+error);
                 }
             });
-
         });
+    }
+
+    public boolean isDataEmpty() {
+        return data.isEmpty();
     }
 
     private void parseQuotesResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {
