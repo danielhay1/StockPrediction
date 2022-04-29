@@ -32,7 +32,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activites.LoginActivity" />
-        <activity android:name=".activites.StockActivity" />
         <activity android:name=".activites.MainActivity"
             />
         <service

@@ -60,13 +60,6 @@ public class RapidApi {
         MY_STOCKS.put("Dell", "DELL");
         MY_STOCKS.put("Amdocs", "DOX");
 
-
-
-
-
-
-
-
         //MY_STOCKS.put("Advanced Micro Devices", "AMD");
         //MY_STOCKS.put("Siemens", "SIEGY");
 
@@ -275,6 +268,14 @@ public class RapidApi {
                     stock.put("regularMarketChange",result.getString("regularMarketChange"));
                     stock.put("regularMarketPrice",result.getString("regularMarketPrice"));
                     stock.put("regularMarketChangePercent",result.getString("regularMarketChangePercent"));
+                    // Additional details
+                    stock.put("low",result.getString("regularMarketDayLow"));
+                    stock.put("high",result.getString("regularMarketDayHigh"));
+                    stock.put("open",result.getString("regularMarketOpen"));
+                    stock.put("prev_close",result.getString("regularMarketPreviousClose"));
+                    stock.put("vol",result.getString("regularMarketVolume"));
+                    stock.put("year_range",result.getString("fiftyTwoWeekRange"));
+
                     stocks.put(result.getString("symbol"),stock);
                 }
                 break;

@@ -144,6 +144,8 @@ public class MyFireBaseServices {
     private void listenObjectFromFireBase(String preferenceKey, String key, ValueEventListener valueEventListener) {
         DatabaseReference myRef = database.getReference(preferenceKey);
         myRef.child(key).addValueEventListener(valueEventListener);
+        myRef.child(key).addValueEventListener(valueEventListener);
+
     }
 
 

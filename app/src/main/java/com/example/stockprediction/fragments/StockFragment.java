@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
@@ -23,6 +25,17 @@ public class StockFragment extends BaseFragment {
 
     public static final String ARG_PARAM = "stock";
     private Stock stock;
+
+    private TextView stockFrag_TV_name;
+    private TextView stockFrag_TV_symbol;
+    private TextView stockFrag_TV_price;
+    private TextView stockFrag_TV_StockStatusDetails;
+    private TextView stockFrag_TV_date;
+    private ImageView stockFrag_IMG_stockImg;
+    private ImageView stockFrag_IMG_predictionStatus;
+    private com.github.mikephil.charting.charts.BarChart stockFrag_BarChart;
+    private co.ankurg.expressview.ExpressView stockFrag_EV_likeButton;
+
 
 
     @Override
@@ -69,8 +82,20 @@ public class StockFragment extends BaseFragment {
         stock.setPredictionStatus();
     }
 
-    private void findViews(View view) {
+    private double calcPercentageChange(double change, double value) {
+        return (change/value)*100;
+    }
 
+    private void findViews(View view) {
+        stockFrag_TV_name = view.findViewById(R.id.stockFrag_TV_name);
+        stockFrag_TV_symbol = view.findViewById(R.id.stockFrag_TV_symbol);
+        stockFrag_IMG_stockImg = view.findViewById(R.id.stockFrag_IMG_stockImg);
+        stockFrag_TV_price = view.findViewById(R.id.stockFrag_TV_price);
+        stockFrag_TV_StockStatusDetails = view.findViewById(R.id.stockFrag_TV_StockStatusDetails);
+        stockFrag_TV_date = view.findViewById(R.id.stockFrag_TV_date);
+        stockFrag_BarChart = view.findViewById(R.id.stockFrag_BarChart);
+        stockFrag_IMG_predictionStatus = view.findViewById(R.id.stockFrag_IMG_predictionStatus);
+        stockFrag_EV_likeButton = view.findViewById(R.id.stockFrag_EV_likeButton);
     }
 
     private void initViews() {
