@@ -58,8 +58,8 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
                 ArrayList<Stock> stocks = getUser().getFavStocks();
                 Log.d("pttt", "onStockLike: stocks = "+stocks);
                 if(stocks.add(stock)) {
-                    updateUser(getUser().setFavStocks(stocks));
-                    Log.e("pttt", "onStockLike: user="+getUser());
+                        updateUser(getUser().setFavStocks(stocks));
+                        Log.e("pttt", "onStockLike: user="+getUser());
                     MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
                 }
             }

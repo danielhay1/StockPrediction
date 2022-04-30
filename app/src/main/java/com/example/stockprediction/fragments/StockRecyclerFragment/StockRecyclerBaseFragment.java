@@ -42,9 +42,9 @@ import static com.example.stockprediction.apis.RapidApi.*;
 public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     protected StockRecyclerViewAdapter<T> adapter;
     protected ArrayList<T> data;
-    private HashMap<String, Integer> symbolMap = new HashMap<String, Integer>();
-
     private SearchViewModel searchViewModel;
+
+
 
     protected interface initStockRecyclerData_Callback<T extends Stock> {
         ArrayList<T> initRecyclerData();
@@ -132,7 +132,6 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                         T stock = data.get(index);
                         stock.setChartData(json);
                         new MyAsyncTask().executeBgTask(()->{},()->{ // run on ui thread
-                            Log.d("tag-test", "notifyItemChanged, stockSymbol="+stock.getSymbol()+", index="+index);
                             adapter.notifyItemChanged(index);
                         });
 
@@ -147,32 +146,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                     Log.e("xop", "StockJson error: " + error);
                 }
             });
-            MyFireBaseServices.getInstance().listenPredictions(new MyFireBaseServices.FB_Request_Callback<HashMap<String, ArrayList<Prediction>>>() {
-                @Override
-                public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
-                    // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
-                    String day = MyTimeStamp.getCurrentDay();
-                    ArrayList<Prediction> predictions = result.get(day); // all predictions for today
-                    for (Prediction prediction: predictions) {
-                        int index = adapter.getItemIndex(prediction.getTargetSymbol());
-                        data.get(index).setPredictionValue(prediction.getPoints());
-
-
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyItemChanged(index);
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void OnFailure(Exception e) {
-
-                }
-            });
+            initDailyPredictions();
         });
     }
 
@@ -184,28 +158,36 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
             adapter = initAdapter(recyclerView, data, onStockLike_callback);
             // Get stock from FireBaser
-            getInstance().getQuotesRequestCacheOnly(new CallBack_HttpTasks() {
-                @Override
-                public void onResponse(JSONObject json) {
-                    Log.e("pttt", "StockJson found: "+json);
-                    for (int position = 0; position < data.size(); position++) {
-                        try {
-                            parseQuotesResponse(adapter.getItemIndex(data.get(position).getSymbol()),adapter,json);
-                        } catch (JSONException e) {
-                            Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
-                        }
-                    }
-                }
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("pttt", "StockJson error: "+error);
-                }
-            });
+            // Recycler will init data from cache therefor there is no API calls.
+            //initDailyPredictions();
         });
     }
 
-    public boolean isDataEmpty() {
-        return data.isEmpty();
+    private void initDailyPredictions() {
+        MyFireBaseServices.getInstance().listenPredictions(new MyFireBaseServices.FB_Request_Callback<HashMap<String, ArrayList<Prediction>>>() {
+            @Override
+            public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
+                // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
+                String day = MyTimeStamp.getCurrentDay();
+                ArrayList<Prediction> predictions = result.get(day); // all predictions for today
+                for (Prediction prediction: predictions) {
+                    int index = adapter.getItemIndex(prediction.getTargetSymbol());
+                    data.get(index).setPredictionValue(prediction.getPoints());
+                }
+                //Collections.sort(data);
+                Log.d("data_data", "OnSuccess: data = "+data);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyAdapterDataSetChanged(data);
+                    }
+                });
+            }
+            @Override
+            public void OnFailure(Exception e) {
+                Log.e("stock_recycler_base_fragment", "initDailyPredictions: error= "+e);
+            }
+        });
     }
 
     private void parseQuotesResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {

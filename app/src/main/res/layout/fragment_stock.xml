@@ -56,7 +56,7 @@
                     android:src="@mipmap/ic_launcher_round"
                     />
                 <TextView
-                    android:id="@+id/stockFrag_TV_price"
+                    android:id="@+id/stockFrag_TV_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -91,7 +91,7 @@
                         android:textSize="14sp" />
                 </LinearLayout>
 
-                <com.github.mikephil.charting.charts.BarChart
+                <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/stockFrag_BarChart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

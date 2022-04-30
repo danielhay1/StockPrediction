@@ -23,19 +23,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
-import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -132,14 +126,10 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
             holder.RVROW_LBL_StockValue.setText("$" + Double.parseDouble(cacheStock.getString("regularMarketPrice")));
             holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), holder.RVROW_LBL_StockStatusDetails));
             holder.RVROW_LBL_StockPredictionDetails.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
-
             setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
             setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
             holder.RVROW_LBL_StockName.setText(stock.getName());
             holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
-            if(stock.getPredictionStatus() == Stock.StockStatus.NO_DATA) {
-                //holder.
-            }
 
         } catch (JSONException e) {
             Log.e("stock_recycler", "parseQuotesResponse: jsonException = "+e);
@@ -211,7 +201,6 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
 
     private void markLikedStocks(T stock, ViewHolder holder) {
-
         if(likedStocks != null) {
             if(!likedStocks.isEmpty()){
                 if (likedStocks.contains(stock)) {
@@ -301,13 +290,6 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         for (int i = 0; i < data.size() ; i++) {
             lineEntries.add(new Entry(i, data.get(i)));
         }
-//        lineEntries.add(new Entry(0, 422.5f));
-//        lineEntries.add(new Entry(1, 400.52f));
-//        lineEntries.add(new Entry(2, 413.354f));
-//        lineEntries.add(new Entry(3, 489.2f));
-//        lineEntries.add(new Entry(4, 499.52f));
-
-
         LineDataSet lineDataSet = new LineDataSet(lineEntries, "Stock Price");
         lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         lineDataSet.setHighlightEnabled(true);
@@ -345,6 +327,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
     }
 
 
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
         private ImageView RVROW_IMG_StockImg;
         private ImageView RVROW_IMG_currentStatus;
@@ -379,15 +362,11 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         }
     }
 
-/*    private void sortBy(Comparator<T> comparator) {
-        this.filteredStockData.sort(comparator);
-        this.symbolIndexMap.clear();
-        for (int i = 0; i <filteredStockData.size() ; i++) {
-            symbolIndexMap.put(filteredStockData.get(i).getSymbol(), i);
-        }
+    public void notifyAdapterDataSetChanged(List<T> stocks) {
+        stocksData = stocks;
+        initSymbolIndexMap(stocksData);
         notifyDataSetChanged();
-    }*/
-
+    }
 
     // convenience method for getting data at click position
     public T getItem(int id) {
@@ -420,7 +399,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         void onItemClick(View view, int position);
     }
 
-    public class MyValueFormatter extends ValueFormatter implements IValueFormatter {
+    private class MyValueFormatter extends ValueFormatter implements IValueFormatter {
 
         private DecimalFormat mFormat;
 

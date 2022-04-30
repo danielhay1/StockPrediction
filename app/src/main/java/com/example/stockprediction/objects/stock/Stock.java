@@ -20,19 +20,29 @@ public class Stock implements Comparable<Stock>{
 
     @Override
     public int compareTo(Stock o) {
-        if(StockStatus.valueOf(this.getPredictionStatus().toString()) != StockStatus.valueOf(o.getPredictionStatus().toString())) {
-            return StockStatus.valueOf(this.getPredictionStatus().toString()).compareTo(StockStatus.valueOf(o.getPredictionStatus().toString()));
+        if(this.getPredictionStatus().getValue() != o.getPredictionStatus().getValue()) {
+            return Integer.compare(o.getPredictionStatus().getValue(),this.getPredictionStatus().getValue());
         } else {
             return this.name.compareTo(o.name);
         }
     }
 
     public enum StockStatus {
-        NO_DATA,
-        UNCHANGED,
-        INCREASE,
-        DECREASE
+        NO_DATA(0),
+        UNCHANGED(1),
+        DECREASE(2),
+        INCREASE(3);
+
+        private final int value;
+        private StockStatus(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
+
     private String name = "";
     private String symbol = ""; // Use also as stock identifier
     private double value = 0.0;
@@ -48,12 +58,6 @@ public class Stock implements Comparable<Stock>{
     public Stock() {
 
     }
-
-/*
-    public Stock(String jsonStock) {
-        Stock stock = JsonToStock(jsonStock);
-    }
-*/
 
     public Stock(String name, String symbol) {
         this.name = name;
