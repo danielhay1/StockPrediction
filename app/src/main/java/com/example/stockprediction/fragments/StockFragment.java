@@ -216,14 +216,14 @@ public class StockFragment extends BaseFragment {
         // no description text
         chart.getDescription().setEnabled(false);
         // enable touch gestures
-        chart.setTouchEnabled(false);
+        chart.setTouchEnabled(true);
         //chart.setDragDecelerationFrictionCoef(0.9f);
         // if disabled, scaling can be done on x- and y-axis separately
         //chart.setPinchZoom(true);
         // enable scaling and dragging
-        chart.setDragEnabled(false);
+        chart.setDragEnabled(true);
         chart.setScaleEnabled(true);
-        chart.setDrawGridBackground(false);
+        //chart.setDrawGridBackground(true);
         chart.setHighlightPerDragEnabled(true);
         setData(chart,stock.getChartData());
     }
@@ -261,12 +261,12 @@ public class StockFragment extends BaseFragment {
         //chart.getAxisLeft().addLimitLine(upperLimitLine(5,"Upper Limit",2,12,getColor("defaultGreen"),getColor("defaultGreen")));
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
 
-        chart.animateY(0);
+        chart.animateY(1000);
         chart.getXAxis().setGranularityEnabled(true);
         chart.getXAxis().setGranularity(1.0f);
         chart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
         chart.getAxisRight().setEnabled(false);
-        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisLeft().setEnabled(true);
         chart.getXAxis().setEnabled(false);
         chart.setData(lineData);
         chart.invalidate();
@@ -289,6 +289,7 @@ public class StockFragment extends BaseFragment {
     private void setStockData(Stock stock){
         stockFrag_TV_value.setText("$" + stock.getValue());
         stockFrag_TV_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), stockFrag_TV_StockStatusDetails));
+        setTextViewColor(stockFrag_TV_StockStatusDetails);
         //.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
         setImg(stock.getStockImg(),stockFrag_IMG_stockImg);
         setStockStatusImg(stockFrag_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
