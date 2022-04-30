@@ -226,17 +226,10 @@ public class MyPreference {
             return cacheTimeStamp < refreshTimeStamp;
         }
 
-        private static String getCurrentDay() {
-            Calendar calendar = Calendar.getInstance();
-            Date date = calendar.getTime();
-            // full name form of the day
-            return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
-        }
-
         private static JSONObject generateCustomObject(JSONObject json, String jsonKey) {
             JSONObject customJson = new JSONObject();
             try {
-                customJson.put("request_day",getCurrentDay());
+                customJson.put("request_day",MyTimeStamp.getCurrentDay());
                 customJson.put("request_timestamp",System.currentTimeMillis()/1000);
                 //customJson.put("stocks",json);
                 customJson.put(jsonKey,json);

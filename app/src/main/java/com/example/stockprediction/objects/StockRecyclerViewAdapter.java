@@ -130,8 +130,9 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
             stock.setChangeAmount(Double.parseDouble(cacheStock.getString("regularMarketChange")));
             stock.setChangePercent(Double.parseDouble(cacheStock.getString("regularMarketChangePercent")));
             holder.RVROW_LBL_StockValue.setText("$" + Double.parseDouble(cacheStock.getString("regularMarketPrice")));
-            holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
-            holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
+            holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), holder.RVROW_LBL_StockStatusDetails));
+            holder.RVROW_LBL_StockPredictionDetails.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
+
             setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
             setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
             holder.RVROW_LBL_StockName.setText(stock.getName());
@@ -152,8 +153,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         holder.RVROW_LBL_StockName.setText(stock.getName());
         holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());
         holder.RVROW_LBL_StockValue.setText("$" + String.valueOf(stock.getValue()));
-        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockStatusDetails));
-        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock, holder.RVROW_LBL_StockPredictionDetails));
+        holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), holder.RVROW_LBL_StockStatusDetails));
+        holder.RVROW_LBL_StockPredictionDetails.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
     }
 
     private void setStockChart(T stock, ViewHolder holder) {
@@ -233,10 +234,10 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
             textView.setTextColor(context.getColor(R.color.green_200));
         }
     }
-    private String getStockChangeDetails(T stock,TextView textView){
+    private String getStockChangeDetails(double stockChangeAmount, double stockChangePercent,TextView textView){
         //String sign = (stock.getChangeAmount() > 0) ? "+" : (stock.getChangeAmount() < 0) ? "-" : "";
-        String sign = (stock.getChangeAmount() > 0) ? "+" : "";
-        return sign+String.format("%.2f", stock.getChangeAmount()) + "(" + String.format("%.2f", stock.getChangePercent())+ "%)";
+        String sign = (stockChangeAmount> 0) ? "+" : "";
+        return sign+String.format("%.2f", stockChangeAmount) + "(" + String.format("%.2f", stockChangePercent)+ "%)";
     }
 
     @Override

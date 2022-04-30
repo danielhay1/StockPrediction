@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ImageTools {
-    private ImageTools() {};
+    private ImageTools() {}
 
     public static void glideSetImageByStrUrl(Activity activity, String stringImg, ImageView imageView) {
         Log.d("pttt", "setImageUserWithUriGlide:");

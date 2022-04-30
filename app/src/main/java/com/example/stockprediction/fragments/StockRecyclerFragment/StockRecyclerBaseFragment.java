@@ -16,11 +16,14 @@ import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.activites.MainActivity;
 import com.example.stockprediction.apis.RapidApi;
+import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.example.stockprediction.fragments.StockFragment;
 import com.example.stockprediction.objects.BaseFragment;
+import com.example.stockprediction.objects.Prediction;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.MyAsyncTask;
+import com.example.stockprediction.utils.MyTimeStamp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -142,6 +145,32 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.e("xop", "StockJson error: " + error);
+                }
+            });
+            MyFireBaseServices.getInstance().listenPredictions(new MyFireBaseServices.FB_Request_Callback<HashMap<String, ArrayList<Prediction>>>() {
+                @Override
+                public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
+                    // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
+                    String day = MyTimeStamp.getCurrentDay();
+                    ArrayList<Prediction> predictions = result.get(day); // all predictions for today
+                    for (Prediction prediction: predictions) {
+                        int index = adapter.getItemIndex(prediction.getTargetSymbol());
+                        data.get(index).setPredictionValue(prediction.getPoints());
+
+
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyItemChanged(index);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void OnFailure(Exception e) {
+
                 }
             });
         });

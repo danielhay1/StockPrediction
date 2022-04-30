@@ -28,6 +28,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class MyFireBaseServices {
 
     private final String DB_URL = "https://stockprediction-b3afb-default-rtdb.europe-west1.firebasedatabase.app/";
@@ -40,17 +43,19 @@ public class MyFireBaseServices {
     private final String PREDICTION_NOTIFICATIONS_TOPIC = "settings";
 
     // ################# CallBacks #################:
-    public interface FB_Request_Callback <T> {
+    public interface FB_Request_Callback<T> {
         void OnSuccess(T result);
+
         void OnFailure(Exception e);
     }
 
     public interface FBImageReady_Callback {
         void imageUriCallback(String imageUri);
     }
+
     // #############################################
     private FirebaseUser firebaseUser;   // Current login user
-    private  static MyFireBaseServices instance;
+    private static MyFireBaseServices instance;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase database;
     private FirebaseStorage storage;
@@ -65,8 +70,8 @@ public class MyFireBaseServices {
         this.database = FirebaseDatabase.getInstance(DB_URL);
     }
 
-    public static void Init(){
-        if(instance == null) {
+    public static void Init() {
+        if (instance == null) {
             Log.d("pttt", "Init: MyFireBaseServices");
             instance = new MyFireBaseServices();
         }
@@ -111,8 +116,8 @@ public class MyFireBaseServices {
     }
 
     public void saveUserToFireBase(User user) {
-        if(firebaseUser.getUid()!=null){
-            saveObject(MY_USERS,user.getUid(),user);
+        if (firebaseUser.getUid() != null) {
+            saveObject(MY_USERS, user.getUid(), user);
             Log.d("pttt", "saveUserToFireBase: ");
         }
     }
@@ -144,28 +149,27 @@ public class MyFireBaseServices {
     private void listenObjectFromFireBase(String preferenceKey, String key, ValueEventListener valueEventListener) {
         DatabaseReference myRef = database.getReference(preferenceKey);
         myRef.child(key).addValueEventListener(valueEventListener);
-        myRef.child(key).addValueEventListener(valueEventListener);
-
     }
 
 
-    public void listenPredictions(String preferenceKey,FB_Request_Callback<Prediction> valueEventListener) {
-        listenObjectFromFireBase(PREDICTIONS, preferenceKey, new MyValueEventListener<Prediction>(Prediction.class,valueEventListener));
+    public void listenPredictions(String preferenceKey, FB_Request_Callback<Prediction> valueEventListener) {
+        listenObjectFromFireBase(PREDICTIONS, preferenceKey, new MyValueEventListener<Prediction>(Prediction.class, valueEventListener));
 
     }
 
 
     public void loadUserFromFireBase(FB_Request_Callback<User> valueEventListener) {
-        loadObjectFromFireBase(MY_USERS, firebaseUser.getUid(), new MyValueEventListener<User>(User.class,valueEventListener));
+        loadObjectFromFireBase(MY_USERS, firebaseUser.getUid(), new MyValueEventListener<User>(User.class, valueEventListener));
     }
 
     // Image load\store methods:
     public void savePhotoToStorage(String key, Uri uri, FBImageReady_Callback FBImageReady_Callback) {
-        if(firebaseUser.getUid()!=null) {
+        if (firebaseUser.getUid() != null) {
             StorageReference storageRef = storage.getInstance().getReference();
             StorageReference mountainImagesRef = storageRef.child("image/" + key);
             UploadTask uploadTask = mountainImagesRef.putFile(uri);
-            uploadTask.addOnFailureListener(e -> { }).addOnSuccessListener(taskSnapshot -> {
+            uploadTask.addOnFailureListener(e -> {
+            }).addOnSuccessListener(taskSnapshot -> {
                 Log.d("pttt", "savePhotoToStorageUri: successed ");
                 getImageUri(taskSnapshot, FBImageReady_Callback);
             });
@@ -178,7 +182,7 @@ public class MyFireBaseServices {
                 Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
                 result.addOnSuccessListener(uri -> {
                     String imageUrl = uri.toString();
-                    Log.d("pttt", "imageUrl= "+imageUrl);
+                    Log.d("pttt", "imageUrl= " + imageUrl);
                     if (FBImageReady_Callback != null) {
                         FBImageReady_Callback.imageUriCallback(imageUrl);
                     }
@@ -211,9 +215,48 @@ public class MyFireBaseServices {
 
             @Override
             public void OnFailure(Exception e) {
-                Log.d("pttt", "OnFailure: exception: "+e);
+                Log.d("pttt", "OnFailure: exception: " + e);
             }
         });
+    }
+
+    public HashMap<String, ArrayList<Prediction>> listenPredictions(FB_Request_Callback<HashMap<String, ArrayList<Prediction>>> fb_request_callback) {
+        HashMap<String, ArrayList<Prediction>> dailyPredictions = new HashMap<String, ArrayList<Prediction>>();
+        ArrayList<Prediction> predictions = new ArrayList<Prediction>();
+        DatabaseReference myRef = database.getReference(PREDICTIONS);
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot != null) {
+                    //Log.d("my_firebase_services", "onDataChange: snapshot= "+snapshot);
+                    for (DataSnapshot data : snapshot.getChildren()) { // days
+                        if (data != null) {
+                            String key = data.getKey();
+                            for (DataSnapshot pridictionsSnapshot : data.getChildren()) { // index of predictions
+                                Prediction prediction = new Prediction();
+                                if(pridictionsSnapshot.child("actual").getValue() != null)
+                                    prediction.setActualValue(Double.parseDouble(pridictionsSnapshot.child("actual").getValue().toString()));
+                                prediction.setDependencies(pridictionsSnapshot.child("dependencies"));
+                                prediction.setPoints(Double.parseDouble(pridictionsSnapshot.child("points").getValue().toString()));
+                                prediction.setPrecision(Double.parseDouble(pridictionsSnapshot.child("precision").getValue().toString()));
+                                prediction.setTarget(pridictionsSnapshot.child("target"));
+                                predictions.add(prediction);
+
+                            }
+                            dailyPredictions.put(key, predictions);
+                        }
+                    }
+                }
+                Log.d("my_firebase_services", "onDataChange: snapshot= "+dailyPredictions);
+                fb_request_callback.OnSuccess(dailyPredictions);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                fb_request_callback.OnFailure(error.toException());
+            }
+        });
+        return dailyPredictions;
     }
 
 

@@ -82,10 +82,6 @@ public class StockFragment extends BaseFragment {
         stock.setPredictionStatus();
     }
 
-    private double calcPercentageChange(double change, double value) {
-        return (change/value)*100;
-    }
-
     private void findViews(View view) {
         stockFrag_TV_name = view.findViewById(R.id.stockFrag_TV_name);
         stockFrag_TV_symbol = view.findViewById(R.id.stockFrag_TV_symbol);

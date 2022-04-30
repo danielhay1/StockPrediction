@@ -190,7 +190,6 @@ public class Stock implements Comparable<Stock>{
     }
 
 
-
     public Stock JsonToStock(String jsonStock) {
         Gson gson = new Gson();
         return gson.fromJson(jsonStock,Stock.class);
@@ -200,6 +199,18 @@ public class Stock implements Comparable<Stock>{
         Gson gson = new Gson();
         return gson.toJson(this,Stock.class);
     }
+    // static methods
+    public double calcPercentageChange(double change, double value) {
+        try {
+            Log.d("stock", "value " + (change/value)*100);
+            return (change/value)*100;
+        } catch (ArithmeticException e) {
+            Log.d("stock", "value " + 0);
+            return 0;
+        }
+
+    }
+
 
     @Override
     public boolean equals(@Nullable Object obj) {
