@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.example.stockprediction.objects.BaseFragment;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
@@ -54,6 +55,14 @@ public class StockFragment extends BaseFragment {
     private LineChart stockFrag_BarChart;
     private co.ankurg.expressview.ExpressView stockFrag_EV_likeButton;
 
+    // Additional data
+    private TextView stockFrag_TV_open;
+    private TextView stockFrag_TV_prevClose;
+    private TextView stockFrag_TV_high;
+    private TextView stockFrag_TV_low;
+    private TextView stockFrag_TV_vol;
+    private TextView stockFrag_TV_yRange;
+
 
 
     @Override
@@ -64,6 +73,7 @@ public class StockFragment extends BaseFragment {
             Gson gson = new Gson();
             String jsonStock = getArguments().getString(ARG_PARAM);
             stock = gson.fromJson(jsonStock, Stock.class);
+
 /*            RapidApi.getInstance().getQuotesRequestCacheOnly(new RapidApi.CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
@@ -93,6 +103,11 @@ public class StockFragment extends BaseFragment {
         initViews();
         Log.d("StockFragment", "onCreate: stock = "+stock.getValue());
         setStockData(stock);
+        try {
+            setExtraData();
+        } catch (JSONException e) {
+            Log.e("StockFragment", "JSONException error = " + e);
+        }
         return view;
     }
 
@@ -114,6 +129,12 @@ public class StockFragment extends BaseFragment {
         stockFrag_BarChart = view.findViewById(R.id.stockFrag_BarChart);
         stockFrag_IMG_predictionStatus = view.findViewById(R.id.stockFrag_IMG_predictionStatus);
         stockFrag_EV_likeButton = view.findViewById(R.id.stockFrag_EV_likeButton);
+        stockFrag_TV_open = view.findViewById(R.id.stockFrag_TV_open);
+        stockFrag_TV_prevClose = view.findViewById(R.id.stockFrag_TV_prevClose);
+        stockFrag_TV_high = view.findViewById(R.id.stockFrag_TV_high);
+        stockFrag_TV_low = view.findViewById(R.id.stockFrag_TV_low);
+        stockFrag_TV_vol = view.findViewById(R.id.stockFrag_TV_vol);
+        stockFrag_TV_yRange = view.findViewById(R.id.stockFrag_TV_yRange);
     }
 
     private void initViews() {
@@ -295,6 +316,17 @@ public class StockFragment extends BaseFragment {
         stockFrag_TV_symbol.setText(stock.getSymbol());
         setStockChart(stock);
         markLikedStocks(stock);
+    }
+
+    private void setExtraData() throws JSONException {
+        JSONObject jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON).getJSONObject("stocks").getJSONObject(stock.getSymbol());
+        Log.d("rtrtrt", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
+        stockFrag_TV_open.setText("Open: \t" + jsonStockData.getString("open"));
+        stockFrag_TV_prevClose.setText("Previous close: \t" + jsonStockData.getString("prev_close"));
+        stockFrag_TV_high.setText("High: \t" + jsonStockData.getString("high"));
+        stockFrag_TV_low.setText("Low: \t" + jsonStockData.getString("low"));
+        stockFrag_TV_vol.setText("Vol \t" + jsonStockData.getString("vol"));
+        stockFrag_TV_yRange.setText("Yearly range: \t" + jsonStockData.getString("year_range"));
     }
 
 }

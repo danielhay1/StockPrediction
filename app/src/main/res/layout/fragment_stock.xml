@@ -95,7 +95,7 @@
                     android:id="@+id/stockFrag_BarChart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="70dp"/>
+                    android:layout_marginBottom="70dp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -140,7 +140,7 @@
             android:layout_weight="1"
             android:layout_marginTop="50dp"
             android:gravity="center"
-            android:paddingHorizontal="50dp"
+            android:paddingHorizontal="10dp"
             android:orientation="horizontal">
             <LinearLayout
                 android:layout_width="0dp"
@@ -154,28 +154,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
-                    android:text="Previous close:\t"/>
+                    android:text="Previous close:\t-"/>
                 <TextView
                     android:id="@+id/stockFrag_TV_open"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
                     android:layout_marginTop="15dp"
-                    android:text="Open:\t"/>
+                    android:text="Open:\t-"/>
                 <TextView
                     android:id="@+id/stockFrag_TV_high"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
                     android:layout_marginTop="15dp"
-                    android:text="High:\t"/>
+                    android:text="High:\t-"/>
                 <TextView
                     android:id="@+id/stockFrag_TV_low"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
                     android:layout_marginTop="15dp"
-                    android:text="Low:\t"/>
+                    android:text="Low:\t-"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
@@ -189,14 +189,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
-                    android:text="Vol:\t"/>
+                    android:text="Vol:\t-"/>
                 <TextView
                     android:id="@+id/stockFrag_TV_yRange"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:textColor="@color/light_gray"
-                    android:text="Yearly range:\t"/>
+                    android:text="Yearly range:\t-"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
