@@ -250,6 +250,49 @@ public class RapidApi {
         httpRequestQueue.addToRequestQueue(jsonObjectRequest);
     }
 
+    public void httpGetChartCustomRange(String symbol, String range, CallBack_HttpTasks callBack_httpTasks) {
+        if(range == null) {range = "5d";}
+        String url = this.buildURL(getOperationStringVal(STOCK_OPERATION.GET_CHART),symbol,"1d",range,"US");
+
+        Log.d("rapid_api", "httpGetJson: url= "+url);
+        String finalRange = range;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (com.android.volley.Request.Method.GET, url, null, response -> {
+                    try {
+                        JSONObject myResponse =  MyPreference.StockCacheManager.generateCustomObject(generateCustomJsonQuotes(response,STOCK_OPERATION.GET_CHART),"stocks");
+                        Log.e("rapid_api", "onResponse: myResponse= "+myResponse);
+
+                        callBack_httpTasks.onResponse(myResponse);
+
+                    } catch (JSONException e) {
+                        Log.e("rapid_api", "onResponse: error"+ e);
+                    }
+                }, error -> {
+                    // TODO: Handle error
+                    if(error.networkResponse.statusCode == 429) {
+                        Log.d("rapid_api", "onResponse: VolleyError = 429, retrying request");
+                        new MyAsyncTask().executeDelayBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
+                            httpGetChartCustomRange(symbol, finalRange, callBack_httpTasks);
+                        }, 1000);
+                    } else {
+                        Log.d("rapid_api", "onResponse: VolleyError: "+ error);
+                        callBack_httpTasks.onErrorResponse(error);
+                    }
+                })  {
+            /**
+             * Passing some request headers
+             */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("X-RapidAPI-Host", HOST);
+                headers.put("X-RapidAPI-Key", api_key);
+                return headers;
+            }
+        };
+        httpRequestQueue.addToRequestQueue(jsonObjectRequest);
+    }
+
     private JSONObject generateCustomJsonQuotes(JSONObject apiResponse, STOCK_OPERATION operation) throws JSONException {
         JSONObject stocks = new JSONObject();
         switch (operation) {

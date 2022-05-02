@@ -323,6 +323,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends RecyclerView.Ada
         chart.getAxisLeft().setEnabled(false);
         chart.getXAxis().setEnabled(false);
         chart.setData(lineData);
+        chart.setNoDataTextColor(context.getColor(R.color.black));
         chart.invalidate();
     }
 

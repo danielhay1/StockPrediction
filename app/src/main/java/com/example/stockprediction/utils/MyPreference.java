@@ -226,7 +226,7 @@ public class MyPreference {
             return cacheTimeStamp < refreshTimeStamp;
         }
 
-        private static JSONObject generateCustomObject(JSONObject json, String jsonKey) {
+        public static JSONObject generateCustomObject(JSONObject json, String jsonKey) {
             JSONObject customJson = new JSONObject();
             try {
                 customJson.put("request_day",MyTimeStamp.getCurrentDay());

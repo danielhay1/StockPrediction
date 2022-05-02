@@ -1,5 +1,6 @@
 package com.example.stockprediction.fragments;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -12,8 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.apis.RapidApi;
+import com.example.stockprediction.apis.RapidApi.CallBack_HttpTasks;
 import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.example.stockprediction.objects.BaseFragment;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
@@ -28,6 +31,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -63,6 +67,8 @@ public class StockFragment extends BaseFragment {
     private TextView stockFrag_TV_vol;
     private TextView stockFrag_TV_yRange;
 
+    private List<MaterialButton> buttonList; // segmentedControl implementation
+
 
 
     @Override
@@ -73,23 +79,6 @@ public class StockFragment extends BaseFragment {
             Gson gson = new Gson();
             String jsonStock = getArguments().getString(ARG_PARAM);
             stock = gson.fromJson(jsonStock, Stock.class);
-
-/*            RapidApi.getInstance().getQuotesRequestCacheOnly(new RapidApi.CallBack_HttpTasks() {
-                @Override
-                public void onResponse(JSONObject json) {
-                    try {
-                        updateDataFromAPI(json);
-                    } catch (JSONException e) {
-                        Log.e("StockFragment", "onCreate: stockUpdateFromAPI error= "+e);
-                    }
-                }
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                }
-            });*/
-
-
         }
     }
 
@@ -108,6 +97,7 @@ public class StockFragment extends BaseFragment {
         } catch (JSONException e) {
             Log.e("StockFragment", "JSONException error = " + e);
         }
+        initSegmentButtons(view);
         return view;
     }
 
@@ -229,6 +219,80 @@ public class StockFragment extends BaseFragment {
         }
     }
 
+    private void initSegmentButtons(View view) {
+
+        buttonList = new ArrayList<>();
+
+
+        MaterialButton weekBtn = (MaterialButton) view.findViewById(R.id.stockFrag_BTN_week);
+        MaterialButton monthBtn = (MaterialButton) view.findViewById(R.id.stockFrag_BTN_month);
+        MaterialButton yearBtn = (MaterialButton) view.findViewById(R.id.stockFrag_BTN_year);
+
+        weekBtn.setOnClickListener(v -> {
+            onSegmentionSelect(v);
+        });
+        monthBtn.setOnClickListener(v-> {onSegmentionSelect(v);});
+        yearBtn.setOnClickListener(v->{onSegmentionSelect(v);});
+
+        buttonList.add(weekBtn);
+        buttonList.add(monthBtn);
+        buttonList.add(yearBtn);
+    }
+
+    private void onSegmentionSelect(View v) {
+        String range = "";
+        switch (v.getId()) {
+            case R.id.stockFrag_BTN_week:
+                buttonList.get(0).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.light_gray)));
+                buttonList.get(0).setTextColor(getResources().getColor(R.color.light_gray));
+                buttonList.get(1).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_800)));
+                buttonList.get(1).setTextColor(getResources().getColor(R.color.purple_800));
+                buttonList.get(2).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_800)));
+                buttonList.get(2).setTextColor(getResources().getColor(R.color.purple_800));
+                range = "5d";
+                break;
+            case R.id.stockFrag_BTN_month:
+                buttonList.get(0).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_800)));
+                buttonList.get(0).setTextColor(getResources().getColor(R.color.purple_800));
+                buttonList.get(1).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.light_gray)));
+                buttonList.get(1).setTextColor(getResources().getColor(R.color.light_gray));
+                buttonList.get(2).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_800)));
+                buttonList.get(2).setTextColor(getResources().getColor(R.color.purple_800));
+                range = "1mo";
+                break;
+            case R.id.stockFrag_BTN_year:
+                buttonList.get(0).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_800)));
+                buttonList.get(0).setTextColor(getResources().getColor(R.color.purple_800));
+                buttonList.get(1).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.purple_800)));
+                buttonList.get(1).setTextColor(getResources().getColor(R.color.purple_800));
+                buttonList.get(2).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.light_gray)));
+                buttonList.get(2).setTextColor(getResources().getColor(R.color.light_gray));
+                range = "1y";
+                break;
+            default:
+                range = "5d";
+                break;
+        }
+        refreshChart(range);
+    }
+
+    private void refreshChart(String range) {
+        RapidApi.getInstance().httpGetChartCustomRange(stock.getSymbol(), range, new CallBack_HttpTasks() {
+            @Override
+            public void onResponse(JSONObject json) {
+                stock.setChartData(json);
+                initChart(stock,stockFrag_BarChart);
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+    }
+
+
+
     private void initChart(Stock stock, com.github.mikephil.charting.charts.LineChart chart) {
         Log.d("tag-test", "setStockChart:, stockSymbol= " + stock.getSymbol());
 
@@ -259,14 +323,24 @@ public class StockFragment extends BaseFragment {
         lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         lineDataSet.setHighlightEnabled(true);
         lineDataSet.setLineWidth(2);
-        lineDataSet.setColor(getContext().getColor(R.color.black));
-        lineDataSet.setCircleColor(getContext().getColor(R.color.black));
-        lineDataSet.setCircleRadius(3);
-        lineDataSet.setCircleHoleRadius(2);
+        lineDataSet.setColor(getContext().getColor(R.color.light_gray));
+
         lineDataSet.setDrawHighlightIndicators(true);
         lineDataSet.setHighLightColor(Color.RED);
-        lineDataSet.setValueTextSize(8);
-        lineDataSet.setValueTextColor(getContext().getColor(R.color.white));
+        if(lineEntries.size()< 7) {
+            lineDataSet.setValueTextSize(8);
+            lineDataSet.setCircleRadius(3);
+            lineDataSet.setCircleHoleRadius(2);
+            lineDataSet.setCircleColor(getContext().getColor(R.color.light_gray));
+            lineDataSet.setCircleHoleColor(getContext().getColor(R.color.purple_900));
+            lineDataSet.setValueTextColor(getContext().getColor(R.color.light_gray));
+        }
+        else {
+            lineDataSet.setValueTextSize(0);
+            lineDataSet.setDrawCircleHole(false);
+            lineDataSet.setDrawCircles(false);
+
+        }
 
         LineData lineData = new LineData(lineDataSet);
 // usage on whole data object
@@ -283,11 +357,14 @@ public class StockFragment extends BaseFragment {
         chart.animateY(1000);
         chart.getXAxis().setGranularityEnabled(true);
         chart.getXAxis().setGranularity(1.0f);
-        chart.getXAxis().setLabelCount(lineDataSet.getEntryCount());
         chart.getAxisRight().setEnabled(false);
         chart.getAxisLeft().setEnabled(true);
         chart.getXAxis().setEnabled(false);
         chart.setData(lineData);
+        chart.setNoDataTextColor(getContext().getColor(R.color.light_gray));
+        chart.getAxisLeft().setTextColor(getContext().getColor(R.color.light_gray));
+        chart.getLegend().setTextColor(getContext().getColor(R.color.light_gray));
+
         chart.invalidate();
     }
 

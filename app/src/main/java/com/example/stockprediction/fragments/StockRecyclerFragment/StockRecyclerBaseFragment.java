@@ -220,8 +220,10 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
 
 
     public void goToStockFragment(Stock stock) {
-        String jsonStock = stock.stockToJson();
-        ((MainActivity)getActivity()).openStockFragment(StockFragment.ARG_PARAM,jsonStock);
+        if(stock != null) {
+            String jsonStock = stock.stockToJson();
+            ((MainActivity)getActivity()).openStockFragment(StockFragment.ARG_PARAM,jsonStock);
+        }
     }
 }
 

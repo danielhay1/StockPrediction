@@ -9,8 +9,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -80,6 +85,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initListeners();
         initFragment(false,savedInstanceState);
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void handleNoNetwork() {
+        if(!isNetworkAvailable()) {
+            progress.setVisibility(View.INVISIBLE);
+            MySignal.getInstance().alertDialog(this,"No network","make sure internet connection is established.","Open network settings","Cancel", (dialog, which)->{
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            });
+            progress.setVisibility(View.VISIBLE);
+        }
     }
 
     private void loadNewUser() {
@@ -166,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.e("pttt", "loadFailed: setUserDetails-exception: "+e);
                     }
                 });
+        handleNoNetwork();
     }
 
     private void setNavBar(User user, boolean isImgUpdated) {
