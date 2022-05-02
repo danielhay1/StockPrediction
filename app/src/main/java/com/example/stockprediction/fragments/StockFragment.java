@@ -348,12 +348,7 @@ public class StockFragment extends BaseFragment {
 
 // usage on individual dataset object
         lineDataSet.setValueFormatter(new MyValueFormatter());
-        //chart.setDrawMarkers(true);
-        //chart.setMarker(markerView(context));
-        //chart.getAxisLeft().addLimitLine(lowerLimitLine(2,"Lower Limit",2,12,getColor("defaultOrange"),getColor("defaultOrange")));
-        //chart.getAxisLeft().addLimitLine(upperLimitLine(5,"Upper Limit",2,12,getColor("defaultGreen"),getColor("defaultGreen")));
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-
         chart.animateY(1000);
         chart.getXAxis().setGranularityEnabled(true);
         chart.getXAxis().setGranularity(1.0f);
@@ -396,14 +391,16 @@ public class StockFragment extends BaseFragment {
     }
 
     private void setExtraData() throws JSONException {
+        final DecimalFormat df = new DecimalFormat("0.000");
         JSONObject jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON).getJSONObject("stocks").getJSONObject(stock.getSymbol());
         Log.d("rtrtrt", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
-        stockFrag_TV_open.setText("Open: \t" + jsonStockData.getString("open"));
-        stockFrag_TV_prevClose.setText("Previous close: \t" + jsonStockData.getString("prev_close"));
-        stockFrag_TV_high.setText("High: \t" + jsonStockData.getString("high"));
-        stockFrag_TV_low.setText("Low: \t" + jsonStockData.getString("low"));
-        stockFrag_TV_vol.setText("Vol \t" + jsonStockData.getString("vol"));
-        stockFrag_TV_yRange.setText("Yearly range: \t" + jsonStockData.getString("year_range"));
+        stockFrag_TV_open.setText("Open: \t" + df.format(Double.parseDouble(jsonStockData.getString("open"))));
+        stockFrag_TV_prevClose.setText("Previous close: \t" + df.format(Double.parseDouble(jsonStockData.getString("prev_close"))));
+        stockFrag_TV_high.setText("High: \t" + df.format(Double.parseDouble(jsonStockData.getString("high"))));
+        stockFrag_TV_low.setText("Low: \t" + df.format(Double.parseDouble(jsonStockData.getString("low"))));
+        stockFrag_TV_vol.setText("Vol \t" + df.format(Double.parseDouble(jsonStockData.getString("vol"))));
+        String[] range = jsonStockData.getString("year_range").trim().split("-");
+        stockFrag_TV_yRange.setText("Yearly range: \t" + df.format(Double.parseDouble(range[0])) + " - " + df.format(Double.parseDouble(range[1])));
     }
 
 }

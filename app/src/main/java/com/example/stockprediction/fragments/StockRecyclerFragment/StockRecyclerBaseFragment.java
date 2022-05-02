@@ -4,6 +4,8 @@ package com.example.stockprediction.fragments.StockRecyclerFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.TextView;
 
@@ -51,6 +53,12 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -59,7 +67,6 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        observeModelView();
     }
 
     private void updateFilteredData(String text) {
@@ -147,6 +154,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                 }
             });
             initDailyPredictions();
+            observeModelView();
         });
     }
 

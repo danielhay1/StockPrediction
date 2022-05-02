@@ -182,7 +182,7 @@ public class MyPreference {
     }
     // Preference fragment - Preferences:
     public SettingsInspector getSettingsInspector(Context context) {
-        return new SettingsInspector(context);
+        return SettingsInspector.getInstance(context);
     }
 
     // RapidAPI cache store & load:
@@ -240,7 +240,7 @@ public class MyPreference {
         }
     }
 
-    private static class SettingsInspector {
+    public static class SettingsInspector {
         private Context context;
         SharedPreferences sharedPreferences;
         private final int PRIVATE_MODE = 0;
@@ -248,12 +248,29 @@ public class MyPreference {
         // Preference Keys:
         private String notification_mode;
         private String theme_mode;
+        private static SettingsInspector instance;
+        private static final Object lock = new Object();
 
-        public SettingsInspector(Context context) {
+        public static SettingsInspector getInstance(Context appContext) {
+            //Singleton design pattern
+            Init(appContext);
+            return instance;
+        }
+
+        private SettingsInspector(Context context) {
             this.context = context;
             notification_mode = context.getString( R.string.settings_notification_key);
             theme_mode = context.getString(R.string.settings_theme_key);
             sharedPreferences  = context.getSharedPreferences(SETTINGS_SHARED_PREFERENCES, PRIVATE_MODE);
+        }
+
+        public static void Init(Context appContext) {
+            if (instance == null) {
+                synchronized (lock) {
+                    Log.d("pttt", "Init: SettingsInspector");
+                    instance = new SettingsInspector(appContext);
+                }
+            }
         }
 
         //Function returns if the app was run for the first time or not

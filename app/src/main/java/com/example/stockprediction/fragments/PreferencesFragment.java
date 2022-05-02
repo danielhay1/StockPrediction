@@ -44,6 +44,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         // Define the settings file to use by this settings fragment
         myPerf = getPreferenceManager();
         myPerf.setSharedPreferencesName(SETTINGS_SHARED_PREFERENCES);
+        Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+myPerf.getSharedPreferences().getString("settings_notification","x"));
+        Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+MyPreference.getInstance(getContext()).getSettingsInspector(getContext()).getTheme_mode());
+
+
     }
 
     @Override

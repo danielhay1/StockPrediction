@@ -197,6 +197,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
+                    android:textSize="12sp"
                     android:text="Previous close:\t-"/>
 
                 <TextView
@@ -204,6 +205,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
+                    android:textSize="12sp"
                     android:layout_marginTop="15dp"
                     android:text="High:\t-"/>
                 <TextView
@@ -211,6 +213,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
+                    android:textSize="12sp"
                     android:layout_marginTop="15dp"
                     android:text="Vol:\t-"/>
 
@@ -221,12 +224,14 @@
                 android:layout_weight="1"
                 android:layout_marginLeft="2dp"
                 android:gravity="center|left"
+                android:textSize="12sp"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/stockFrag_TV_open"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
+                    android:textSize="12sp"
                     android:text="Open:\t-"/>
 
                 <TextView
@@ -235,6 +240,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/light_gray"
                     android:layout_marginTop="15dp"
+                    android:textSize="12sp"
                     android:text="Low:\t-"/>
 
                 <TextView
@@ -243,6 +249,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:textColor="@color/light_gray"
+                    android:textSize="12sp"
                     android:text="Yearly range:\t-"/>
 
 
