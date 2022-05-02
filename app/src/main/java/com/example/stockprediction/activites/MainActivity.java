@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         state = savedInstanceState;
         setContentView(R.layout.activity_main);
-        
+        // In case of new user
+        loadNewUser();
         findViews();
         progress.setVisibility(View.VISIBLE);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -79,6 +80,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initListeners();
         initFragment(false,savedInstanceState);
 
+    }
+
+    private void loadNewUser() {
+        Gson gson = new Gson();
+        if (getIntent().hasExtra(USER)) {
+            String jsonUser = getIntent().getStringExtra(USER);
+            user = gson.fromJson(jsonUser,User.class);
+        }
     }
 
     private void loadFragment() {

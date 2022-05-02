@@ -60,7 +60,6 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
                 if(stocks.add(stock)) {
                         updateUser(getUser().setFavStocks(stocks));
                         Log.e("pttt", "onStockLike: user="+getUser());
-                    MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
                 }
             }
 
@@ -69,7 +68,6 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
                 ArrayList<Stock> stocks = getUser().getFavStocks();
                 if(stocks.remove(stock)) {
                     updateUser(getUser().setFavStocks(stocks));
-                    MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
                 }
             }
         });

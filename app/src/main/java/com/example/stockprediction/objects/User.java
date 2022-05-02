@@ -78,11 +78,4 @@ public class User {
         return this.favStocks;
     }
 
-
-    private void login() {
-        // After user is logged in:
-
-        // Load user details.
-        // Load user favorite stocks.
-    }
 }

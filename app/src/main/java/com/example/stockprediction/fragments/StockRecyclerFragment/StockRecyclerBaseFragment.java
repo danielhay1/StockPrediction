@@ -170,18 +170,20 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                 // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
                 String day = MyTimeStamp.getCurrentDay();
                 ArrayList<Prediction> predictions = result.get(day); // all predictions for today
-                for (Prediction prediction: predictions) {
-                    int index = adapter.getItemIndex(prediction.getTargetSymbol());
-                    data.get(index).setPredictionValue(prediction.getPoints());
-                }
-                //Collections.sort(data);
-                Log.d("data_data", "OnSuccess: data = "+data);
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.notifyAdapterDataSetChanged(data);
+                if(predictions != null) {
+                    for (Prediction prediction: predictions) {
+                        int index = adapter.getItemIndex(prediction.getTargetSymbol());
+                        data.get(index).setPredictionValue(prediction.getPoints());
                     }
-                });
+                    Collections.sort(data);
+                    Log.d("data_data", "OnSuccess: data = "+data);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyAdapterDataSetChanged(data);
+                        }
+                    });
+                }
             }
             @Override
             public void OnFailure(Exception e) {

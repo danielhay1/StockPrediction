@@ -61,7 +61,6 @@ public class FavoritiesFragment extends StockRecyclerBaseFragment<Stock> {
                     // Update Adapter
                     FavoritiesFragment.super.adapter.removeAt(position);
                     // Update user favStocks Set on firebase
-                    MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
                     if(stocks.isEmpty()) {
                         favorities_TV_noStocks.setVisibility(View.VISIBLE);
                         favorities_IMG_noStocks.setVisibility(View.VISIBLE);

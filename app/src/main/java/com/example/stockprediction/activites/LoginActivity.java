@@ -22,6 +22,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.gson.Gson;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -217,9 +218,14 @@ public class LoginActivity extends AppCompatActivity {
                                     .setUid(myFireBaseServices.getFirebaseUser().getUid())
                                     .setEmail(email)
                                     .setName(getNameInput());
-                            Log.d("pttt", "onComplete: user ="+user);
+                            Log.d("LoginActivity", "onComplete: user ="+user);
                             myFireBaseServices.saveUserToFireBase(user);
+                            Bundle bundle = new Bundle();
+                            Gson gson = new Gson();
+                            String jsonUser = gson.toJson(user,User.class);
+                            bundle.putString(MainActivity.USER, jsonUser);
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtras(bundle);
                             startActivity(intent);
                             finish();
 

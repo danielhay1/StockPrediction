@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import com.example.stockprediction.activites.MainActivity;
+import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.google.gson.Gson;
 
 public class BaseFragment extends Fragment {
@@ -39,6 +40,7 @@ public class BaseFragment extends Fragment {
 
     public void updateUser(User user) {
         setUser(user);
+        MyFireBaseServices.getInstance().saveUserToFireBase(user);
         onUserUpdate.onUserUpdate(user);
     }
 }

@@ -58,9 +58,8 @@ public class ProfileFragment extends BaseFragment {
                         ImageTools.glideSetImageByStrUrl(getActivity(),result,imageview_account_profile);
                         MyFireBaseServices.getInstance().savePhotoToStorage("profile-pic_"+getUser().getUid(), result, imageUri -> {
                             if(imageUri!=null) {
-                                MyFireBaseServices.getInstance().updateUserPhotoInFireStore(imageUri,getUser());
                                 // TODO: invoke mainActivity to update image on toolbar
-                                updateUser(getUser());
+                                updateUser(getUser().setImageUrl(imageUri));
                             }
                         });
                     }

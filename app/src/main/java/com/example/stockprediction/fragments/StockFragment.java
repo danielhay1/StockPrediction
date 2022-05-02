@@ -125,7 +125,6 @@ public class StockFragment extends BaseFragment {
                 if(stocks.add(stock)) {
                     updateUser(getUser().setFavStocks(stocks));
                     Log.e("pttt", "onStockLike: user="+getUser());
-                    MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
                 }
             }
 
@@ -134,7 +133,6 @@ public class StockFragment extends BaseFragment {
                 ArrayList<Stock> stocks = getUser().getFavStocks();
                 if(stocks.remove(stock)) {
                     updateUser(getUser().setFavStocks(stocks));
-                    MyFireBaseServices.getInstance().saveUserToFireBase(getUser());
                 }
             }
         });

@@ -197,13 +197,6 @@ public class MyFireBaseServices {
         return user;
     }
 
-    public User updateUserPhotoInFireStore(Uri uri, User user) {
-        String stringUri = uri.toString();
-        user.setImageUrl(stringUri);
-        saveUserToFireBase(user);
-        return user;
-    }
-
     public void getUserPhotoFromFireStore(FBImageReady_Callback FBImageReady_Callback) {
         loadUserFromFireBase(new FB_Request_Callback<User>() {
             @Override
