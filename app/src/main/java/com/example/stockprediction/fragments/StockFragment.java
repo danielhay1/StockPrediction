@@ -69,6 +69,7 @@ public class StockFragment extends BaseFragment {
 
     private List<MaterialButton> buttonList; // segmentedControl implementation
 
+    private List<Float> originalStockChart;
 
 
     @Override
@@ -79,6 +80,7 @@ public class StockFragment extends BaseFragment {
             Gson gson = new Gson();
             String jsonStock = getArguments().getString(ARG_PARAM);
             stock = gson.fromJson(jsonStock, Stock.class);
+            originalStockChart = stock.getChartData();
         }
     }
 
@@ -132,6 +134,7 @@ public class StockFragment extends BaseFragment {
             @Override
             public void onChecked(@org.jetbrains.annotations.Nullable ExpressView expressView) {
                 ArrayList<Stock> stocks = getUser().getFavStocks();
+                stock = stock.setChartData(originalStockChart);
                 Log.d("pttt", "onStockLike: stocks = "+stocks);
                 if(stocks.add(stock)) {
                     updateUser(getUser().setFavStocks(stocks));
@@ -280,7 +283,8 @@ public class StockFragment extends BaseFragment {
         RapidApi.getInstance().httpGetChartCustomRange(stock.getSymbol(), range, new CallBack_HttpTasks() {
             @Override
             public void onResponse(JSONObject json) {
-                stock.setChartData(json);
+                Stock displayStock = stock;
+                displayStock.setChartData(json);
                 initChart(stock,stockFrag_BarChart);
             }
 

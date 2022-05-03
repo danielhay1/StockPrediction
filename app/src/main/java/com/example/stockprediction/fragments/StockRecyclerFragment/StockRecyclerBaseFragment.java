@@ -105,7 +105,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     public void initStockRecyclerView(RecyclerView recyclerView,initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             data = initRecyclerData_callback.initRecyclerData();
-            Collections.sort(this.data); // TODO: check it
+            Collections.sort(this.data);
             Log.e("pttt", "initStockRecyclerView: data="+data);
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
