@@ -54,6 +54,7 @@ public class StockFragment extends BaseFragment {
     private TextView stockFrag_TV_value;
     private TextView stockFrag_TV_StockStatusDetails;
     private TextView stockFrag_TV_date;
+    private TextView stockFrag_TV_predictionValue;
     private ImageView stockFrag_IMG_stockImg;
     private ImageView stockFrag_IMG_predictionStatus;
     private LineChart stockFrag_BarChart;
@@ -127,6 +128,7 @@ public class StockFragment extends BaseFragment {
         stockFrag_TV_low = view.findViewById(R.id.stockFrag_TV_low);
         stockFrag_TV_vol = view.findViewById(R.id.stockFrag_TV_vol);
         stockFrag_TV_yRange = view.findViewById(R.id.stockFrag_TV_yRange);
+        stockFrag_TV_predictionValue = view.findViewById(R.id.stockFrag_TV_predictionValue);
     }
 
     private void initViews() {
@@ -206,6 +208,9 @@ public class StockFragment extends BaseFragment {
         }
     }
     private String getStockChangeDetails(double stockChangeAmount, double stockChangePercent,TextView textView){
+        if(stockChangeAmount == 0) {
+            return "None.";
+        }
         String sign = (stockChangeAmount> 0) ? "+" : "";
         return sign+String.format("%.2f", stockChangeAmount) + "(" + String.format("%.2f", stockChangePercent)+ "%)";
     }
@@ -390,6 +395,7 @@ public class StockFragment extends BaseFragment {
         setStockStatusImg(stockFrag_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
         stockFrag_TV_name.setText(stock.getName());
         stockFrag_TV_symbol.setText(stock.getSymbol());
+        stockFrag_TV_predictionValue.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), stockFrag_TV_predictionValue));
         setStockChart(stock);
         markLikedStocks(stock);
     }

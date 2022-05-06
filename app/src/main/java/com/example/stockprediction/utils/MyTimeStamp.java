@@ -13,4 +13,10 @@ public class MyTimeStamp {
         // full name form of the day
         return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
     }
+    public static String timeStampToDay(long time) {
+        Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+        calendar.setTimeInMillis(time);
+        Date date = calendar.getTime();
+        return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
+    }
 }

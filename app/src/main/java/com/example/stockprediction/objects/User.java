@@ -78,4 +78,14 @@ public class User {
         return this.favStocks;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid='" + uid + '\'' +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", favStocks=" + favStocks +
+                '}';
+    }
 }

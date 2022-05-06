@@ -150,23 +150,36 @@
                     <ImageView
                         android:id="@+id/stockFrag_IMG_predictionStatus"
                         android:layout_width="30dp"
+
                         android:layout_height="match_parent"
                         android:src="@drawable/prediction_status_unchanged" />
 
                     <TextView
+                        android:id="@+id/stockFrag_TV_prediction"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center|bottom"
                         android:layout_marginBottom="10dp"
-                        android:text=" Predicted."
+                        android:text=" Prediction: "
                         android:layout_toEndOf="@+id/stockFrag_IMG_predictionStatus"
                         android:textColor="@color/light_gray"
                         android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/stockFrag_TV_predictionValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|bottom"
+                        android:layout_marginBottom="10dp"
+                        android:layout_toEndOf="@+id/stockFrag_TV_prediction"
+                        android:textColor="@color/light_gray"
+                        android:text="None."
+                        android:textSize="14sp" />
+
                     <co.ankurg.expressview.ExpressView
                         android:id="@+id/stockFrag_EV_likeButton"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_margin="2.5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:padding="10dp"
                         android:gravity="right|bottom"
                         android:layout_alignParentRight="true"
                         app:checkedIconTint="@color/dark_red"

@@ -215,7 +215,6 @@ public class MyFireBaseServices {
 
     public HashMap<String, ArrayList<Prediction>> listenPredictions(FB_Request_Callback<HashMap<String, ArrayList<Prediction>>> fb_request_callback) {
         HashMap<String, ArrayList<Prediction>> dailyPredictions = new HashMap<String, ArrayList<Prediction>>();
-        ArrayList<Prediction> predictions = new ArrayList<Prediction>();
         DatabaseReference myRef = database.getReference(PREDICTIONS);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -225,6 +224,7 @@ public class MyFireBaseServices {
                     for (DataSnapshot data : snapshot.getChildren()) { // days
                         if (data != null) {
                             String key = data.getKey();
+                            ArrayList<Prediction> predictions = new ArrayList<Prediction>();
                             for (DataSnapshot pridictionsSnapshot : data.getChildren()) { // index of predictions
                                 Prediction prediction = new Prediction();
                                 if(pridictionsSnapshot.child("actual").getValue() != null)

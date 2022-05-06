@@ -1,13 +1,11 @@
 
 package com.example.stockprediction.fragments.StockRecyclerFragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,27 +15,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.activites.MainActivity;
-import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.example.stockprediction.fragments.StockFragment;
 import com.example.stockprediction.objects.BaseFragment;
+import com.example.stockprediction.objects.BaseStockRecyclerViewAdapter;
 import com.example.stockprediction.objects.Prediction;
 import com.example.stockprediction.objects.StockRecyclerViewAdapter;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.MyAsyncTask;
 import com.example.stockprediction.utils.MyTimeStamp;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.stockprediction.apis.RapidApi.*;
 
@@ -45,16 +40,19 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     protected StockRecyclerViewAdapter<T> adapter;
     protected ArrayList<T> data;
     private SearchViewModel searchViewModel;
-
+    private PredictionReady_callback predictionReady_callback;
 
 
     protected interface initStockRecyclerData_Callback<T extends Stock> {
         ArrayList<T> initRecyclerData();
     }
 
+    protected interface PredictionReady_callback<T extends Stock> {
+        void onPredictionUpdate(List<Stock> stocks);
+    }
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -62,7 +60,6 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -90,11 +87,14 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         adapter.notifyDataSetChanged();
     }
 
+
     private StockRecyclerViewAdapter initAdapter(RecyclerView recyclerView, ArrayList<T> stocksData, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback) {
-        Log.e("pttt", "initAdapter: favStocks = "+getUser().getFavStocks());
+        Log.e("stock_recycler_base_fragment", "initAdapter: favStocks = "+getUser().getFavStocks());
+        Log.e("stock_recycler_base_fragment", "initAdapter: data = "+stocksData);
+
         adapter = new StockRecyclerViewAdapter(getContext(), stocksData, getUser().getFavStocks(), onStockLike_callback);
         adapter.setClickListener((view, position) -> {
-            Log.d("pttt", "onItemClick: Selected item: "+position);
+            Log.d("stock_recycler_base_fragment", "onItemClick: Selected item: "+position + ",stocks="+stocksData);
             Stock stock = stocksData.get(position);
             goToStockFragment(stock);
         });
@@ -102,11 +102,23 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         return adapter;
     }
 
+    /*private StockRecyclerViewAdapter initBaseAdapter(RecyclerView recyclerView, ArrayList<T> stocksData) {
+        Log.e("stock_recycler_base_fragment", "initAdapter: favStocks = "+getUser().getFavStocks());
+        adapter = (StockRecyclerViewAdapter<T>) new BaseStockRecyclerViewAdapter(getContext(), stocksData);
+        adapter.setClickListener((view, position) -> {
+            Log.d("stock_recycler_base_fragment", "onItemClick: Selected item: "+position + ",stocks="+data);
+            Stock stock = stocksData.get(position);
+            goToStockFragment(stock);
+        });
+        recyclerView.setAdapter(adapter);
+        return adapter;
+    }*/
+
     public void initStockRecyclerView(RecyclerView recyclerView,initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             data = initRecyclerData_callback.initRecyclerData();
             Collections.sort(this.data);
-            Log.e("pttt", "initStockRecyclerView: data="+data);
+            Log.e("stock_recycler_base_fragment", "initStockRecyclerView: data="+data);
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
             adapter = initAdapter(recyclerView, data, onStockLike_callback);
@@ -141,7 +153,6 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                         new MyAsyncTask().executeBgTask(()->{},()->{ // run on ui thread
                             adapter.notifyItemChanged(index);
                         });
-
                         Log.d("stock_recycler_base_fragment", "StockJson found: " + symbol + ",stock to update: "+stock.getSymbol());
                     } catch (JSONException e) {
                         Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
@@ -158,6 +169,11 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         });
     }
 
+    public void initStockRecyclerView(RecyclerView recyclerView,initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback, PredictionReady_callback predictionReady_callback)  {
+        initStockRecyclerView(recyclerView,initRecyclerData_callback,onStockLike_callback);
+        this.predictionReady_callback = predictionReady_callback;
+    }
+
     public void initStockRecyclerViewFromCache(RecyclerView recyclerView, initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             data = initRecyclerData_callback.initRecyclerData();
@@ -165,39 +181,63 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
             adapter = initAdapter(recyclerView, data, onStockLike_callback);
-            // Get stock from FireBaser
-            // Recycler will init data from cache therefor there is no API calls.
-            //initDailyPredictions();
         });
+        observeModelView();
     }
 
     private void initDailyPredictions() {
+        for (Stock stock: getUser().getFavStocks()) { //TODO: DEBUG FAVSTOCK - UPDATED VALUE.
+            stock.setPredictionValue(0);
+        }
+        Log.d("initDailyPredictions", "initDailyPredictions:  user= "+getUser().getImageUrl());
+        updateUser(getUser());
+        //added above
         MyFireBaseServices.getInstance().listenPredictions(new MyFireBaseServices.FB_Request_Callback<HashMap<String, ArrayList<Prediction>>>() {
             @Override
             public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
                 // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
                 String day = MyTimeStamp.getCurrentDay();
+                //String day = "Monday";
+                //String day = "Monday";
                 ArrayList<Prediction> predictions = result.get(day); // all predictions for today
                 if(predictions != null) {
+                    List<T> predictionStocks = new ArrayList<T>();
                     for (Prediction prediction: predictions) {
                         int index = adapter.getItemIndex(prediction.getTargetSymbol());
-                        data.get(index).setPredictionValue(prediction.getPoints());
+                        T stock = data.get(index);
+                        stock.setPredictionValue(prediction.getPoints());
+                        predictionStocks.add(stock);
+                        updateFavStocksPrediction(stock); // added
                     }
-                    Collections.sort(data);
-                    Log.d("data_data", "OnSuccess: data = "+data);
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyAdapterDataSetChanged(data);
-                        }
-                    });
+                    updateUser(getUser());
+                    if(!predictions.isEmpty() && predictionReady_callback!=null)
+                        predictionReady_callback.onPredictionUpdate(predictionStocks);
+                    Log.d("data_data", "OnSuccess: data = "+predictionStocks);
+                    //Collections.sort(data);
+//                    Log.d("data_data", "OnSuccess: data = "+data);
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            adapter.notifyAdapterDataSetChanged(data);
+//                        }
+//                    });
+                    adapter.sortData();
                 }
             }
             @Override
             public void OnFailure(Exception e) {
-                Log.e("stock_recycler_base_fragment", "initDailyPredictions: error= "+e);
+                Log.e("data_data", "initDailyPredictions: error= "+e);
             }
         });
+    }
+
+    private void updateFavStocksPrediction(T predictionStocks) {
+        for (int i = 0; i < getUser().getFavStocks().size() ; i++) {
+            if(getUser().getFavStocks().get(i).getSymbol().equalsIgnoreCase(predictionStocks.getSymbol())) {
+                getUser().getFavStocks().get(i).setPredictionValue(predictionStocks.getPredictionValue());
+                break;
+            }
+        }
     }
 
     private void parseQuotesResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {
@@ -225,7 +265,6 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             }
         });
     }
-
 
     public void goToStockFragment(Stock stock) {
         if(stock != null) {

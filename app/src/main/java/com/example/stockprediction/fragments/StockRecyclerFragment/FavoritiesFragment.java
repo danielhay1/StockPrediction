@@ -52,20 +52,21 @@ public class FavoritiesFragment extends StockRecyclerBaseFragment<Stock> {
 
                 @Override
                 public void onStockDislike(Stock stock, int position) {
-                    Log.d("FavStock", "onStockDislike: favoriteStocks="+ FavoritiesFragment.super.data+"index="+position);
+                    Log.d("FavStock", "onStockDislike: favoriteStocks="+ FavoritiesFragment.super.data+",index="+position+",stock="+stock.getName());
                     // Update user stock list
                     ArrayList<Stock> stocks = getUser().getFavStocks();
-                    stocks.remove(position);
-                    updateUser(getUser().setFavStocks(stocks));
+                    //ArrayList<Stock> stocks =new ArrayList<Stock>(adapter.getLikedStocks());
+
+                    //stocks.remove(position);
                     Log.e("FavStock", "sonStockDislike: onStockDislike: "+stocks);
                     // Update Adapter
                     FavoritiesFragment.super.adapter.removeAt(position);
                     // Update user favStocks Set on firebase
+                    updateUser(getUser().setFavStocks(stocks));
                     if(stocks.isEmpty()) {
                         favorities_TV_noStocks.setVisibility(View.VISIBLE);
                         favorities_IMG_noStocks.setVisibility(View.VISIBLE);
                     }
-
                 }
             });
         } else {

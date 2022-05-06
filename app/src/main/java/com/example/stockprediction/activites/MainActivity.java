@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,7 +22,6 @@ import android.view.View;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
@@ -37,6 +35,7 @@ import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
 import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
+import com.example.stockprediction.utils.MyTimeStamp;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -68,15 +67,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SearchViewCallBack searchViewCallBack;
     private SearchViewModel searchViewModel;
     private Bundle state;
+    private boolean isUpdatedImage = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         state = savedInstanceState;
         setContentView(R.layout.activity_main);
         // In case of new user
-        loadNewUser();
         findViews();
         progress.setVisibility(View.VISIBLE);
+        progress.show();
+        loadNewUser();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
@@ -97,10 +98,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void handleNoNetwork() {
         if(!isNetworkAvailable()) {
             progress.setVisibility(View.INVISIBLE);
+            progress.hide();
             MySignal.getInstance().alertDialog(this,"No network","make sure internet connection is established.","Open network settings","Cancel", (dialog, which)->{
                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             });
             progress.setVisibility(View.VISIBLE);
+            progress.show();
         }
     }
 
@@ -128,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigateById(fragmentToLoad);
         navigationView.setCheckedItem(fragmentToLoad);
         progress.setVisibility(View.GONE);
+        progress.hide();
     }
 
     @Override
@@ -326,11 +330,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.nav_share:
-                MySignal.getInstance().toast("Share");
+                MySignal.getInstance().toast("share");
                 break;
 
-            case R.id.nav_send:
-                MySignal.getInstance().toast("Send");
+            case R.id.version:
+                MySignal.getInstance().toast("Version: "+ getResources().getString(R.string.version_number));
                 break;
         }
     }
@@ -368,20 +372,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 MySignal.getInstance().toast("Share");
                 break;
 
-            case R.id.nav_send:
-                MySignal.getInstance().toast("Send");
+            case R.id.version:
+                MySignal.getInstance().toast("Version: "+ getResources().getString(R.string.version_number));
                 break;
         }
     }
 
     @Override
     public void onUserUpdate(User updatedUser) {
-        boolean isUpdatedImage = true;
-        if(!updatedUser.getImageUrl().equals(user.getImageUrl())) {
-            isUpdatedImage = false;
-            user.setImageUrl(updatedUser.getImageUrl());
+        if(user == null) {
+            MyFireBaseServices.getInstance().loadUserFromFireBase(new MyFireBaseServices.FB_Request_Callback<User>() {
+                @Override
+                public void OnSuccess(User result) {
+                    if(!updatedUser.getImageUrl().equals(user.getImageUrl())) {
+                        isUpdatedImage = false;
+                        user.setImageUrl(updatedUser.getImageUrl());
+                    }
+                    setNavBar(updatedUser,isUpdatedImage);
+                    if(progress.getVisibility() == View.VISIBLE) {
+                        progress.hide();
+                        progress.setVisibility(View.INVISIBLE);
+                    }
+                }
+                @Override
+                public void OnFailure(Exception e) { }
+            });
+        } else {
+            if(!updatedUser.getImageUrl().equals(user.getImageUrl())) {
+                isUpdatedImage = false;
+                user.setImageUrl(updatedUser.getImageUrl());
+            }
+            setNavBar(updatedUser,isUpdatedImage);
         }
-        setNavBar(updatedUser,isUpdatedImage);
+
     }
 
     public void setSearchViewCallBack(
@@ -393,6 +416,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
+
         // Open fragment -> if not specified load main fragment.
         //loadFragment(); //-> TODO: FIX CRASH
         // navigateById(R.id.nav_favorities);
@@ -429,6 +453,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
-
     // CONNECT USER:
+
+
 }
