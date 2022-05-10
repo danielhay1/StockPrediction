@@ -280,10 +280,10 @@ public class MyPreference {
         private boolean checkPref(String preferenceName) {
             return sharedPreferences.getBoolean(preferenceName, false);
         }
-        public String getTheme_mode() {
+        public String getNotification_mode() {
             return sharedPreferences.getString(notification_mode,context.getString(R.string.settings_notification_default));
         }
-        public String getNotification_mode() {
+        public String getTheme_mode() {
             return sharedPreferences.getString(theme_mode,context.getString(R.string.settings_theme_default));
         }
     }

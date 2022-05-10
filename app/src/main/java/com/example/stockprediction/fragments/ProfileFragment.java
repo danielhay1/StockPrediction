@@ -26,7 +26,7 @@ import com.example.stockprediction.objects.BaseFragment;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
-import com.example.stockprediction.apis.firebase.MyFireBaseServices;
+import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

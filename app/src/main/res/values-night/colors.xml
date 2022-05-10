@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="theme_bgcolor">#1C1C1C</color>
+    <color name="icon_color">#D6D6D6</color>
+    <color name="text">#D6D6D6</color>
+    <color name="purpel_text">#FFBB86FC</color>
+</resources>

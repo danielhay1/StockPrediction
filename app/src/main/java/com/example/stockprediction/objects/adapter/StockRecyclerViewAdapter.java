@@ -1,4 +1,4 @@
-package com.example.stockprediction.objects;
+package com.example.stockprediction.objects.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -201,7 +201,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends BaseStockRecycle
         lineDataSet.setDrawHighlightIndicators(true);
         lineDataSet.setHighLightColor(Color.RED);
         lineDataSet.setValueTextSize(8);
-        lineDataSet.setValueTextColor(context.getColor(R.color.black));
+        lineDataSet.setValueTextColor(context.getColor(R.color.text));
+        lineDataSet.setCircleHoleColor(context.getColor(R.color.theme_bgcolor));
 
         LineData lineData = new LineData(lineDataSet);
         lineData.setValueFormatter(new MyValueFormatter());
@@ -214,7 +215,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends BaseStockRecycle
         chart.getAxisLeft().setEnabled(false);
         chart.getXAxis().setEnabled(false);
         chart.setData(lineData);
-        chart.setNoDataTextColor(context.getColor(R.color.black));
+        chart.setNoDataTextColor(context.getColor(R.color.text));
+        chart.getLegend().setTextColor(context.getColor(R.color.text));
         chart.invalidate();
     }
 

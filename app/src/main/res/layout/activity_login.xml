@@ -40,9 +40,9 @@
             android:layout_height="wrap_content"
             android:hint="Name"
             android:textColorHint="@color/light_gray"
-            app:boxStrokeColor="@color/white"
+            app:boxStrokeColor="@color/theme_bgcolor"
             app:boxStrokeErrorColor="@color/red"
-            app:hintTextColor="@color/white"
+            app:hintTextColor="@color/theme_bgcolor"
             android:visibility="invisible">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -50,9 +50,9 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/white"
+                android:textColor="@color/theme_bgcolor"
                 android:textColorHint="@color/light_gray"
-                app:boxStrokeColor="@color/white" />
+                app:boxStrokeColor="@color/theme_bgcolor" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -62,18 +62,18 @@
             android:layout_height="wrap_content"
             android:hint="Email"
             android:textColorHint="@color/light_gray"
-            app:boxStrokeColor="@color/white"
+            app:boxStrokeColor="@color/theme_bgcolor"
             app:boxStrokeErrorColor="@color/red"
-            app:hintTextColor="@color/white">
+            app:hintTextColor="@color/theme_bgcolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/white"
+                android:textColor="@color/theme_bgcolor"
                 android:textColorHint="@color/light_gray"
-                app:boxStrokeColor="@color/white" />
+                app:boxStrokeColor="@color/theme_bgcolor" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -83,18 +83,18 @@
             android:layout_height="wrap_content"
             android:hint="Password"
             android:textColorHint="@color/light_gray"
-            app:boxStrokeColor="@color/white"
+            app:boxStrokeColor="@color/theme_bgcolor"
             app:boxStrokeErrorColor="@color/red"
-            app:hintTextColor="@color/white">
+            app:hintTextColor="@color/theme_bgcolor">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:textColor="@color/white"
+                android:textColor="@color/theme_bgcolor"
                 android:textColorHint="@color/light_gray"
-                app:boxStrokeColor="@color/white" />
+                app:boxStrokeColor="@color/theme_bgcolor" />
         </com.google.android.material.textfield.TextInputLayout>
         <TextView
             android:id="@+id/login_TV_notes"
@@ -118,9 +118,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Login"
-            android:textColor="@color/white"
+            android:textColor="@color/theme_bgcolor"
             app:cornerRadius="50dp"
-            app:strokeColor="@color/white" />
+            app:strokeColor="@color/theme_bgcolor" />
 
         <TextView
             android:id="@+id/login_register"
@@ -128,7 +128,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Register"
-            android:textColor="@color/white"/>
+            android:textColor="@color/theme_bgcolor"/>
         <!---> Finger Print Icon <!-->
 
     </LinearLayout>

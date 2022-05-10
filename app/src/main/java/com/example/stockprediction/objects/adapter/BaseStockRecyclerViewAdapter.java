@@ -1,4 +1,4 @@
-package com.example.stockprediction.objects;
+package com.example.stockprediction.objects.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -6,8 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -98,7 +96,7 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
         }   else if (sign == '+') {
             textView.setTextColor(context.getColor(R.color.green_200));
         } else {
-            textView.setTextColor(context.getColor(android.R.color.tab_indicator_text));
+            textView.setTextColor(context.getColor(R.color.text));
         }
 
     }
@@ -193,7 +191,6 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
 // usage on individual dataset object
         lineDataSet.setValueFormatter(new BaseStockRecyclerViewAdapter.MyValueFormatter());
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        chart.animateY(1000);
         chart.getXAxis().setGranularityEnabled(true);
         chart.getXAxis().setGranularity(1.0f);
         chart.getAxisRight().setEnabled(false);

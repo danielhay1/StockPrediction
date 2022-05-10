@@ -1,5 +1,7 @@
 package com.example.stockprediction.utils;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,9 +16,15 @@ public class MyTimeStamp {
         return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
     }
     public static String timeStampToDay(long time) {
-        Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
-        calendar.setTimeInMillis(time);
+        Date date = new Date(time*1000L);
+        return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date);
+    }
+
+    public static String getDaysBack(int numOfDays) { //TODO: test function
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,-1*numOfDays);
         Date date = calendar.getTime();
+        // full name form of the day
         return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
     }
 }

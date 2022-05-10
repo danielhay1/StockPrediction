@@ -33,9 +33,8 @@ import com.example.stockprediction.fragments.StockRecyclerFragment.SearchViewMod
 import com.example.stockprediction.fragments.ProfileFragment;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
-import com.example.stockprediction.apis.firebase.MyFireBaseServices;
+import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
-import com.example.stockprediction.utils.MyTimeStamp;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int displayingFragmentId;
     // User
     private User user;
-
     private SearchViewCallBack searchViewCallBack;
     private SearchViewModel searchViewModel;
     private Bundle state;
@@ -71,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("main_activity", "onCreate:");
         state = savedInstanceState;
         setContentView(R.layout.activity_main);
         // In case of new user
@@ -85,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         initListeners();
         initFragment(false,savedInstanceState);
-
     }
 
     private boolean isNetworkAvailable() {
@@ -121,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (intent.hasExtra(FRAGMENT_TO_LOAD)) {
             fragmentToLoad = getIntent().getExtras().getInt(FRAGMENT_TO_LOAD, NULL_FRAGMENT_TO_LOAD);
             if (fragmentToLoad != NULL_FRAGMENT_TO_LOAD) {
-                Log.e("pttt", "loadFragment: loading fragment: "+fragmentToLoad);
+                Log.e("main_activity", "loadFragment: loading fragment: "+fragmentToLoad);
             }  else {   // Fragment to load not found -> open default fragment - MainFragment
                 fragmentToLoad = R.id.nav_main;
             }
@@ -158,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.e("pttt" ,"onQueryTextSubmit: textChanged");
+                Log.e("main_activity" ,"onQueryTextSubmit: textChanged");
                 searchViewModel.sendData(newText);
                 return false;
             }
@@ -184,12 +182,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         setNavBar(result,isImgUpdated);
                         if(savedInstanceState == null) {
                             loadFragment();
+                        } else {
+                            if(progress.getVisibility() == View.VISIBLE) {
+                                progress.hide();
+                                progress.setVisibility(View.INVISIBLE);
+                            }
                         }
                     }
 
                     @Override
                     public void OnFailure(Exception e) {
-                        Log.e("pttt", "loadFailed: setUserDetails-exception: "+e);
+                        Log.e("main_activity", "loadFailed: setUserDetails-exception: "+e);
                     }
                 });
         handleNoNetwork();
@@ -238,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void OnFailure(Exception e) {
-                Log.e("pttt", "loadFailed: setUserDetails-exception: "+e);
+                Log.e("main_activity", "loadFailed: setUserDetails-exception: "+e);
             }
         });
     }
@@ -299,31 +302,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment;
         switch (itemId) {
             case R.id.nav_main:
-                Log.d("pttt", "Switch to MainFragment");
+                Log.d("main_activity", "Switch to MainFragment");
                 enableSearchView(true);
                 fragment = new MainFragment();
                 replaceFragment(fragment,argKey,arg);
                 break;
             case R.id.nav_favorities:
-                Log.d("pttt", "Switch to FavoritiesFragment");
+                Log.d("main_activity", "Switch to FavoritiesFragment");
                 enableSearchView(true);
                 fragment = new FavoritiesFragment();
                 replaceFragment(fragment,argKey,arg);
                 break;
             case R.id.nav_profile:
-                Log.d("pttt", "Switch to ProfileFragment");
+                Log.d("main_activity", "Switch to ProfileFragment");
                 enableSearchView(false);
                 fragment = new ProfileFragment();
                 replaceFragment(fragment,argKey,arg);
                 break;
             case R.xml.preferences:
-                Log.d("pttt", "Switch to PreferenceFragment");
+                Log.d("main_activity", "Switch to PreferenceFragment");
                 enableSearchView(false);
                 fragment = new PreferencesFragment();
                 replaceFragment(fragment,argKey,arg);
                 break;
             case R.layout.fragment_stock:
-                Log.d("pttt", "Switch to StockFragment");
+                Log.d("main_activity", "Switch to StockFragment");
                 enableSearchView(false);
                 fragment = new StockFragment();
                 replaceFragment(fragment,argKey,arg);
@@ -343,27 +346,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         displayingFragmentId = itemId;
         switch (itemId) {
             case R.id.nav_main:
-                Log.d("pttt", "Switch to mainFragment");
+                Log.d("main_activity", "Switch to mainFragment");
                 enableSearchView(true);
                 replaceFragment(new MainFragment());
                 break;
             case R.id.nav_favorities:
-                Log.d("pttt", "Switch to favoritiesFragment");
+                Log.d("main_activity", "Switch to favoritiesFragment");
                 enableSearchView(true);
                 replaceFragment(new FavoritiesFragment());
                 break;
             case R.id.nav_profile:
-                Log.d("pttt", "Switch to profileFragment");
+                Log.d("main_activity", "Switch to profileFragment");
             enableSearchView(false);
             replaceFragment(new ProfileFragment());
             break;
             case R.xml.preferences:
-                Log.d("pttt", "Switch to preferenceFragment");
+                Log.d("main_activity", "Switch to preferenceFragment");
                 enableSearchView(false);
                 replaceFragment(new PreferencesFragment());
                 break;
             case R.layout.fragment_stock:
-                Log.d("pttt", "Switch to preferenceFragment");
+                Log.d("main_activity", "Switch to preferenceFragment");
                 enableSearchView(false);
                 replaceFragment(new StockFragment());
                 break;
@@ -389,10 +392,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         user.setImageUrl(updatedUser.getImageUrl());
                     }
                     setNavBar(updatedUser,isUpdatedImage);
-                    if(progress.getVisibility() == View.VISIBLE) {
-                        progress.hide();
-                        progress.setVisibility(View.INVISIBLE);
-                    }
                 }
                 @Override
                 public void OnFailure(Exception e) { }
@@ -414,9 +413,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     @Override
+    protected void onResume() {
+        Log.d("main_activity", "onResume:");
+        super.onResume();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
-
+        Log.d("main_activity", "onStart:");
         // Open fragment -> if not specified load main fragment.
         //loadFragment(); //-> TODO: FIX CRASH
         // navigateById(R.id.nav_favorities);

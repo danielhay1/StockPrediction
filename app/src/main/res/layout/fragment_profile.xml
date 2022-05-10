@@ -5,7 +5,7 @@
     android:id="@+id/activity_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/theme_bgcolor"
     android:orientation="vertical">
 
     <View
@@ -46,8 +46,8 @@
                 android:layout_alignEnd="@+id/imageview_account_profile"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="40dp"
-                android:background="@color/white"
-                app:backgroundTint="@color/white"
+                android:background="@color/theme_bgcolor"
+                app:backgroundTint="@color/theme_bgcolor"
                 android:src="@drawable/edit_icon"
                 app:maxImageSize="35dp" />
 
@@ -85,6 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:text="profile Details"
+                    android:textColor="@color/text"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -93,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Username"
-
+                    android:textColor="@color/text"
                     android:textSize="17sp" />
 
                 <TextView
@@ -101,11 +102,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Email"
+                    android:textColor="@color/text"
                     android:textSize="17sp"/>
                 <TextView
                     android:id="@+id/profile_TV_favStocks"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="Favorite stocks"
+                    android:textColor="@color/text"
                     android:textSize="17sp"/>
 
                 <!--EDIT MODE-->
@@ -160,10 +164,10 @@
         android:layout_marginHorizontal="4dp"
         android:layout_centerHorizontal="true"
         android:text="Settings"
-        android:textColor="@color/purple_900"
+        android:textColor="@color/purpel_text"
         android:layout_above="@id/profile_BTN_Logout"
         app:cornerRadius="50dp"
-        app:strokeColor="@color/purple_700" />
+        app:strokeColor="@color/purpel_text" />
     <com.google.android.material.button.MaterialButton
         android:id="@+id/profile_BTN_Logout"
         style="@style/Widget.MaterialComponents.Button.TextButton.Dialog.Flush"
@@ -173,7 +177,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="4dp"
         android:text="Logout"
-        android:textColor="@color/purple_900"
+        android:textColor="@color/purpel_text"
         app:cornerRadius="50dp"
-        app:strokeColor="@color/purple_700" />
+        app:strokeColor="@color/purpel_text" />
 </RelativeLayout>

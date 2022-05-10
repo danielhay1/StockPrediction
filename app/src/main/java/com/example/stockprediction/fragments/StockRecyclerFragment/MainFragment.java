@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.stockprediction.R;
 import com.example.stockprediction.apis.RapidApi;
-import com.example.stockprediction.objects.BaseStockRecyclerViewAdapter;
+import com.example.stockprediction.objects.adapter.BaseStockRecyclerViewAdapter;
 import com.example.stockprediction.objects.stock.Stock;
-import com.example.stockprediction.objects.StockRecyclerViewAdapter;
+import com.example.stockprediction.objects.adapter.StockRecyclerViewAdapter;
 import com.example.stockprediction.utils.MyAsyncTask;
 
 import java.util.ArrayList;

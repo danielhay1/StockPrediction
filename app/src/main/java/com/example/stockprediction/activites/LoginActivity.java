@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.stockprediction.R;
 import com.example.stockprediction.objects.User;
-import com.example.stockprediction.apis.firebase.MyFireBaseServices;
+import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

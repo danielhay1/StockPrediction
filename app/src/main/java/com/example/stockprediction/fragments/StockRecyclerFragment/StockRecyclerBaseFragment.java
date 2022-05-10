@@ -13,14 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.VolleyError;
-import com.example.stockprediction.R;
 import com.example.stockprediction.activites.MainActivity;
-import com.example.stockprediction.apis.firebase.MyFireBaseServices;
+import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.example.stockprediction.fragments.StockFragment;
 import com.example.stockprediction.objects.BaseFragment;
-import com.example.stockprediction.objects.BaseStockRecyclerViewAdapter;
 import com.example.stockprediction.objects.Prediction;
-import com.example.stockprediction.objects.StockRecyclerViewAdapter;
+import com.example.stockprediction.objects.adapter.StockRecyclerViewAdapter;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.MyAsyncTask;
 import com.example.stockprediction.utils.MyTimeStamp;

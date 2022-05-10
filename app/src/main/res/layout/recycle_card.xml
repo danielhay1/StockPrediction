@@ -11,6 +11,7 @@
             android:layout_margin="8dp"
             android:elevation="4dp"
             app:cardCornerRadius="24dp"
+            app:cardBackgroundColor="@color/theme_bgcolor"
             app:cardElevation="4dp">
 
             <RelativeLayout
@@ -50,6 +51,7 @@
                                 android:fontFamily="sans-serif-light"
                                 android:gravity="center"
                                 android:text="Stock Name"
+                                android:textColor="@color/text"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
                             <TextView
@@ -57,6 +59,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
+                                android:textColor="@color/text"
                                 android:text="symbol"
                                 android:textSize="12sp" />
                         </LinearLayout>
@@ -80,6 +83,7 @@
                                 android:layout_height="match_parent"
                                 android:gravity="center|bottom"
                                 android:text="Prediction: "
+                                android:textColor="@color/text"
                                 android:textSize="10sp" />
 
                             <TextView
@@ -87,6 +91,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:gravity="center|bottom"
+                                android:textColor="@color/text"
                                 android:text="None."
                                 android:textSize="5pt" />
 
@@ -110,6 +115,7 @@
                         android:layout_gravity="center_horizontal"
                         android:fontFamily="sans-serif-light"
                         android:text="Value"
+                        android:textColor="@color/text"
                         android:textSize="8pt"
                         android:textStyle="bold" />
 
@@ -120,6 +126,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginRight="17dp"
                         android:text="+184.84(+0.71%)"
+                        android:textColor="@color/text"
                         android:textSize="5pt" />
                     <!--Insert Graph Here!-->
                     <RelativeLayout

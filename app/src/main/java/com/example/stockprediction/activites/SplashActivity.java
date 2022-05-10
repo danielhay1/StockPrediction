@@ -8,7 +8,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.stockprediction.R;
-import com.example.stockprediction.apis.firebase.MyFireBaseServices;
+import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 
 public class SplashActivity extends AppCompatActivity {
 

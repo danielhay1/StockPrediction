@@ -7,18 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
 import androidx.preference.ListPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.example.stockprediction.R;
-import com.example.stockprediction.utils.MyPreference;
-import com.example.stockprediction.utils.MySignal;
 
 public class PreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private PreferenceManager myPerf;
@@ -27,6 +21,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
     public final static String SETTINGS_SHARED_PREFERENCES = TAG + ".settings";
     public static String theme_mode;
     public static String notification_mode;
+    private ListPreference themePreference;
+    private ListPreference notificationPreference;
     /*
      - To access shared preference inside this fragment use -> myPerf.
      - To access shared preference outside this fragment use :
@@ -35,7 +31,40 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
              Context.MODE_PRIVATE);
      */
 
+    private void findPreferences() {
+        themePreference = (ListPreference) findPreference(getContext().getResources().getString(R.string.settings_theme_key));
+        notificationPreference = (ListPreference) findPreference(getContext().getResources().getString(R.string.settings_notification_key));
+        themePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            preference.setSummary((CharSequence) newValue);
+            return true;
+        });
+        notificationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            preference.setSummary((CharSequence) newValue);
+            return true;
+        });
+    }
 
+    private void setDefaultValue(String value, ListPreference preferenceList) {
+        if(!value.equals("")) {
+            preferenceList.setValue(value);
+        }
+    }
+
+    private void setSummary(String value, ListPreference preferenceList) {
+        if(!value.equals("")) {
+            preferenceList.setSummary(value);
+        }
+    }
+
+    private void initListPreference() {
+        String currentThemeValue = myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),"");
+        String currentNotificationValue = myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_notification_key),"");
+        setSummary(currentThemeValue,themePreference);
+        setSummary(currentNotificationValue,notificationPreference);
+        setDefaultValue(currentThemeValue,themePreference);
+        setDefaultValue(currentNotificationValue,notificationPreference);
+
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -44,19 +73,19 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         // Define the settings file to use by this settings fragment
         myPerf = getPreferenceManager();
         myPerf.setSharedPreferencesName(SETTINGS_SHARED_PREFERENCES);
-        Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+myPerf.getSharedPreferences().getString("settings_notification","x"));
-        Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+MyPreference.getInstance(getContext()).getSettingsInspector(getContext()).getTheme_mode());
-
-
+        findPreferences();
+        Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+ myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_notification_key),"X"));
+        Log.d("preferences_fragment", "onCreatePreferences: settings_theme=" + myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),"X"));
+        initListPreference();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
+
         //view.setBackgroundColor(getContext().getResources().getDrawable(R.drawable.round_corners_bg));
         if(theme_mode == null) {theme_mode = getString(R.string.settings_theme_key);}
         if(notification_mode == null) {notification_mode = getString(R.string.settings_notification_key);}
-
         return view;
     }
 
@@ -71,6 +100,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         super.onResume();
         getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
+
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -91,6 +122,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
                         break;
                 }
                 AppCompatDelegate.setDefaultNightMode(theme);
+                themePreference.setSummary(themeVal);
+
             } else if (key == notification_mode) {
                 // code block
                 Log.d("pttt", "onSharedPreferenceChanged: ");
@@ -105,6 +138,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
                         case "none":
                             break;
                     }
+                    notificationPreference.setSummary(notificationVal);
+                    //MyPreference.SettingsInspector.getInstance(getContext()).s
                 }
             }
         }

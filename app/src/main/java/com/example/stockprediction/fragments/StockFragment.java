@@ -17,11 +17,12 @@ import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.apis.RapidApi.CallBack_HttpTasks;
-import com.example.stockprediction.apis.firebase.MyFireBaseServices;
 import com.example.stockprediction.objects.BaseFragment;
-import com.example.stockprediction.objects.StockRecyclerViewAdapter;
+import com.example.stockprediction.objects.Prediction;
 import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.utils.MyPreference;
+import com.example.stockprediction.utils.MyTimeStamp;
+import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -34,11 +35,14 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import co.ankurg.expressview.ExpressView;
@@ -97,6 +101,7 @@ public class StockFragment extends BaseFragment {
         setStockData(stock);
         try {
             setExtraData();
+            getHistoricPredictionRatio(); // TODO: move to a action
         } catch (JSONException e) {
             Log.e("StockFragment", "JSONException error = " + e);
         }
@@ -411,6 +416,72 @@ public class StockFragment extends BaseFragment {
         stockFrag_TV_vol.setText("Vol \t" + df.format(Double.parseDouble(jsonStockData.getString("vol"))));
         String[] range = jsonStockData.getString("year_range").trim().split("-");
         stockFrag_TV_yRange.setText("Yearly range: \t" + df.format(Double.parseDouble(range[0])) + " - " + df.format(Double.parseDouble(range[1])));
+    }
+
+    private void getHistoricPredictionRatio() throws JSONException {
+        /**
+         * Data to display:
+         * day
+         * value
+         * pridiction (if there was a prediction)
+         * actual (if there was a prediction)
+         */
+        MyFireBaseServices.getInstance().listenPredictions(new MyFireBaseServices.FB_Request_Callback<HashMap<String, ArrayList<Prediction>>>() {
+            @Override
+            public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
+
+                try {
+                    JSONObject jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+stock.getSymbol()).getJSONObject("stocks").getJSONObject(stock.getSymbol());
+                    JSONArray times = jsonStockData.getJSONArray("timestamp");
+                    JSONArray values = jsonStockData.getJSONArray("values");
+
+                    if(times != null) {
+                        for (int i = 0; i < times.length(); i++) {
+                            String day = MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(i)));
+                            double value = Double.parseDouble(values.getString(i));
+                            String predictionValue = " - ";
+                            String actualValue = " - ";
+                            if(result.get(day) != null) {
+                                for (Prediction p: result.get(day)) {
+                                    if(stock.getSymbol().equalsIgnoreCase(p.getTargetSymbol())) {
+                                        predictionValue = String.valueOf(p.getPoints());
+                                        actualValue = String.valueOf(p.getActualValue());
+                                        break;
+                                    }
+                                }
+                                Log.d("rtrtrt", "day= " + day + "value= "+ value + "predictionValue= " + predictionValue + "actualValue= " + actualValue);
+                            }
+
+
+                            /*for (Prediction p: result.get(day)) {
+                                if(p.getTargetSymbol().equalsIgnoreCase(stock.getSymbol())) {
+                                    double points = p.getPoints();
+                                    double actual = p.getActualValue(); // can be null!
+                                    break;
+                                }
+                            }*/
+                        }
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void OnFailure(Exception e) {
+
+            }
+        });
+
+
+
+
+    }
+
+    private class PredictionRatio {
+
     }
 
 }
