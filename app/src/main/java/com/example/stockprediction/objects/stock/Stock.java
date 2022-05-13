@@ -61,13 +61,11 @@ public class Stock implements Comparable<Stock>{
 
     public Stock(String name, String symbol) {
         this.name = name;
-        this.symbol = symbol;
-        this.stockImg = generateImgName(symbol);
+        this.setSymbol(symbol);
     }
 
-    public Stock(String name, String symbol, double value, double previousValue, double predictionValue, StockStatus predictionStatus) {
-        this.name = name;
-        this.symbol = symbol;
+    public Stock(String symbol, double value, double previousValue, double predictionValue, StockStatus predictionStatus) {
+        setSymbol(symbol);
         this.value = value;
         this.predictionStatus = (predictionStatus != null) ? predictionStatus : StockStatus.NO_DATA;
         this.predictionValue = predictionValue;
@@ -102,6 +100,7 @@ public class Stock implements Comparable<Stock>{
 
     public Stock setSymbol(String symbol) {
         this.symbol = symbol;
+        this.setStockImg(generateImgName(symbol));
         return this;
     }
 

@@ -118,6 +118,7 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
 
 
     protected void setImg(String imgName,ImageView img) {
+        Log.d("stock_recycler", "Setting img: img="+imgName);
         if(!imgName.equalsIgnoreCase("")) {
             Context context = mInflater.getContext();
             int resourceId = context.getResources().getIdentifier(imgName, "drawable",context.getPackageName());//initialize res and context in adapter's contructor
@@ -166,7 +167,9 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
         chart.setScaleEnabled(true);
         chart.setDrawGridBackground(false);
         chart.setHighlightPerDragEnabled(true);
-        setChartData(chart,stock.getChartData());
+        chart.setNoDataTextColor(context.getColor(R.color.purple_900));
+        if(stock.getChartData()!=null)
+            setChartData(chart,stock.getChartData());
     }
 
     protected void setChartData(com.github.mikephil.charting.charts.LineChart chart, List<Float> data) {
@@ -179,6 +182,7 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
         lineDataSet.setHighlightEnabled(true);
         lineDataSet.setLineWidth(2);
         lineDataSet.setColor(context.getColor(R.color.purple_200));
+
         lineDataSet.setDrawHighlightIndicators(true);
         lineDataSet.setHighLightColor(Color.RED);
         lineDataSet.setValueTextSize(0);

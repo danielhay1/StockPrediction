@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.VolleyError;
 import com.example.stockprediction.activites.MainActivity;
+import com.example.stockprediction.objects.adapter.BaseStockRecyclerViewAdapter;
 import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.example.stockprediction.fragments.StockFragment;
 import com.example.stockprediction.objects.BaseFragment;
@@ -125,7 +126,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             getInstance().getQuotesRequest((List<Stock>) data, new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
-                        Log.e("pttt", "StockJson found: "+json);
+                    Log.e("pttt", "StockJson found: "+json);
                     for (int position = 0; position < data.size(); position++) {
                         try {
                             parseQuotesResponse(adapter.getItemIndex(data.get(position).getSymbol()),adapter,json);
@@ -136,7 +137,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                 }
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                        Log.e("pttt", "StockJson error: "+error);
+                    Log.e("pttt", "StockJson error: "+error);
                 }
             });
             getInstance().getChartRequest((List<Stock>) data, new CallBack_HttpTasks() {
@@ -238,7 +239,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         }
     }
 
-    private void parseQuotesResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {
+    protected void parseQuotesResponse(int position, BaseStockRecyclerViewAdapter<T> adapter, JSONObject json) throws JSONException {
         Stock stock = data.get(position);
         JSONObject result = json.getJSONObject("stocks").getJSONObject(stock.getSymbol().toUpperCase());
         stock.setValue(Double.parseDouble(result.getString("regularMarketPrice")));

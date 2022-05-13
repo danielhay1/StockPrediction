@@ -75,6 +75,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends BaseStockRecycle
             setDataFromCache(stock, (ViewHolder) holder);
         } else {
             fillStockData(stock, v);
+            setImg(stock.getStockImg(),((ViewHolder) holder).RVROW_IMG_StockImg);
+
         }
         setStockChart(stock, v);
         super.setTextViewColor(holder.RVROW_LBL_StockStatusDetails);

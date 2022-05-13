@@ -434,11 +434,13 @@ public class StockFragment extends BaseFragment {
                     JSONObject jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+stock.getSymbol()).getJSONObject("stocks").getJSONObject(stock.getSymbol());
                     JSONArray times = jsonStockData.getJSONArray("timestamp");
                     JSONArray values = jsonStockData.getJSONArray("values");
+                    Log.d("rtrtrt", "Current day= " + result);
 
                     if(times != null) {
                         for (int i = 0; i < times.length(); i++) {
+                            Log.d("rtrtrt", "day0= " + MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(0))));
                             String day = MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(i)));
-                            double value = Double.parseDouble(values.getString(i));
+                            String value = String.format("%.2f", Double.parseDouble(values.getString(i)));
                             String predictionValue = " - ";
                             String actualValue = " - ";
                             if(result.get(day) != null) {
@@ -449,8 +451,8 @@ public class StockFragment extends BaseFragment {
                                         break;
                                     }
                                 }
-                                Log.d("rtrtrt", "day= " + day + "value= "+ value + "predictionValue= " + predictionValue + "actualValue= " + actualValue);
                             }
+                            Log.d("rtrtrt", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
 
 
                             /*for (Prediction p: result.get(day)) {

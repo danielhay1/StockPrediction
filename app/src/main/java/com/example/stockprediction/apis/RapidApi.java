@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Random;
 import java.util.StringJoiner;
 
 
@@ -35,7 +37,6 @@ public class RapidApi {
     private static String api_key;
     private HttpRequestQueue httpRequestQueue;
     private static final Object lock = new Object();
-
 
     //private OkHttpClient client;
     // Stock hash collection
@@ -153,28 +154,34 @@ public class RapidApi {
         //TODO: fix run for each stock
         int refreshInterval = MyPreference.StockCacheManager.REFRESH_INTERVAL.CHARTS_DATA;
         String cacheKey = MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON;
-        for (int i = 0; i < stocks.size(); i ++) {
-            int index = i;
-            String stockSymbol = stocks.get(index).getSymbol();
-            try {
-                JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(cacheKey + stockSymbol); // could throw null pointer exception in case of no data in cache
-                if (!MyPreference.StockCacheManager.shouldRefreshCache(jsonObject, refreshInterval)) {
-                    Log.d("rapid_api", "getting json from cache: json= " + jsonObject);
-                    callBack_httpTasks.onResponse(jsonObject);
-                } else {
-                    new MyAsyncTask().executeBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
-                        httpGetRequest(stockSymbol, STOCK_OPERATION.GET_CHART, cacheKey + stockSymbol, callBack_httpTasks);
-                    });
+        new MyAsyncTask().executeBgTask(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < stocks.size(); i ++) {
+                    int index = i;
+                    String stockSymbol = stocks.get(index).getSymbol();
+                    try {
+                        JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(cacheKey + stockSymbol); // could throw null pointer exception in case of no data in cache
+                        if (!MyPreference.StockCacheManager.shouldRefreshCache(jsonObject, refreshInterval)) {
+                            Log.d("rapid_api", "getting json from cache: json= " + jsonObject);
+                            callBack_httpTasks.onResponse(jsonObject);
+                        } else {
+                            new MyAsyncTask().executeBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
+                                httpGetRequest(stockSymbol, STOCK_OPERATION.GET_CHART, cacheKey + stockSymbol, callBack_httpTasks);
+                            });
+                        }
+                    } catch (NullPointerException e) {
+                        Log.e("rapid_api", "intervalRequest:  error= " + e.getLocalizedMessage());
+                        new MyAsyncTask().executeBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
+                            httpGetRequest(stockSymbol, STOCK_OPERATION.GET_CHART, cacheKey + stockSymbol, callBack_httpTasks);
+                        });
+                    } catch (JSONException e) {
+                        Log.e("rapid_api", "intervalRequest:  symbol: " + stockSymbol + "not exists in cache");
+                    }
                 }
-            } catch (NullPointerException e) {
-                Log.e("rapid_api", "intervalRequest:  error= " + e.getLocalizedMessage());
-                new MyAsyncTask().executeBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
-                    httpGetRequest(stockSymbol, STOCK_OPERATION.GET_CHART, cacheKey + stockSymbol, callBack_httpTasks);
-                });
-            } catch (JSONException e) {
-                Log.e("rapid_api", "intervalRequest:  symbol: " + stockSymbol + "not exists in cache");
             }
-        }
+        });
+
     }
 
     public void getQuotesRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
@@ -270,10 +277,11 @@ public class RapidApi {
                 }, error -> {
                     // TODO: Handle error
                     if(error.networkResponse.statusCode == 429) {
+                        Long delay = Long.valueOf(new Random().nextInt(3)+1); // wait 1-3 sec
                         Log.d("rapid_api", "onResponse: VolleyError = 429, retrying request");
                         new MyAsyncTask().executeDelayBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
                             httpGetChartCustomRange(symbol, finalRange, callBack_httpTasks);
-                        }, 1000);
+                        }, delay);
                     } else {
                         Log.d("rapid_api", "onResponse: VolleyError: "+ error);
                         callBack_httpTasks.onErrorResponse(error);

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.VolleyError;
 import com.example.stockprediction.R;
 import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.objects.adapter.BaseStockRecyclerViewAdapter;
@@ -17,9 +18,14 @@ import com.example.stockprediction.objects.stock.Stock;
 import com.example.stockprediction.objects.adapter.StockRecyclerViewAdapter;
 import com.example.stockprediction.utils.MyAsyncTask;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.example.stockprediction.apis.RapidApi.getInstance;
 
 
 public class MainFragment extends StockRecyclerBaseFragment<Stock> {
@@ -81,10 +87,53 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
 
     public void initBaseStockRecyclerView(RecyclerView recyclerView,List<Stock> data) {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
-            Log.e("pttt", "initStockRecyclerView: data="+data);
+
+            Log.e("pttt", "initStockRecyclerView-predictions: data="+data);
+
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext(),RecyclerView.HORIZONTAL,true));
             adapter = initBaseAdapter(recyclerView,data);
+            getInstance().getQuotesRequest((List<Stock>) data, new RapidApi.CallBack_HttpTasks() {
+                @Override
+                public void onResponse(JSONObject json) {
+                    Log.e("pttt", "StockJson found: "+json);
+
+                    for (int position = 0; position < data.size(); position++) {
+                        try {
+                            parseQuotesResponse(adapter.getItemIndex(data.get(position).getSymbol()),adapter,json);
+                        } catch (JSONException e) {
+                            Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
+                        }
+                    }
+                }
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("pttt", "StockJson error: "+error);
+                }
+            });
+            getInstance().getChartRequest((List<Stock>) data, new RapidApi.CallBack_HttpTasks() {
+                @Override
+                public void onResponse(JSONObject json) {
+                    String symbol;
+                    try {
+                        symbol = json.getJSONObject("stocks").getString("symbol");
+                        int index  = adapter.getItemIndex(symbol);
+                        Stock stock = data.get(index);
+                        stock.setChartData(json);
+                        new MyAsyncTask().executeBgTask(()->{},()->{ // run on ui thread
+                            adapter.notifyItemChanged(index);
+                        });
+                        Log.d("stock_recycler_base_fragment", "StockJson found: " + symbol + ",stock to update: "+stock.getSymbol());
+                    } catch (JSONException e) {
+                        Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
+                    }
+                }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("xop", "StockJson error: " + error);
+                }
+            });
         });
     }
     private BaseStockRecyclerViewAdapter<Stock> initBaseAdapter(RecyclerView recyclerView, List<Stock> stocksData) {
