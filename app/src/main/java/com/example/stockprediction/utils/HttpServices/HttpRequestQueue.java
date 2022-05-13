@@ -14,7 +14,6 @@ public class HttpRequestQueue {
     private RequestQueue requestQueue;
     private ImageLoader imageLoader;
     private static Context context;
-
     private HttpRequestQueue(Context context) {
         HttpRequestQueue.context = context;
         requestQueue = getRequestQueue();

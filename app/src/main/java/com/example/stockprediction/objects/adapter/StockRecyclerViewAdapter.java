@@ -219,6 +219,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends BaseStockRecycle
         chart.setData(lineData);
         chart.setNoDataTextColor(context.getColor(R.color.text));
         chart.getLegend().setTextColor(context.getColor(R.color.text));
+        chart.setNoDataTextColor(context.getColor(R.color.purple_900));
         chart.invalidate();
     }
 

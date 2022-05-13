@@ -204,14 +204,16 @@ public class Stock implements Comparable<Stock>{
     }
     // static methods
     public double calcPercentageChange(double change, double value) {
+        double returnValue = 0.0;
         try {
-            Log.d("stock", "value " + (change/value)*100);
-            return (change/value)*100;
+            if(value != 0) {
+                returnValue = (change/value)*100;
+            }
+            Log.d("stock", "value " + returnValue);
         } catch (ArithmeticException e) {
-            Log.d("stock", "value " + 0);
-            return 0;
+            Log.d("stock", "ArithmeticException, error= " + e);
         }
-
+        return returnValue;
     }
 
 

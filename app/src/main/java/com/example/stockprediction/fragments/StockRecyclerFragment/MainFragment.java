@@ -111,7 +111,7 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
                     Log.e("pttt", "StockJson error: "+error);
                 }
             });
-            getInstance().getChartRequest((List<Stock>) data, new RapidApi.CallBack_HttpTasks() {
+            getInstance().getChartsRequest((List<Stock>) data, new RapidApi.CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
                     String symbol;

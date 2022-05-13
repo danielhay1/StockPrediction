@@ -140,7 +140,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                     Log.e("pttt", "StockJson error: "+error);
                 }
             });
-            getInstance().getChartRequest((List<Stock>) data, new CallBack_HttpTasks() {
+            getInstance().getChartsRequest((List<Stock>) data, new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
                     String symbol;

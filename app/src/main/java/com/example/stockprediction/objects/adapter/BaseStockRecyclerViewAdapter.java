@@ -201,7 +201,6 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
         chart.getAxisLeft().setEnabled(false);
         chart.getXAxis().setEnabled(false);
         chart.setData(lineData);
-        chart.setNoDataTextColor(context.getColor(R.color.purple_500));
         chart.getAxisLeft().setTextColor(context.getColor(R.color.purple_200));
         chart.getLegend().setEnabled(false);   // Hide the legend
         chart.invalidate();
