@@ -57,12 +57,12 @@ public class StockFragment extends BaseFragment {
     private TextView stockFrag_TV_symbol;
     private TextView stockFrag_TV_value;
     private TextView stockFrag_TV_StockStatusDetails;
-    private TextView stockFrag_TV_date;
     private TextView stockFrag_TV_predictionValue;
     private ImageView stockFrag_IMG_stockImg;
     private ImageView stockFrag_IMG_predictionStatus;
     private LineChart stockFrag_BarChart;
     private co.ankurg.expressview.ExpressView stockFrag_EV_likeButton;
+    private com.github.aakira.expandablelayout.ExpandableWeightLayout stockFrag_EL_expandableLayout;
 
     // Additional data
     private TextView stockFrag_TV_open;
@@ -122,7 +122,6 @@ public class StockFragment extends BaseFragment {
         stockFrag_IMG_stockImg = view.findViewById(R.id.stockFrag_IMG_stockImg);
         stockFrag_TV_value = view.findViewById(R.id.stockFrag_TV_value);
         stockFrag_TV_StockStatusDetails = view.findViewById(R.id.stockFrag_TV_StockStatusDetails);
-        stockFrag_TV_date = view.findViewById(R.id.stockFrag_TV_date);
         stockFrag_BarChart = view.findViewById(R.id.stockFrag_BarChart);
         stockFrag_IMG_predictionStatus = view.findViewById(R.id.stockFrag_IMG_predictionStatus);
         stockFrag_EV_likeButton = view.findViewById(R.id.stockFrag_EV_likeButton);
@@ -133,6 +132,7 @@ public class StockFragment extends BaseFragment {
         stockFrag_TV_vol = view.findViewById(R.id.stockFrag_TV_vol);
         stockFrag_TV_yRange = view.findViewById(R.id.stockFrag_TV_yRange);
         stockFrag_TV_predictionValue = view.findViewById(R.id.stockFrag_TV_predictionValue);
+        stockFrag_EL_expandableLayout = view.findViewById(R.id.stockFrag_EL_expandableLayout);
     }
 
     private void initViews() {
@@ -155,6 +155,18 @@ public class StockFragment extends BaseFragment {
                     updateUser(getUser().setFavStocks(stocks));
                 }
             }
+        });
+        stockFrag_EL_expandableLayout.setOnClickListener(v -> {
+/*            if(stockFrag_EL_expandableLayout.isExpanded()) {
+                stockFrag_EL_expandableLayout.setExpandWeight(2);
+                //stockFrag_EL_expandableLayout.setExpanded(false);
+
+            } else {
+                //stockFrag_EL_expandableLayout.setExpanded(true);
+                stockFrag_EL_expandableLayout.setExpandWeight(5);
+            }*/
+            //stockFrag_EL_expandableLayout.moveChild(0);
+            stockFrag_EL_expandableLayout.toggle();
         });
     }
 

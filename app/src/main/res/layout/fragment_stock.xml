@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_800"
+    android:background="@color/purple_1000"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.StockFragment">
 
@@ -13,188 +13,210 @@
         android:layout_height="match_parent"
         android:background="@color/purple_900"
         android:orientation="vertical">
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="@color/purple_1000">
+            <TextView
+                android:id="@+id/stockFrag_TV_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:text="Apple"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/light_gray"
+                />
+            <TextView
+                android:id="@+id/stockFrag_TV_symbol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="appl"
+                android:gravity="center_horizontal"
+                android:textSize="18sp"
+                android:textColor="@color/light_gray"
+                />
+            <ImageView
+                android:id="@+id/stockFrag_IMG_stockImg"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="10dp"
+                android:src="@mipmap/ic_launcher_round"
+                />
+            <TextView
+                android:id="@+id/stockFrag_TV_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="0.0$"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/light_gray"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/stockFrag_TV_StockStatusDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="+184.84(+0.71%)"
+                    android:textColor="@color/light_gray"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/down_arrow"/>
+        </LinearLayout>
+        <com.github.aakira.expandablelayout.ExpandableWeightLayout
+            android:id="@+id/stockFrag_EL_expandableLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="5"
-            android:layout_marginTop="-40dp"
-            android:elevation="4dp"
-            app:cardCornerRadius="50dp"
-            app:cardBackgroundColor="@color/purple_1000"
-            app:cardElevation="4dp">
-            <LinearLayout
+            app:ael_expanded="true"
+            app:ael_duration="750"
+            app:ael_interpolator="accelerate"
+            app:ael_orientation="vertical">
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="50dp"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/stockFrag_TV_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="35dp"
-                    android:text="Apple"
-                    android:gravity="center_horizontal"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/light_gray"
-                    />
-                <TextView
-                    android:id="@+id/stockFrag_TV_symbol"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="appl"
-                    android:gravity="center_horizontal"
-                    android:textSize="18sp"
-                    android:textColor="@color/light_gray"
-                    />
-                <ImageView
-                    android:id="@+id/stockFrag_IMG_stockImg"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:layout_marginTop="10dp"
-                    android:src="@mipmap/ic_launcher_round"
-                    />
-                <TextView
-                    android:id="@+id/stockFrag_TV_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="0.0$"
-                    android:gravity="center_horizontal"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/light_gray"
-                    />
+                android:layout_marginTop="-40dp"
+                android:elevation="4dp"
+                app:cardCornerRadius="50dp"
+                app:cardBackgroundColor="@color/purple_1000"
+                app:cardElevation="4dp">
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/stockFrag_TV_StockStatusDetails"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:text="+184.84(+0.71%)"
-                        android:textColor="@color/light_gray"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/stockFrag_TV_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="left"
-                        android:text=" | Today"
-                        android:textColor="@color/light_gray"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:layout_marginTop="15dp"
-                    android:orientation="horizontal">
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/stockFrag_BTN_week"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textSize="10sp"
-                        android:text="Week"
-                        android:textColor="@color/light_gray"
-                        app:strokeColor="@color/light_gray" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/stockFrag_BTN_month"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textSize="10sp"
-                        android:text="Month"
-                        android:textColor="@color/purple_800"
-                        app:strokeColor="@color/purple_800" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/stockFrag_BTN_year"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textSize="10sp"
-                        android:text="Year"
-                        android:textColor="@color/purple_800"
-                        app:strokeColor="@color/purple_800" />
-                </LinearLayout>
-
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/stockFrag_BarChart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="70dp" />
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="50dp"
+                    android:orientation="vertical">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="-70dp"
-                    android:layout_marginHorizontal="20dp"
-                    android:orientation="horizontal">
+                    <LinearLayout
+                        xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/stockFrag_BTN_week"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="10sp"
+                            android:text="Week"
+                            android:textColor="@color/light_gray"
+                            app:strokeColor="@color/light_gray" />
 
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/stockFrag_BTN_month"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="10sp"
+                            android:text="Month"
+                            android:textColor="@color/purple_800"
+                            app:strokeColor="@color/purple_800" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/stockFrag_BTN_year"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textSize="10sp"
+                            android:text="Year"
+                            android:textColor="@color/purple_800"
+                            app:strokeColor="@color/purple_800" />
+                    </LinearLayout>
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/stockFrag_BarChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="70dp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="-120dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/stockFrag_IMG_predictionStatus"
+                            android:layout_width="30dp"
+
+                            android:layout_height="match_parent"
+                            android:src="@drawable/prediction_status_unchanged" />
+
+                        <TextView
+                            android:id="@+id/stockFrag_TV_prediction"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center|bottom"
+                            android:layout_marginBottom="10dp"
+                            android:text=" Prediction: "
+                            android:layout_toEndOf="@+id/stockFrag_IMG_predictionStatus"
+                            android:textColor="@color/light_gray"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/stockFrag_TV_predictionValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center|bottom"
+                            android:layout_marginBottom="10dp"
+                            android:layout_toEndOf="@+id/stockFrag_TV_prediction"
+                            android:textColor="@color/light_gray"
+                            android:text="None."
+                            android:textSize="14sp" />
+
+                        <co.ankurg.expressview.ExpressView
+                            android:id="@+id/stockFrag_EV_likeButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:padding="10dp"
+                            android:gravity="right|bottom"
+                            android:layout_alignParentRight="true"
+                            app:checkedIconTint="@color/dark_red"
+                            app:uncheckedIconTint="@color/purple_800"
+
+                            />
+
+                    </RelativeLayout>
                     <ImageView
-                        android:id="@+id/stockFrag_IMG_predictionStatus"
-                        android:layout_width="30dp"
-
-                        android:layout_height="match_parent"
-                        android:src="@drawable/prediction_status_unchanged" />
-
-                    <TextView
-                        android:id="@+id/stockFrag_TV_prediction"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center|bottom"
-                        android:layout_marginBottom="10dp"
-                        android:text=" Prediction: "
-                        android:layout_toEndOf="@+id/stockFrag_IMG_predictionStatus"
-                        android:textColor="@color/light_gray"
-                        android:textSize="14sp" />
-                    <TextView
-                        android:id="@+id/stockFrag_TV_predictionValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center|bottom"
-                        android:layout_marginBottom="10dp"
-                        android:layout_toEndOf="@+id/stockFrag_TV_prediction"
-                        android:textColor="@color/light_gray"
-                        android:text="None."
-                        android:textSize="14sp" />
-
-                    <co.ankurg.expressview.ExpressView
-                        android:id="@+id/stockFrag_EV_likeButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:padding="10dp"
-                        android:gravity="right|bottom"
-                        android:layout_alignParentRight="true"
-                        app:checkedIconTint="@color/dark_red"
-                        app:uncheckedIconTint="@color/purple_800"
-
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_centerHorizontal="true"
+                        android:src="@drawable/up_arrow"
                         />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                </RelativeLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.github.aakira.expandablelayout.ExpandableWeightLayout >
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="40dp"
+            android:layout_marginVertical="40dp"
             android:gravity="center"
             android:paddingHorizontal="10dp"
             android:orientation="horizontal">
@@ -268,5 +290,6 @@
 
             </LinearLayout>
         </LinearLayout>
+
     </LinearLayout>
 </FrameLayout>

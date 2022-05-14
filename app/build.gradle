@@ -73,7 +73,7 @@ dependencies {
     // like button
     implementation "co.ankurg.expressview:expressview:0.0.3"
     // Notifications
-
+    implementation 'com.github.aakira:expandable-layout:1.6.0@aar'
 
 
 }
