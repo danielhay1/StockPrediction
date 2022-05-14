@@ -246,12 +246,17 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         stock.setChangeAmount(Double.parseDouble(result.getString("regularMarketChange")));
         stock.setChangePercent(Double.parseDouble(result.getString("regularMarketChangePercent")));
         stock.setPredictionStatus();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyItemChanged(position);
-            }
-        });
+        try {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyItemChanged(position);
+                }
+            });
+        } catch (NullPointerException e) {
+
+        }
+
     }
 
     private void parseChartResponse(int position, StockRecyclerViewAdapter<T> adapter, JSONObject json) {

@@ -73,7 +73,6 @@ public class StockFragment extends BaseFragment {
     private TextView stockFrag_TV_yRange;
 
     private List<MaterialButton> buttonList; // segmentedControl implementation
-
     private List<Float> originalStockChart;
 
 
@@ -468,7 +467,10 @@ public class StockFragment extends BaseFragment {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
                 }
+
             }
 
             @Override

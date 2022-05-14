@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +62,7 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
             for (Map.Entry<String, String> entry : RapidApi.MY_STOCKS.entrySet()) {
                 stocksData.add(new Stock(entry.getKey(), entry.getValue()));
             }
+            Collections.sort(stocksData);
             return stocksData;
         }, new StockRecyclerViewAdapter.OnStockLike_Callback() {
             @Override
@@ -146,5 +148,10 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
         });
         recyclerView.setAdapter(adapter);
         return adapter;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

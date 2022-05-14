@@ -35,10 +35,38 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         themePreference = (ListPreference) findPreference(getContext().getResources().getString(R.string.settings_theme_key));
         notificationPreference = (ListPreference) findPreference(getContext().getResources().getString(R.string.settings_notification_key));
         themePreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue != null) {
+                Log.d("pttt", "onSharedPreferenceChanged: theme = " + newValue);
+                int theme = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                switch (newValue.toString().toLowerCase()) {
+                    case "day":
+                        theme = AppCompatDelegate.MODE_NIGHT_NO;
+                        break;
+                    case "night":
+                        theme = AppCompatDelegate.MODE_NIGHT_YES;
+                        break;
+                    case "same as system":
+                        theme = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                        break;
+                }
+                AppCompatDelegate.setDefaultNightMode(theme);
+            }
             preference.setSummary((CharSequence) newValue);
             return true;
         });
         notificationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            if (newValue != null) {
+                Log.d("pttt", "onSharedPreferenceChanged: theme = " + newValue);
+                switch (newValue.toString().toLowerCase()) {
+                    case "all predictions":
+                        break;
+                    case "favorite stocks":
+                        break;
+                    case "none":
+                        break;
+                }
+                //notificationPreference.setSummary(notificationVal);
+            }
             preference.setSummary((CharSequence) newValue);
             return true;
         });
@@ -92,56 +120,17 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
     @Override
     public void onPause() {
         super.onPause();
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
 
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key == theme_mode) {
-            String themeVal = sharedPreferences.getString(key, null);
-            if (themeVal != null) {
-                Log.d("pttt", "onSharedPreferenceChanged: theme = " + themeVal);
-                int theme = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                switch (themeVal.toLowerCase()) {
-                    case "day":
-                        theme = AppCompatDelegate.MODE_NIGHT_NO;
-                        break;
-                    case "night":
-                        theme = AppCompatDelegate.MODE_NIGHT_YES;
-                        break;
-                    case "same as system":
-                        theme = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                        break;
-                }
-                AppCompatDelegate.setDefaultNightMode(theme);
-                themePreference.setSummary(themeVal);
-
-            } else if (key == notification_mode) {
-                // code block
-                Log.d("pttt", "onSharedPreferenceChanged: ");
-                String notificationVal = sharedPreferences.getString(key, null);
-                if (notificationVal != null) {
-                    Log.d("pttt", "onSharedPreferenceChanged: theme = " + notificationVal);
-                    switch (notificationVal.toLowerCase()) {
-                        case "all predictions":
-                            break;
-                        case "favorite stocks":
-                            break;
-                        case "none":
-                            break;
-                    }
-                    notificationPreference.setSummary(notificationVal);
-                    //MyPreference.SettingsInspector.getInstance(getContext()).s
-                }
-            }
-        }
-    }
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) { }
 }

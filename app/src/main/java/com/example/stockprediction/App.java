@@ -26,7 +26,7 @@ public class App extends Application {
         Log.d("app_delegate", "setTheme: "+MyPreference.SettingsInspector.getInstance(this).getTheme_mode());
         String themeVal = MyPreference.SettingsInspector.getInstance(this).getTheme_mode();
         if (themeVal != null) {
-            Log.d("pttt", "onSharedPreferenceChanged: theme = " + themeVal);
+            Log.d("app_delegate", "theme = " + themeVal);
             int theme = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
             switch (themeVal.toLowerCase()) {
                 case "day":

@@ -94,11 +94,11 @@ public class ProfileFragment extends BaseFragment {
 
     public void initViews() {
         profile_BTN_edit.setOnClickListener(v -> {
-            Fragment fragment = new EditProfileFragment();
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.profile_BTN_edit, fragment);
-            fragmentTransaction.commit();
+//            Fragment fragment = new EditProfileFragment();
+//            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            fragmentTransaction.replace(R.id.profile_BTN_edit, fragment);
+//            fragmentTransaction.commit();
         });
         profile_FAB_editImage.setOnClickListener(v -> uploadImage());
         profile_BTN_Logout.setOnClickListener(v-> MyFireBaseServices.getInstance().signOut(getActivity()));

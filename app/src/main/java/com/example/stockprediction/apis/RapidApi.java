@@ -155,6 +155,8 @@ public class RapidApi {
         String cacheKey = MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+ stockSymbol;
         try {
             JSONObject jsonObject = MyPreference.getInstance(appContext).getStocksData(cacheKey); // could throw null pointer exception in case of no data in cache
+            Log.d("rapid_api", "getting json from cache: json= " + jsonObject);
+
             if (!MyPreference.StockCacheManager.shouldRefreshCache(jsonObject, refreshInterval)) {
                 Log.d("rapid_api", "getting json from cache: json= " + jsonObject);
                 callBack_httpTasks.onResponse(jsonObject);
@@ -174,17 +176,16 @@ public class RapidApi {
     }
 
     public synchronized void getChartsRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
-        new MyAsyncTask().executeBgTask(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < stocks.size(); i ++) {
-                    int index = i;
+        for (int i = 0; i < stocks.size(); i ++) {
+            int index = i;
+            new MyAsyncTask().executeBgTask(new Runnable() {
+                @Override
+                public void run() {
                     String stockSymbol = stocks.get(index).getSymbol();
                     getChartRequest(stockSymbol,callBack_httpTasks);
                 }
-            }
-        });
-
+            });
+        }
     }
 
     public void getQuotesRequest(List<Stock> stocks, CallBack_HttpTasks callBack_httpTasks) {
