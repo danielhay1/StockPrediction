@@ -24,7 +24,7 @@
             app:cardElevation="4dp">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="40dp"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -129,7 +129,7 @@
                 <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/stockFrag_BarChart"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp" />
+                    android:layout_height="150dp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -182,10 +182,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    app:ael_expanded="false"
+                    app:ael_expanded="true"
                     app:ael_duration="750"
                     app:ael_interpolator="accelerate"
                     app:ael_orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/light_gray"
+                        android:layout_margin="12dp"
+                        android:textSize="14sp"
+                        android:text="Prediction Additional details:"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -195,42 +202,56 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/light_gray"
+                            android:gravity="center_horizontal"
                             android:textSize="9sp"
                             android:text="Sunday"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
+                            android:textColor="@color/light_gray"
+                            android:gravity="center_horizontal"
                             android:layout_height="wrap_content"
                             android:textSize="9sp"
                             android:text="Monday"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
+                            android:textColor="@color/light_gray"
                             android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
                             android:textSize="9sp"
                             android:text="Tuesday"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
+                            android:textColor="@color/light_gray"
                             android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
                             android:textSize="9sp"
                             android:text="Wednesday"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
+                            android:textColor="@color/light_gray"
                             android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
                             android:textSize="9sp"
                             android:text="Thursday"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
+                            android:textColor="@color/light_gray"
                             android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
                             android:textSize="9sp"
                             android:text="Friday"/>
                         <TextView
                             android:layout_width="0dp"
                             android:layout_weight="1"
+                            android:textColor="@color/light_gray"
                             android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
                             android:textSize="9sp"
                             android:text="Saturday"/>
                     </LinearLayout>
