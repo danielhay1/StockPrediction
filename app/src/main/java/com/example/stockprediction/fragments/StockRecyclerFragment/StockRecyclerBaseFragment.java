@@ -122,7 +122,6 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
             adapter = initAdapter(recyclerView, data, onStockLike_callback);
             // Get stock from FireBaser
-
             getInstance().getQuotesRequest((List<Stock>) data, new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
@@ -149,6 +148,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                         int index  = adapter.getItemIndex(symbol);
                         T stock = data.get(index);
                         stock.setChartData(json);
+                        updateFavStocksChartData(stock);
                         new MyAsyncTask().executeBgTask(()->{},()->{ // run on ui thread
                             adapter.notifyItemChanged(index);
                         });
@@ -228,6 +228,15 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                 Log.e("data_data", "initDailyPredictions: error= "+e);
             }
         });
+    }
+
+    private void updateFavStocksChartData(T stock) {
+        for (int i = 0; i < getUser().getFavStocks().size() ; i++) {
+            if(getUser().getFavStocks().get(i).getSymbol().equalsIgnoreCase(stock.getSymbol())) {
+                getUser().getFavStocks().get(i).setChartData(stock.getChartData());
+                break;
+            }
+        }
     }
 
     private void updateFavStocksPrediction(T predictionStocks) {
