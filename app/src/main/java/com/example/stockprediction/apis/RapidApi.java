@@ -239,7 +239,7 @@ public class RapidApi {
                     // TODO: Handle error
                     if(error.networkResponse.statusCode == 429 && operation == STOCK_OPERATION.GET_CHART) {
                         Log.d("rapid_api", "onResponse: VolleyError = 429, retrying request");
-                        Long delay = Long.valueOf(new Random().nextInt(3)+1); // wait 1-3 sec
+                        Long delay = Long.valueOf(new Random().nextInt(3)+1)*1000; // wait 1-3 sec
                         if (operation == STOCK_OPERATION.GET_CHART) {
                             new MyAsyncTask().executeDelayBgTask(() -> { // Sleep delay sec then retry request
                                 getChartRequest(symbol, callBack_httpTasks);
@@ -287,7 +287,7 @@ public class RapidApi {
                 }, error -> {
                     // TODO: Handle error
                     if(error.networkResponse.statusCode == 429) {
-                        Long delay = Long.valueOf(new Random().nextInt(3)+1); // wait 1-3 sec
+                        Long delay = Long.valueOf(new Random().nextInt(3)+1)*1000; // wait 1-3 sec
                         Log.d("rapid_api", "onResponse: VolleyError = 429, retrying request");
                         new MyAsyncTask().executeDelayBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
                             httpGetChartCustomRange(symbol, finalRange, callBack_httpTasks);

@@ -47,12 +47,11 @@ import java.util.List;
 
 import co.ankurg.expressview.ExpressView;
 import co.ankurg.expressview.OnCheckListener;
-
+// implement RapidApi.CallBack_HttpTasks()
 public class StockFragment extends BaseFragment {
 
     public static final String ARG_PARAM = "stock";
     private Stock stock;
-
     private TextView stockFrag_TV_name;
     private TextView stockFrag_TV_symbol;
     private TextView stockFrag_TV_value;
@@ -60,9 +59,10 @@ public class StockFragment extends BaseFragment {
     private TextView stockFrag_TV_predictionValue;
     private ImageView stockFrag_IMG_stockImg;
     private ImageView stockFrag_IMG_predictionStatus;
+    private ImageView stockFrag_BTN_expandButton;
     private LineChart stockFrag_BarChart;
     private co.ankurg.expressview.ExpressView stockFrag_EV_likeButton;
-    private com.github.aakira.expandablelayout.ExpandableWeightLayout stockFrag_EL_expandableLayout;
+    private com.github.aakira.expandablelayout.ExpandableLinearLayout stockFrag_EL_expandableLayout;
 
     // Additional data
     private TextView stockFrag_TV_open;
@@ -133,6 +133,7 @@ public class StockFragment extends BaseFragment {
         stockFrag_TV_yRange = view.findViewById(R.id.stockFrag_TV_yRange);
         stockFrag_TV_predictionValue = view.findViewById(R.id.stockFrag_TV_predictionValue);
         stockFrag_EL_expandableLayout = view.findViewById(R.id.stockFrag_EL_expandableLayout);
+        stockFrag_BTN_expandButton = view.findViewById(R.id.stockFrag_BTN_expandButton);
     }
 
     private void initViews() {
@@ -156,17 +157,15 @@ public class StockFragment extends BaseFragment {
                 }
             }
         });
-        stockFrag_EL_expandableLayout.setOnClickListener(v -> {
-/*            if(stockFrag_EL_expandableLayout.isExpanded()) {
-                stockFrag_EL_expandableLayout.setExpandWeight(2);
+        stockFrag_BTN_expandButton.setOnClickListener(v -> {
+            stockFrag_EL_expandableLayout.toggle();
+            if(stockFrag_EL_expandableLayout.isExpanded()) {
                 //stockFrag_EL_expandableLayout.setExpanded(false);
-
+                setImg("down_arrow",stockFrag_BTN_expandButton);
             } else {
                 //stockFrag_EL_expandableLayout.setExpanded(true);
-                stockFrag_EL_expandableLayout.setExpandWeight(5);
-            }*/
-            //stockFrag_EL_expandableLayout.moveChild(0);
-            stockFrag_EL_expandableLayout.toggle();
+                setImg("up_arrow",stockFrag_BTN_expandButton);
+            }
         });
     }
 
@@ -417,16 +416,21 @@ public class StockFragment extends BaseFragment {
     }
 
     private void setExtraData() throws JSONException {
+        JSONObject jsonStockData = null;
         final DecimalFormat df = new DecimalFormat("0.000");
-        JSONObject jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON).getJSONObject("stocks").getJSONObject(stock.getSymbol());
-        Log.d("rtrtrt", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
-        stockFrag_TV_open.setText("Open: \t" + df.format(Double.parseDouble(jsonStockData.getString("open"))));
-        stockFrag_TV_prevClose.setText("Previous close: \t" + df.format(Double.parseDouble(jsonStockData.getString("prev_close"))));
-        stockFrag_TV_high.setText("High: \t" + df.format(Double.parseDouble(jsonStockData.getString("high"))));
-        stockFrag_TV_low.setText("Low: \t" + df.format(Double.parseDouble(jsonStockData.getString("low"))));
-        stockFrag_TV_vol.setText("Vol \t" + df.format(Double.parseDouble(jsonStockData.getString("vol"))));
-        String[] range = jsonStockData.getString("year_range").trim().split("-");
-        stockFrag_TV_yRange.setText("Yearly range: \t" + df.format(Double.parseDouble(range[0])) + " - " + df.format(Double.parseDouble(range[1])));
+        try {
+            jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON).getJSONObject("stocks").getJSONObject(stock.getSymbol());
+        } catch (NullPointerException e) {}
+        if(jsonStockData!=null) {
+            Log.d("rtrtrt", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
+            stockFrag_TV_open.setText("Open: \t" + df.format(Double.parseDouble(jsonStockData.getString("open"))));
+            stockFrag_TV_prevClose.setText("Previous close: \t" + df.format(Double.parseDouble(jsonStockData.getString("prev_close"))));
+            stockFrag_TV_high.setText("High: \t" + df.format(Double.parseDouble(jsonStockData.getString("high"))));
+            stockFrag_TV_low.setText("Low: \t" + df.format(Double.parseDouble(jsonStockData.getString("low"))));
+            stockFrag_TV_vol.setText("Vol \t" + df.format(Double.parseDouble(jsonStockData.getString("vol"))));
+            String[] range = jsonStockData.getString("year_range").trim().split("-");
+            stockFrag_TV_yRange.setText("Yearly range: \t" + df.format(Double.parseDouble(range[0])) + " - " + df.format(Double.parseDouble(range[1])));
+        }
     }
 
     private void getHistoricPredictionRatio() throws JSONException {

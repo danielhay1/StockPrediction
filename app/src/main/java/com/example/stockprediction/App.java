@@ -18,7 +18,7 @@ public class App extends Application {
         MySignal.Init(this);
         RapidApi.Init(this);
         MyFireBaseServices.getInstance().Init();
-        //MyPreference.getInstance(this).clearStockCache();
+        MyPreference.getInstance(this).clearStockCache();
         setTheme();
     }
 
