@@ -39,7 +39,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +47,7 @@ import java.util.List;
 import co.ankurg.expressview.ExpressView;
 import co.ankurg.expressview.OnCheckListener;
 // implement RapidApi.CallBack_HttpTasks()
-public class StockFragment extends BaseFragment {
+public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
 
     public static final String ARG_PARAM = "stock";
     private Stock stock;
@@ -74,7 +73,7 @@ public class StockFragment extends BaseFragment {
 
     private List<MaterialButton> buttonList; // segmentedControl implementation
     private List<Float> originalStockChart;
-
+    private CallBack_HttpTasks callBack_httpTasks;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,7 +107,7 @@ public class StockFragment extends BaseFragment {
         return view;
     }
 
-    private void updateDataFromAPI(JSONObject json) throws JSONException {
+    private void updateStockData(JSONObject json) throws JSONException {
         JSONObject result = json.getJSONObject("stocks").getJSONObject(stock.getSymbol().toUpperCase());
         stock.setValue(Double.parseDouble(result.getString("regularMarketPrice")));
         stock.setChangeAmount(Double.parseDouble(result.getString("regularMarketChange")));
@@ -137,15 +136,16 @@ public class StockFragment extends BaseFragment {
     }
 
     private void initViews() {
+        RapidApi.getInstance().observe(this);
         stockFrag_EV_likeButton.setOnCheckListener(new OnCheckListener() {
             @Override
             public void onChecked(@org.jetbrains.annotations.Nullable ExpressView expressView) {
                 ArrayList<Stock> stocks = getUser().getFavStocks();
                 stock = stock.setChartData(originalStockChart);
-                Log.d("pttt", "onStockLike: stocks = "+stocks);
+                Log.d("StockFragment", "onStockLike: stocks = "+stocks);
                 if(stocks.add(stock)) {
                     updateUser(getUser().setFavStocks(stocks));
-                    Log.e("pttt", "onStockLike: user="+getUser());
+                    Log.e("StockFragment", "onStockLike: user="+getUser());
                 }
             }
 
@@ -205,7 +205,7 @@ public class StockFragment extends BaseFragment {
                 if (getUser().getFavStocks().contains(stock)) {
                     if(!stockFrag_EV_likeButton.isChecked()) {
                         stockFrag_EV_likeButton.setChecked(true);
-                        Log.d("stock_recycler", "markAsLiked: symbol="+stock.getSymbol() + ", likedStocks="+getUser().getFavStocks());
+                        Log.d("StockFragment", "markAsLiked: symbol="+stock.getSymbol() + ", likedStocks="+getUser().getFavStocks());
                     }
                 } else {
                     stockFrag_EV_likeButton.setChecked(false);
@@ -245,8 +245,6 @@ public class StockFragment extends BaseFragment {
     private void initSegmentButtons(View view) {
 
         buttonList = new ArrayList<>();
-
-
         MaterialButton weekBtn = (MaterialButton) view.findViewById(R.id.stockFrag_BTN_week);
         MaterialButton monthBtn = (MaterialButton) view.findViewById(R.id.stockFrag_BTN_month);
         MaterialButton yearBtn = (MaterialButton) view.findViewById(R.id.stockFrag_BTN_year);
@@ -318,7 +316,7 @@ public class StockFragment extends BaseFragment {
 
 
     private void initChart(Stock stock, com.github.mikephil.charting.charts.LineChart chart) {
-        Log.d("tag-test", "setStockChart:, stockSymbol= " + stock.getSymbol());
+        Log.d("StockFragment", "setStockChart:, stockSymbol= " + stock.getSymbol());
 
         // no description text
         chart.getDescription().setEnabled(false);
@@ -336,7 +334,7 @@ public class StockFragment extends BaseFragment {
     }
 
     private void setData(com.github.mikephil.charting.charts.LineChart chart, List<Float> data) {
-        Log.d("tag-test", "setStockChart:, data= " + data);
+        Log.d("StockFragment", "setStockChart:, data= " + data);
 
         ArrayList<Entry> lineEntries = new ArrayList<Entry>();
         for (int i = 0; i < data.size() ; i++) {
@@ -348,7 +346,6 @@ public class StockFragment extends BaseFragment {
         lineDataSet.setHighlightEnabled(true);
         lineDataSet.setLineWidth(2);
         lineDataSet.setColor(getContext().getColor(R.color.light_gray));
-
         lineDataSet.setDrawHighlightIndicators(true);
         lineDataSet.setHighLightColor(Color.RED);
         if(lineEntries.size()< 7) {
@@ -358,12 +355,10 @@ public class StockFragment extends BaseFragment {
             lineDataSet.setCircleColor(getContext().getColor(R.color.light_gray));
             lineDataSet.setCircleHoleColor(getContext().getColor(R.color.purple_900));
             lineDataSet.setValueTextColor(getContext().getColor(R.color.light_gray));
-        }
-        else {
+        } else {
             lineDataSet.setValueTextSize(0);
             lineDataSet.setDrawCircleHole(false);
             lineDataSet.setDrawCircles(false);
-
         }
 
         LineData lineData = new LineData(lineDataSet);
@@ -387,20 +382,30 @@ public class StockFragment extends BaseFragment {
         chart.invalidate();
     }
 
-    private class MyValueFormatter extends ValueFormatter implements IValueFormatter {
-
-        private DecimalFormat mFormat;
-
-        public MyValueFormatter() {
-            mFormat = new DecimalFormat("###,###,##0.000"); // use one decimal
+    @Override
+    public void onResponse(JSONObject json) {
+        try {
+            String operation = json.getString("operation");
+            if(operation.equalsIgnoreCase(RapidApi.STOCK_OPERATION.GET_QUOTES.name()))
+            {
+                updateStockData(json);
+                setStockData(stock);
+                setExtraData();
+            } else if (operation.equalsIgnoreCase(RapidApi.STOCK_OPERATION.GET_CHART.name())) {
+                setStockChart(stock);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            // write your logic here
-            return mFormat.format(value) + " $"; // e.g. append a dollar-sign
-        }
+
     }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        Log.e("StockFragment", "onErrorResponse: error= "+ error);
+    }
+
     private void setStockData(Stock stock){
         stockFrag_TV_value.setText("$" + stock.getValue());
         stockFrag_TV_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), stockFrag_TV_StockStatusDetails));
@@ -422,7 +427,7 @@ public class StockFragment extends BaseFragment {
             jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON).getJSONObject("stocks").getJSONObject(stock.getSymbol());
         } catch (NullPointerException e) {}
         if(jsonStockData!=null) {
-            Log.d("rtrtrt", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
+            Log.d("StockFragment", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
             stockFrag_TV_open.setText("Open: \t" + df.format(Double.parseDouble(jsonStockData.getString("open"))));
             stockFrag_TV_prevClose.setText("Previous close: \t" + df.format(Double.parseDouble(jsonStockData.getString("prev_close"))));
             stockFrag_TV_high.setText("High: \t" + df.format(Double.parseDouble(jsonStockData.getString("high"))));
@@ -449,11 +454,11 @@ public class StockFragment extends BaseFragment {
                     JSONObject jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+stock.getSymbol()).getJSONObject("stocks").getJSONObject(stock.getSymbol());
                     JSONArray times = jsonStockData.getJSONArray("timestamp");
                     JSONArray values = jsonStockData.getJSONArray("values");
-                    Log.d("rtrtrt", "Current day= " + result);
+                    Log.d("StockFragment", "Current day= " + result);
 
                     if(times != null) {
                         for (int i = 0; i < times.length(); i++) {
-                            Log.d("rtrtrt", "day0= " + MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(0))));
+                            Log.d("StockFragment", "day0= " + MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(0))));
                             String day = MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(i)));
                             String value = String.format("%.2f", Double.parseDouble(values.getString(i)));
                             String predictionValue = " - ";
@@ -467,7 +472,7 @@ public class StockFragment extends BaseFragment {
                                     }
                                 }
                             }
-                            Log.d("rtrtrt", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
+                            Log.d("StockFragment", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
 
 
                             /*for (Prediction p: result.get(day)) {
@@ -494,14 +499,30 @@ public class StockFragment extends BaseFragment {
 
             }
         });
-
-
-
-
     }
 
     private class PredictionRatio {
 
     }
 
+    private class MyValueFormatter extends ValueFormatter implements IValueFormatter {
+
+        private DecimalFormat mFormat;
+
+        public MyValueFormatter() {
+            mFormat = new DecimalFormat("###,###,##0.000"); // use one decimal
+        }
+
+        @Override
+        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+            // write your logic here
+            return mFormat.format(value) + " $"; // e.g. append a dollar-sign
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        RapidApi.getInstance().RemoveObserver(this);
+    }
 }

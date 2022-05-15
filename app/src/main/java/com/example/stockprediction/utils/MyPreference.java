@@ -101,8 +101,8 @@ public class MyPreference {
         return gson.fromJson(getString(key), Stock.class);
     }
 
-    private JSONObject putJsonObject(String key, JSONObject jsonObject, String jsonKey) {
-        JSONObject customJsonObject = StockCacheManager.generateCustomObject(jsonObject,jsonKey);
+    private JSONObject putJsonObject(String key, JSONObject jsonObject, String jsonKey, String operation) {
+        JSONObject customJsonObject = StockCacheManager.generateCustomObject(jsonObject,jsonKey,operation);
         this.putString(key,customJsonObject.toString());
         return customJsonObject;
     }
@@ -186,15 +186,15 @@ public class MyPreference {
     }
 
     // RapidAPI cache store & load:
-    public JSONObject putStocksData(JSONObject jsonObject, String jsonKey, String cacheKey) {
-        return this.putJsonObject(cacheKey,jsonObject,jsonKey);
+    public JSONObject putStocksData(JSONObject jsonObject, String jsonKey, String cacheKey, String operation) {
+        return this.putJsonObject(cacheKey,jsonObject,jsonKey,operation);
     }
 
     public JSONObject getStocksData(String cacheKey) {
         return this.getJsonObject(cacheKey);
     }
 
-    public JSONObject addJsonToStocksData(JSONObject jsonObject, String jsonKey, String cacheKey) throws JSONException {
+    public JSONObject addJsonToStocksData(JSONObject jsonObject, String jsonKey, String cacheKey, String operation) throws JSONException {
         JSONObject json;
         try{
             json = this.getJsonObject(cacheKey);
@@ -202,7 +202,7 @@ public class MyPreference {
             json = new JSONObject();
         }
         Log.e("pttt", "addJsonToStocksData: run after catch");
-        this.putJsonObject(cacheKey,jsonObject,jsonKey);
+        this.putJsonObject(cacheKey,jsonObject,jsonKey, operation);
         return json;
     }
 
@@ -226,11 +226,12 @@ public class MyPreference {
             return cacheTimeStamp < refreshTimeStamp;
         }
 
-        public static JSONObject generateCustomObject(JSONObject json, String jsonKey) {
+        public static JSONObject generateCustomObject(JSONObject json, String jsonKey, String operation) {
             JSONObject customJson = new JSONObject();
             try {
                 customJson.put("request_day",MyTimeStamp.getCurrentDay());
                 customJson.put("request_timestamp",System.currentTimeMillis()/1000);
+                customJson.put("operation",operation);
                 //customJson.put("stocks",json);
                 customJson.put(jsonKey,json);
             } catch (JSONException e) {
