@@ -46,6 +46,7 @@ public class ProfileFragment extends BaseFragment {
     private TextView profile_TV_favStocks;
     private FloatingActionButton profile_FAB_editImage;
     private CircleImageView imageview_account_profile;
+
     // Edit layout
     private LinearLayout profile_LAYOUT_editUser;
 

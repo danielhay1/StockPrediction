@@ -2,11 +2,13 @@ package com.example.stockprediction.fragments;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +77,29 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
     private List<Float> originalStockChart;
     private CallBack_HttpTasks callBack_httpTasks;
 
+    // Prediction Additional details:
+    private TextView stockFrag_TV_sundayTitle;
+    private TextView stockFrag_TV_mondayTitle;
+    private TextView stockFrag_TV_tuesdayTitle;
+    private TextView stockFrag_TV_wednesdayTitle;
+    private TextView stockFrag_TV_thursdayTitle;
+    private TextView stockFrag_TV_fridayTitle;
+    private TextView stockFrag_TV_saturdayTitle;
+    private TextView stockFrag_TV_sundayPrediction;
+    private TextView stockFrag_TV_mondayPrediction;
+    private TextView stockFrag_TV_tuesdayPrediction;
+    private TextView stockFrag_TV_wednesdayPrediction;
+    private TextView stockFrag_TV_thursdayPrediction;
+    private TextView stockFrag_TV_fridayPrediction;
+    private TextView stockFrag_TV_saturdayPrediction;
+    private TextView stockFrag_TV_sundayActual;
+    private TextView stockFrag_TV_mondayActual;
+    private TextView stockFrag_TV_tuesdayActual;
+    private TextView stockFrag_TV_wednesdayActual;
+    private TextView stockFrag_TV_thursdayActual;
+    private TextView stockFrag_TV_fridayActual;
+    private TextView stockFrag_TV_saturdayActual;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +124,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
         setStockData(stock);
         try {
             setExtraData();
-            getHistoricPredictionRatio(); // TODO: move to a action
+            getHistoricPredictionRatio();
         } catch (JSONException e) {
             Log.e("StockFragment", "JSONException error = " + e);
         }
@@ -133,6 +158,31 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
         stockFrag_TV_predictionValue = view.findViewById(R.id.stockFrag_TV_predictionValue);
         stockFrag_EL_expandableLayout = view.findViewById(R.id.stockFrag_EL_expandableLayout);
         stockFrag_BTN_expandButton = view.findViewById(R.id.stockFrag_BTN_expandButton);
+
+        // Prediction Additional details:
+        this.stockFrag_TV_sundayPrediction = view.findViewById(R.id.stockFrag_TV_sundayPrediction);
+        this.stockFrag_TV_mondayPrediction = view.findViewById(R.id.stockFrag_TV_mondayPrediction);
+        this.stockFrag_TV_tuesdayPrediction = view.findViewById(R.id.stockFrag_TV_tuesdayPrediction);
+        this.stockFrag_TV_wednesdayPrediction = view.findViewById(R.id.stockFrag_TV_wednesdayPrediction);
+        this.stockFrag_TV_thursdayPrediction = view.findViewById(R.id.stockFrag_TV_thursdayPrediction);
+        this.stockFrag_TV_fridayPrediction = view.findViewById(R.id.stockFrag_TV_fridayPrediction);
+        this.stockFrag_TV_saturdayPrediction = view.findViewById(R.id.stockFrag_TV_saturdayPrediction);
+        this.stockFrag_TV_sundayActual = view.findViewById(R.id.stockFrag_TV_sundayActual);
+        this.stockFrag_TV_mondayActual = view.findViewById(R.id.stockFrag_TV_mondayActual);
+        this.stockFrag_TV_tuesdayActual = view.findViewById(R.id.stockFrag_TV_tuesdayActual);
+        this.stockFrag_TV_wednesdayActual = view.findViewById(R.id.stockFrag_TV_wednesdayActual);
+        this.stockFrag_TV_thursdayActual = view.findViewById(R.id.stockFrag_TV_thursdayActual);
+        this.stockFrag_TV_fridayActual = view.findViewById(R.id.stockFrag_TV_fridayActual);
+        this.stockFrag_TV_saturdayActual = view.findViewById(R.id.stockFrag_TV_saturdayActual);
+        this.stockFrag_TV_sundayTitle = view.findViewById(R.id.stockFrag_TV_sundayTitle);
+        this.stockFrag_TV_mondayTitle = view.findViewById(R.id.stockFrag_TV_mondayTitle);
+        this.stockFrag_TV_tuesdayTitle = view.findViewById(R.id.stockFrag_TV_tuesdayTitle);
+        this.stockFrag_TV_wednesdayTitle = view.findViewById(R.id.stockFrag_TV_wednesdayTitle);
+        this.stockFrag_TV_thursdayTitle = view.findViewById(R.id.stockFrag_TV_thursdayTitle);
+        this.stockFrag_TV_fridayTitle = view.findViewById(R.id.stockFrag_TV_fridayTitle);
+        this.stockFrag_TV_saturdayTitle = view.findViewById(R.id.stockFrag_TV_saturdayTitle);
+
+
     }
 
     private void initViews() {
@@ -222,12 +272,21 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
             textView.setTextColor(getContext().getColor(R.color.green_200));
         }
     }
-    private String getStockChangeDetails(double stockChangeAmount, double stockChangePercent,TextView textView){
+    private String getStockChangeDetails(double stockChangeAmount, double stockChangePercent){
         if(stockChangeAmount == 0) {
             return "None.";
+
         }
         String sign = (stockChangeAmount> 0) ? "+" : "";
         return sign+String.format("%.2f", stockChangeAmount) + "(" + String.format("%.2f", stockChangePercent)+ "%)";
+    }
+
+    private String getStringSignedValue(double value) {
+        if(value == 0) {
+            return "None.";
+        }
+        String sign = (value> 0) ? "+" : "";
+        return sign+String.format("%.2f", value);
     }
 
     private void setStockChart(Stock stock) {
@@ -408,14 +467,14 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
 
     private void setStockData(Stock stock){
         stockFrag_TV_value.setText("$" + stock.getValue());
-        stockFrag_TV_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), stockFrag_TV_StockStatusDetails));
+        stockFrag_TV_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent()));
         setTextViewColor(stockFrag_TV_StockStatusDetails);
         //.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
         setImg(stock.getStockImg(),stockFrag_IMG_stockImg);
         setStockStatusImg(stockFrag_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
         stockFrag_TV_name.setText(stock.getName());
         stockFrag_TV_symbol.setText(stock.getSymbol());
-        stockFrag_TV_predictionValue.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), stockFrag_TV_predictionValue));
+        stockFrag_TV_predictionValue.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue())));
         setStockChart(stock);
         markLikedStocks(stock);
     }
@@ -460,20 +519,71 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                         for (int i = 0; i < times.length(); i++) {
                             Log.d("StockFragment", "day0= " + MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(0))));
                             String day = MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(i)));
-                            String value = String.format("%.2f", Double.parseDouble(values.getString(i)));
-                            String predictionValue = " - ";
-                            String actualValue = " - ";
+                            TextView predictionTV;
+                            TextView actualTV;
+                            TextView dayTv;
+
+                            switch(day) {
+                                case "Sunday":
+                                    predictionTV = stockFrag_TV_sundayPrediction;
+                                    actualTV = stockFrag_TV_sundayActual;
+                                    dayTv = stockFrag_TV_sundayTitle;
+                                    break;
+                                case "Monday":
+                                    predictionTV = stockFrag_TV_mondayPrediction;
+                                    actualTV = stockFrag_TV_mondayActual;
+                                    dayTv = stockFrag_TV_mondayTitle;
+                                    break;
+                                case "Tuesday":
+                                    predictionTV = stockFrag_TV_tuesdayPrediction;
+                                    actualTV = stockFrag_TV_tuesdayActual;
+                                    dayTv = stockFrag_TV_tuesdayTitle;
+                                    break;
+                                case "Wednesday":
+                                    predictionTV = stockFrag_TV_wednesdayPrediction;
+                                    actualTV = stockFrag_TV_wednesdayActual;
+                                    dayTv = stockFrag_TV_wednesdayTitle;
+                                    break;
+                                case "Thursday":
+                                    predictionTV = stockFrag_TV_thursdayPrediction;
+                                    actualTV = stockFrag_TV_thursdayActual;
+                                    dayTv = stockFrag_TV_thursdayTitle;
+                                    break;
+                                case "Friday":
+                                    predictionTV = stockFrag_TV_fridayPrediction;
+                                    actualTV = stockFrag_TV_fridayActual;
+                                    dayTv = stockFrag_TV_fridayTitle;
+                                    break;
+                                case "Saturday":
+                                    predictionTV = stockFrag_TV_saturdayPrediction;
+                                    actualTV = stockFrag_TV_saturdayActual;
+                                    dayTv = stockFrag_TV_saturdayTitle;
+                                    break;
+                                default:
+                                    throw new IllegalStateException("Unexpected value: day= " + day);
+                            }
+                            if(day.equalsIgnoreCase(MyTimeStamp.getCurrentDay())) {
+                                dayTv.setTypeface(dayTv.getTypeface(), Typeface.BOLD);
+                                dayTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+                            }
+                            double value = Double.parseDouble(values.getString(i));
+                            double predictionValue = 0;
+                            double actualValue = 0;
                             if(result.get(day) != null) {
                                 for (Prediction p: result.get(day)) {
                                     if(stock.getSymbol().equalsIgnoreCase(p.getTargetSymbol())) {
-                                        predictionValue = String.valueOf(p.getPoints());
-                                        actualValue = String.valueOf(p.getActualValue());
+                                        predictionValue = p.getPoints();
+                                        actualValue = p.getActualValue();
                                         break;
                                     }
                                 }
                             }
                             Log.d("StockFragment", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
-
+                            // TODO: Normal values to %.2f, color the values by +/-.
+                            predictionTV.setText(getStringSignedValue(predictionValue));
+                            actualTV.setText(getStringSignedValue(actualValue));
+                            setTextViewColor(predictionTV);
+                            setTextViewColor(actualTV);
 
                             /*for (Prediction p: result.get(day)) {
                                 if(p.getTargetSymbol().equalsIgnoreCase(stock.getSymbol())) {
@@ -482,9 +592,10 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                                     break;
                                 }
                             }*/
+
+
                         }
                     }
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
