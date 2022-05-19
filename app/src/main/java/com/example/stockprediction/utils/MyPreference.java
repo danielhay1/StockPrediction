@@ -143,16 +143,6 @@ public class MyPreference {
         this.putObject(KEYS.FAV_STOCKS,stocks);
     }
 
-    public void removeFavStock(Stock stock) {
-        ArrayList<Stock> favStocks = getUserFavStocks();
-        favStocks.remove(stock);
-        putFavStockArrayList(favStocks);
-    }
-
-    public void removeFavStocks() {
-        this.deleteKey(KEYS.FAV_STOCKS);
-    }
-
     public void deleteKey(String key) {
         Log.d("pttt", "deleteKey, key= "+key);
         SharedPreferences.Editor editor = this.sharedPreferences.edit();
@@ -268,7 +258,7 @@ public class MyPreference {
         public static void Init(Context appContext) {
             if (instance == null) {
                 synchronized (lock) {
-                    Log.d("pttt", "Init: SettingsInspector");
+                    Log.d("SettingsInspector", "Init: SettingsInspector");
                     instance = new SettingsInspector(appContext);
                 }
             }
@@ -287,5 +277,11 @@ public class MyPreference {
         public String getTheme_mode() {
             return sharedPreferences.getString(theme_mode,context.getString(R.string.settings_theme_default));
         }
+        public void cleanPreference() {
+            Log.d("SettingsInspector", "deleteAll" +
+                    "Data");
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();        }
     }
 }

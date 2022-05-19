@@ -7,12 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.activites.MainActivity;
+import com.example.stockprediction.utils.firebase.MyFireBaseServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 public class PreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private PreferenceManager myPerf;
@@ -22,7 +29,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
     public static String theme_mode;
     public static String notification_mode;
     private ListPreference themePreference;
-    private ListPreference notificationPreference;
+    private SwitchPreference notificationPreference;
+    private Preference aboutUsBtn;
     /*
      - To access shared preference inside this fragment use -> myPerf.
      - To access shared preference outside this fragment use :
@@ -31,9 +39,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
              Context.MODE_PRIVATE);
      */
 
-    private void findPreferences() {
+    private void initPreferences() {
         themePreference = (ListPreference) findPreference(getContext().getResources().getString(R.string.settings_theme_key));
-        notificationPreference = (ListPreference) findPreference(getContext().getResources().getString(R.string.settings_notification_key));
+        notificationPreference = (SwitchPreference) findPreference(getContext().getResources().getString(R.string.settings_notification_key));
+        aboutUsBtn = (Preference) findPreference("about_us");
         themePreference.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue != null) {
                 Log.d("pttt", "onSharedPreferenceChanged: theme = " + newValue);
@@ -56,19 +65,22 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         });
         notificationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue != null) {
-                Log.d("pttt", "onSharedPreferenceChanged: theme = " + newValue);
-                switch (newValue.toString().toLowerCase()) {
-                    case "all predictions":
-                        break;
-                    case "favorite stocks":
-                        break;
-                    case "none":
-                        break;
+                Log.d("pttt", "onSharedPreferenceChanged: notification = " + newValue);
+                if(newValue == "true") {
+                    MyFireBaseServices.getInstance().registerPredictionTopic(task -> {});
+                } else {
+                    MyFireBaseServices.getInstance().unregisterPredictionTopic();
                 }
                 //notificationPreference.setSummary(notificationVal);
             }
-            preference.setSummary((CharSequence) newValue);
             return true;
+        });
+        aboutUsBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                ((MainActivity)getActivity()).openAboutUsFragment();
+                return false;
+            }
         });
     }
 
@@ -88,10 +100,9 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         String currentThemeValue = myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),"");
         String currentNotificationValue = myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_notification_key),"");
         setSummary(currentThemeValue,themePreference);
-        setSummary(currentNotificationValue,notificationPreference);
         setDefaultValue(currentThemeValue,themePreference);
-        setDefaultValue(currentNotificationValue,notificationPreference);
-
+        Log.d("preferences_fragment", "initListPreference: settings_notification= "+ currentNotificationValue);
+        notificationPreference.setChecked(Boolean.parseBoolean(currentNotificationValue));
     }
 
     @Override
@@ -101,7 +112,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         // Define the settings file to use by this settings fragment
         myPerf = getPreferenceManager();
         myPerf.setSharedPreferencesName(SETTINGS_SHARED_PREFERENCES);
-        findPreferences();
+        initPreferences();
         Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+ myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_notification_key),"X"));
         Log.d("preferences_fragment", "onCreatePreferences: settings_theme=" + myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),"X"));
         initListPreference();

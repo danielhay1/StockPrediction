@@ -28,7 +28,6 @@
     <string name="settings_theme_default">Same as system</string>
 
 
-
     <!--User login\creation-->
     <string name="password_constraint">Password must contain at least 6 characters</string>
     <string name="name_constraint">No name inserted</string>

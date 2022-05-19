@@ -3,13 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:title="@string/general_title">
-        <ListPreference
+        <SwitchPreference
             android:key="@string/settings_notification_key"
-            android:title="@string/notfication_title"
-            android:dialogTitle="@string/notfication_title"
-            android:entries="@array/notfication_values"
-            android:defaultValue="@string/settings_notification_default"
-            android:entryValues="@array/notfication_values"/>
+            android:title="@string/notfication_title"/>
         <ListPreference
             android:key="@string/settings_theme_key"
             android:title="@string/theme_title"
@@ -22,11 +18,12 @@
     <PreferenceCategory
         android:title="@string/about_title">
         <Preference
+            android:title="About Us"
+            android:key="about_us"/>
+        <intent android:action="android.intent.action.VIEW"
+            android:data="http://codepath.com/" />
+        <Preference
             android:title="@string/version_title"
             android:summary="@string/version_number"/>
-        <Preference
-            android:title="About Us"/>
-            <intent android:action="android.intent.action.VIEW"
-                android:data="http://codepath.com/" />
     </PreferenceCategory>
 </PreferenceScreen>

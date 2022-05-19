@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.widget.TextView;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.fragments.AboutUsFragment;
 import com.example.stockprediction.fragments.PreferencesFragment;
 import com.example.stockprediction.fragments.StockFragment;
 import com.example.stockprediction.fragments.StockRecyclerFragment.FavoritiesFragment;
@@ -33,6 +34,7 @@ import com.example.stockprediction.fragments.StockRecyclerFragment.SearchViewMod
 import com.example.stockprediction.fragments.ProfileFragment;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.ImageTools;
+import com.example.stockprediction.utils.MyPreference;
 import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -231,12 +233,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if(result.getImageUrl() != null) {
                     ImageTools.glideSetImageByStrUrl(activity,result.getImageUrl(),nav_IMGVIEW_userImg);
                 }
-                MyFireBaseServices.getInstance().registerPredictionTopic(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-
-                    }
-                });
+                String notificationLevelVal = MyPreference.SettingsInspector.getInstance(getApplicationContext()).getNotification_mode();
+                if(Boolean.parseBoolean(notificationLevelVal)) {
+                    MyFireBaseServices.getInstance().registerPredictionTopic(task -> {});
+                }
             }
 
             @Override
@@ -297,6 +297,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigateById(R.layout.fragment_stock,argKey,arg);
     }
 
+    public void openAboutUsFragment() {
+        navigateById(R.layout.fragment_about_us);
+    }
+
+
     private void navigateById(int itemId, String argKey, String arg) {
         displayingFragmentId = itemId;
         Fragment fragment;
@@ -332,8 +337,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 replaceFragment(fragment,argKey,arg);
                 break;
 
-            case R.id.nav_share:
+            case R.id.nav_about_us:
                 MySignal.getInstance().toast("share");
+                enableSearchView(false);
+                fragment = new StockFragment();
+                replaceFragment(fragment,argKey,arg);
                 break;
 
             case R.id.version:
@@ -371,8 +379,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 replaceFragment(new StockFragment());
                 break;
 
-            case R.id.nav_share:
-                MySignal.getInstance().toast("Share");
+            case R.id.nav_about_us:
+                Log.d("main_activity", "Switch to AboutUsFragment");
+                enableSearchView(false);
+                replaceFragment(new AboutUsFragment());
                 break;
 
             case R.id.version:

@@ -11,6 +11,7 @@ import com.example.stockprediction.utils.MyPreference;
 import com.example.stockprediction.utils.MySignal;
 
 public class App extends Application {
+
     @Override
     public void onCreate() {
         super.onCreate();

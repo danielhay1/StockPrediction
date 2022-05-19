@@ -21,7 +21,7 @@ public class PushNotificationService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         Log.d("push_notification_service", "PushNotificationService: onMessageReceived, body= "+remoteMessage.getNotification().getBody());
         if(remoteMessage.getNotification() != null) {
-            SendNotificationManager(remoteMessage);
+            showNotification(remoteMessage);
         }
         super.onMessageReceived(remoteMessage);
     }
@@ -42,41 +42,6 @@ public class PushNotificationService extends FirebaseMessagingService {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra(MainActivity.FRAGMENT_TO_LOAD, R.id.nav_favorities); // -> In case of calling MainActivity, I can specify the fragment to load.
         MySignal.getInstance().showNotification(this, CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
-    }
-
-    private void SendNotificationManager(RemoteMessage remoteMessage) { //TODO: finish implementaion
-        String notificationLevelVal = MyPreference.SettingsInspector.getInstance(this).getNotification_mode();
-        if (notificationLevelVal != null) {
-            Log.d("push_notification_service", "SendNotificationManager: notificationLevelVal = " + notificationLevelVal);
-            switch (notificationLevelVal.toLowerCase()) {
-                case "all predictions":
-                    showNotification(remoteMessage);
-                    break;
-                case "favorite stocks":
-                    String[] symbolArr = remoteMessage.getNotification().getBody().split(",");
-                    MyFireBaseServices.getInstance().loadUserFromFireBase(new MyFireBaseServices.FB_Request_Callback<User>() {
-                        @Override
-                        public void OnSuccess(User result) {
-                            for (String symbol : symbolArr) {
-                                for (int i = 0; i < result.getFavStocks().size(); i++) {
-                                    if (symbol.equalsIgnoreCase(result.getFavStocks().get(i).getSymbol())) {
-                                        showNotification(remoteMessage);
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void OnFailure(Exception e) {
-                            Log.d("push_notification_service", "SendNotificationManager: error= " + e);
-                        }
-                    });
-                    break;
-                case "none":
-                    break;
-            }
-        }
     }
 
     /*

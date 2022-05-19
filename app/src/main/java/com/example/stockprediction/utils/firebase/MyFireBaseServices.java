@@ -244,11 +244,16 @@ public class MyFireBaseServices {
 
     // Cloud messaging:
     public void registerPredictionTopic(OnCompleteListener onCompleteListener) {
+        Log.d("my_firebase_services", "registerPredictionTopic: "+PREDICTION_NOTIFICATIONS_TOPIC);
         if(onCompleteListener != null) {
             registerTopic(PREDICTION_NOTIFICATIONS_TOPIC,onCompleteListener);
         } else {
             registerTopic(PREDICTION_NOTIFICATIONS_TOPIC);
         }
+    }
+    public void unregisterPredictionTopic() {
+        Log.d("my_firebase_services", "unregisterPredictionTopic: "+PREDICTION_NOTIFICATIONS_TOPIC);
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(PREDICTION_NOTIFICATIONS_TOPIC);
     }
 
     private void registerTopic(String topic, OnCompleteListener onCompleteListener) {
