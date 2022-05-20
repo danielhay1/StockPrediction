@@ -1,6 +1,8 @@
 package com.example.stockprediction.utils.firebase;
 
+import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,7 @@ import com.example.stockprediction.activites.MainActivity;
 import com.example.stockprediction.objects.User;
 import com.example.stockprediction.utils.MyPreference;
 import com.example.stockprediction.utils.MySignal;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -44,7 +47,17 @@ public class PushNotificationService extends FirebaseMessagingService {
         MySignal.getInstance().showNotification(this, CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
     }
 
+    public static void printToken(Context context) {
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
+            if (!TextUtils.isEmpty(token)) {
+                Log.d("PushNotificationService", "retrieve token successful : " + token);
+            } else{
+                Log.e("PushNotificationService", "token should not be null...");
+            }
+        });
+    }
     /*
+
     MESSAGING DESCRIPTION:
     {
     "to": "/topic/PREDICTIONS_PUSH",

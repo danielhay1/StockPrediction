@@ -37,6 +37,7 @@ import com.example.stockprediction.utils.ImageTools;
 import com.example.stockprediction.utils.MyPreference;
 import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.example.stockprediction.utils.MySignal;
+import com.example.stockprediction.utils.firebase.PushNotificationService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         initListeners();
         initFragment(false,savedInstanceState);
+        PushNotificationService.printToken(this);
     }
 
     private boolean isNetworkAvailable() {

@@ -61,6 +61,18 @@ public class RapidApi {
         MY_STOCKS.put("Dell", "DELL");
         MY_STOCKS.put("Amdocs", "DOX");
 
+        MY_STOCKS.put("Wix", "WIX");
+        MY_STOCKS.put("Analog devices", "ADI");
+        MY_STOCKS.put("Applied materials", "AMAT");
+        MY_STOCKS.put("Broadcom", "AVGO");
+        MY_STOCKS.put("Electronic arts", "EA");
+        MY_STOCKS.put("Micron", "MU");
+        MY_STOCKS.put("Western digital", "WDC");
+        MY_STOCKS.put("Tencent", "TCEHY");
+        MY_STOCKS.put("Amd", "AMD");
+        MY_STOCKS.put("Walmart", "WMT");
+        MY_STOCKS.put("Oracle", "ORCL");
+
         //MY_STOCKS.put("Advanced Micro Devices", "AMD");
         //MY_STOCKS.put("Siemens", "SIEGY");
 
@@ -262,7 +274,8 @@ public class RapidApi {
                     // TODO: Handle error
                     if(error.networkResponse.statusCode == 429 && operation == STOCK_OPERATION.GET_CHART) {
                         Log.d("rapid_api", "onResponse: VolleyError = 429, retrying request");
-                        Long delay = Long.valueOf(new Random().nextInt(3)+1)*1000; // wait 1-3 sec
+                        //Long delay = Long.valueOf(new Random().nextInt(3)+1)*1000; // wait 1-3 sec
+                        Long delay = 5000L;
                         if (operation == STOCK_OPERATION.GET_CHART) {
                             new MyAsyncTask().executeDelayBgTask(() -> { // Sleep delay sec then retry request
                                 getChartRequest(symbol, callBack_httpTasks);
@@ -311,7 +324,8 @@ public class RapidApi {
                 }, error -> {
                     // TODO: Handle error
                     if(error.networkResponse.statusCode == 429) {
-                        Long delay = Long.valueOf(new Random().nextInt(3)+1)*1000; // wait 1-3 sec
+                        //Long delay = Long.valueOf(new Random().nextInt(3)+1)*1000; // wait 1-3 sec
+                        Long delay = 5000L;
                         Log.d("rapid_api", "onResponse: VolleyError = 429, retrying request");
                         new MyAsyncTask().executeDelayBgTask(() -> { // Sleep 1 sec then generate ALLOWED_REQUEST_PER_SEC API requests per sec
                             httpGetChartCustomRange(symbol, finalRange, callBack_httpTasks);

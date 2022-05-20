@@ -9,6 +9,7 @@ import com.example.stockprediction.apis.RapidApi;
 import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.example.stockprediction.utils.MyPreference;
 import com.example.stockprediction.utils.MySignal;
+import com.example.stockprediction.utils.firebase.PushNotificationService;
 
 public class App extends Application {
 

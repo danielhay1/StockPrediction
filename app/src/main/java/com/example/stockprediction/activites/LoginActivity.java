@@ -125,6 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("LoginActivity", "signInWithEmailAndPassword: ignInWithEmail:success");
+                            MyFireBaseServices.getInstance().login(); // set FBUser
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -232,7 +233,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.d("LoginActivity", "createUserWithEmailAndPassword: createUserWithEmail:failure", task.getException());
-                            MySignal.getInstance().toast("Authentication failed.");
+                            MySignal.getInstance().toast("There is an existing user with this email address.");
                             login_PB.setVisibility(View.INVISIBLE);
                         }
                     }

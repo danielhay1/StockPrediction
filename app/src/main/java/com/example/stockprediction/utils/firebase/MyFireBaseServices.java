@@ -149,7 +149,8 @@ public class MyFireBaseServices {
 
 
     public void loadUserFromFireBase(FB_Request_Callback<User> valueEventListener) {
-        loadObjectFromFireBase(MY_USERS, firebaseUser.getUid(), new MyValueEventListener<User>(User.class, valueEventListener));
+        if(firebaseUser != null)
+            loadObjectFromFireBase(MY_USERS, firebaseUser.getUid(), new MyValueEventListener<User>(User.class, valueEventListener));
     }
 
     // Image load\store methods:
@@ -250,6 +251,7 @@ public class MyFireBaseServices {
         } else {
             registerTopic(PREDICTION_NOTIFICATIONS_TOPIC);
         }
+
     }
     public void unregisterPredictionTopic() {
         Log.d("my_firebase_services", "unregisterPredictionTopic: "+PREDICTION_NOTIFICATIONS_TOPIC);
