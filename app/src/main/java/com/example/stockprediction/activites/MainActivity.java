@@ -81,13 +81,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         progress.show();
         loadNewUser();
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         initListeners();
         initFragment(false,savedInstanceState);
-        PushNotificationService.printToken(this);
+        //PushNotificationService.printToken(this);
     }
 
     private boolean isNetworkAvailable() {
