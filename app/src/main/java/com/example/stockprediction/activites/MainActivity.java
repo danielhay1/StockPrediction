@@ -304,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void openAboutUsFragment() {
         navigateById( R.id.nav_about_us);
+        navigationView.setCheckedItem(R.id.nav_about_us);
     }
 
 

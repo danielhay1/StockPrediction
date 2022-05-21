@@ -83,7 +83,7 @@ public class ProfileFragment extends BaseFragment {
     }
 
     public void findViews(View view) {
-        this.profile_BTN_edit = view.findViewById(R.id.profile_BTN_edit);
+        //this.profile_BTN_edit = view.findViewById(R.id.profile_BTN_edit);
         this.profile_BTN_Settings = view.findViewById(R.id.profile_BTN_Settings);
         this.profile_BTN_Logout = view.findViewById(R.id.profile_BTN_Logout);
         this.profile_TV_username = view.findViewById(R.id.profile_TV_username);
@@ -94,13 +94,13 @@ public class ProfileFragment extends BaseFragment {
     }
 
     public void initViews() {
-        profile_BTN_edit.setOnClickListener(v -> {
+//        profile_BTN_edit.setOnClickListener(v -> {
 //            Fragment fragment = new EditProfileFragment();
 //            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 //            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //            fragmentTransaction.replace(R.id.profile_BTN_edit, fragment);
 //            fragmentTransaction.commit();
-        });
+//        });
         profile_FAB_editImage.setOnClickListener(v -> uploadImage());
         profile_BTN_Logout.setOnClickListener(v-> MyFireBaseServices.getInstance().signOut(getActivity()));
         profile_BTN_Settings.setOnClickListener(v-> ((MainActivity)getActivity()).openPreferenceFragment());
@@ -149,6 +149,8 @@ public class ProfileFragment extends BaseFragment {
                     symbolList.add(stock.getSymbol());
                 }
                 profile_TV_favStocks.setText("Favorite stocks: " + symbolList.toString());
+            } else {
+                profile_TV_favStocks.setText("Favorite stocks: None");
             }
             if(user.getImageUrl() != null && !user.getImageUrl().equalsIgnoreCase("")) {
                 ImageTools.glideSetImageByStrUrl(getActivity(),user.getImageUrl(),imageview_account_profile);

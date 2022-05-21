@@ -78,27 +78,21 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
     private CallBack_HttpTasks callBack_httpTasks;
 
     // Prediction Additional details:
-    private TextView stockFrag_TV_sundayTitle;
     private TextView stockFrag_TV_mondayTitle;
     private TextView stockFrag_TV_tuesdayTitle;
     private TextView stockFrag_TV_wednesdayTitle;
     private TextView stockFrag_TV_thursdayTitle;
     private TextView stockFrag_TV_fridayTitle;
-    private TextView stockFrag_TV_saturdayTitle;
-    private TextView stockFrag_TV_sundayPrediction;
     private TextView stockFrag_TV_mondayPrediction;
     private TextView stockFrag_TV_tuesdayPrediction;
     private TextView stockFrag_TV_wednesdayPrediction;
     private TextView stockFrag_TV_thursdayPrediction;
     private TextView stockFrag_TV_fridayPrediction;
-    private TextView stockFrag_TV_saturdayPrediction;
-    private TextView stockFrag_TV_sundayActual;
     private TextView stockFrag_TV_mondayActual;
     private TextView stockFrag_TV_tuesdayActual;
     private TextView stockFrag_TV_wednesdayActual;
     private TextView stockFrag_TV_thursdayActual;
     private TextView stockFrag_TV_fridayActual;
-    private TextView stockFrag_TV_saturdayActual;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,13 +114,13 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
         View view = inflater.inflate(R.layout.fragment_stock, container, false);
         findViews(view);
         initViews();
-        Log.d("StockFragment", "onCreate: stock = "+stock.getValue());
+        Log.d("stock_fragment", "onCreate: stock = "+stock.getValue());
         setStockData(stock);
         try {
             setExtraData();
             getHistoricPredictionRatio();
         } catch (JSONException e) {
-            Log.e("StockFragment", "JSONException error = " + e);
+            Log.e("stock_fragment", "JSONException error = " + e);
         }
         initSegmentButtons(view);
         return view;
@@ -160,27 +154,21 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
         stockFrag_BTN_expandButton = view.findViewById(R.id.stockFrag_BTN_expandButton);
 
         // Prediction Additional details:
-        this.stockFrag_TV_sundayPrediction = view.findViewById(R.id.stockFrag_TV_sundayPrediction);
         this.stockFrag_TV_mondayPrediction = view.findViewById(R.id.stockFrag_TV_mondayPrediction);
         this.stockFrag_TV_tuesdayPrediction = view.findViewById(R.id.stockFrag_TV_tuesdayPrediction);
         this.stockFrag_TV_wednesdayPrediction = view.findViewById(R.id.stockFrag_TV_wednesdayPrediction);
         this.stockFrag_TV_thursdayPrediction = view.findViewById(R.id.stockFrag_TV_thursdayPrediction);
         this.stockFrag_TV_fridayPrediction = view.findViewById(R.id.stockFrag_TV_fridayPrediction);
-        this.stockFrag_TV_saturdayPrediction = view.findViewById(R.id.stockFrag_TV_saturdayPrediction);
-        this.stockFrag_TV_sundayActual = view.findViewById(R.id.stockFrag_TV_sundayActual);
         this.stockFrag_TV_mondayActual = view.findViewById(R.id.stockFrag_TV_mondayActual);
         this.stockFrag_TV_tuesdayActual = view.findViewById(R.id.stockFrag_TV_tuesdayActual);
         this.stockFrag_TV_wednesdayActual = view.findViewById(R.id.stockFrag_TV_wednesdayActual);
         this.stockFrag_TV_thursdayActual = view.findViewById(R.id.stockFrag_TV_thursdayActual);
         this.stockFrag_TV_fridayActual = view.findViewById(R.id.stockFrag_TV_fridayActual);
-        this.stockFrag_TV_saturdayActual = view.findViewById(R.id.stockFrag_TV_saturdayActual);
-        this.stockFrag_TV_sundayTitle = view.findViewById(R.id.stockFrag_TV_sundayTitle);
         this.stockFrag_TV_mondayTitle = view.findViewById(R.id.stockFrag_TV_mondayTitle);
         this.stockFrag_TV_tuesdayTitle = view.findViewById(R.id.stockFrag_TV_tuesdayTitle);
         this.stockFrag_TV_wednesdayTitle = view.findViewById(R.id.stockFrag_TV_wednesdayTitle);
         this.stockFrag_TV_thursdayTitle = view.findViewById(R.id.stockFrag_TV_thursdayTitle);
         this.stockFrag_TV_fridayTitle = view.findViewById(R.id.stockFrag_TV_fridayTitle);
-        this.stockFrag_TV_saturdayTitle = view.findViewById(R.id.stockFrag_TV_saturdayTitle);
 
 
     }
@@ -192,10 +180,10 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
             public void onChecked(@org.jetbrains.annotations.Nullable ExpressView expressView) {
                 ArrayList<Stock> stocks = getUser().getFavStocks();
                 stock = stock.setChartData(originalStockChart);
-                Log.d("StockFragment", "onStockLike: stocks = "+stocks);
+                Log.d("stock_fragment", "onStockLike: stocks = "+stocks);
                 if(stocks.add(stock)) {
                     updateUser(getUser().setFavStocks(stocks));
-                    Log.e("StockFragment", "onStockLike: user="+getUser());
+                    Log.e("stock_fragment", "onStockLike: user="+getUser());
                 }
             }
 
@@ -255,7 +243,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                 if (getUser().getFavStocks().contains(stock)) {
                     if(!stockFrag_EV_likeButton.isChecked()) {
                         stockFrag_EV_likeButton.setChecked(true);
-                        Log.d("StockFragment", "markAsLiked: symbol="+stock.getSymbol() + ", likedStocks="+getUser().getFavStocks());
+                        Log.d("stock_fragment", "markAsLiked: symbol="+stock.getSymbol() + ", likedStocks="+getUser().getFavStocks());
                     }
                 } else {
                     stockFrag_EV_likeButton.setChecked(false);
@@ -375,7 +363,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
 
 
     private void initChart(Stock stock, com.github.mikephil.charting.charts.LineChart chart) {
-        Log.d("StockFragment", "setStockChart:, stockSymbol= " + stock.getSymbol());
+        Log.d("stock_fragment", "setStockChart:, stockSymbol= " + stock.getSymbol());
 
         // no description text
         chart.getDescription().setEnabled(false);
@@ -393,7 +381,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
     }
 
     private void setData(com.github.mikephil.charting.charts.LineChart chart, List<Float> data) {
-        Log.d("StockFragment", "setStockChart:, data= " + data);
+        Log.d("stock_fragment", "setStockChart:, data= " + data);
 
         ArrayList<Entry> lineEntries = new ArrayList<Entry>();
         for (int i = 0; i < data.size() ; i++) {
@@ -462,7 +450,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        Log.e("StockFragment", "onErrorResponse: error= "+ error);
+        Log.e("stock_fragment", "onErrorResponse: error= "+ error);
     }
 
     private void setStockData(Stock stock){
@@ -486,7 +474,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
             jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.STOCKS_DATA_JSON).getJSONObject("stocks").getJSONObject(stock.getSymbol());
         } catch (NullPointerException e) {}
         if(jsonStockData!=null) {
-            Log.d("StockFragment", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
+            Log.d("stock_fragment", "setExtraData: " + "Open:\t" + jsonStockData.getString("open"));
             stockFrag_TV_open.setText("Open: \t" + df.format(Double.parseDouble(jsonStockData.getString("open"))));
             stockFrag_TV_prevClose.setText("Previous close: \t" + df.format(Double.parseDouble(jsonStockData.getString("prev_close"))));
             stockFrag_TV_high.setText("High: \t" + df.format(Double.parseDouble(jsonStockData.getString("high"))));
@@ -513,22 +501,16 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                     JSONObject jsonStockData = MyPreference.getInstance(getContext()).getStocksData(MyPreference.StockCacheManager.CACHE_KEYS.CHARTS_DATA_JSON+stock.getSymbol()).getJSONObject("stocks").getJSONObject(stock.getSymbol());
                     JSONArray times = jsonStockData.getJSONArray("timestamp");
                     JSONArray values = jsonStockData.getJSONArray("values");
-                    Log.d("StockFragment", "Current day= " + result);
+                    Log.d("stock_fragment", "Current day= " + result);
 
                     if(times != null) {
                         for (int i = 0; i < times.length(); i++) {
-                            Log.d("StockFragment", "day0= " + MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(0))));
                             String day = MyTimeStamp.timeStampToDay(Long.parseLong(times.getString(i)));
                             TextView predictionTV;
                             TextView actualTV;
                             TextView dayTv;
 
                             switch(day) {
-                                case "Sunday":
-                                    predictionTV = stockFrag_TV_sundayPrediction;
-                                    actualTV = stockFrag_TV_sundayActual;
-                                    dayTv = stockFrag_TV_sundayTitle;
-                                    break;
                                 case "Monday":
                                     predictionTV = stockFrag_TV_mondayPrediction;
                                     actualTV = stockFrag_TV_mondayActual;
@@ -554,15 +536,11 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                                     actualTV = stockFrag_TV_fridayActual;
                                     dayTv = stockFrag_TV_fridayTitle;
                                     break;
-                                case "Saturday":
-                                    predictionTV = stockFrag_TV_saturdayPrediction;
-                                    actualTV = stockFrag_TV_saturdayActual;
-                                    dayTv = stockFrag_TV_saturdayTitle;
-                                    break;
                                 default:
                                     throw new IllegalStateException("Unexpected value: day= " + day);
                             }
                             if(day.equalsIgnoreCase(MyTimeStamp.getCurrentDay())) {
+                                Log.d("stock_fragment", "ccccccccc Current day= " + MyTimeStamp.getCurrentDay());
                                 dayTv.setTypeface(dayTv.getTypeface(), Typeface.BOLD);
                                 dayTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
                             }
@@ -578,22 +556,12 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                                     }
                                 }
                             }
-                            Log.d("StockFragment", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
+                            Log.d("stock_fragment", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
                             // TODO: Normal values to %.2f, color the values by +/-.
                             predictionTV.setText(getStringSignedValue(predictionValue));
                             actualTV.setText(getStringSignedValue(actualValue));
                             setTextViewColor(predictionTV);
                             setTextViewColor(actualTV);
-
-                            /*for (Prediction p: result.get(day)) {
-                                if(p.getTargetSymbol().equalsIgnoreCase(stock.getSymbol())) {
-                                    double points = p.getPoints();
-                                    double actual = p.getActualValue(); // can be null!
-                                    break;
-                                }
-                            }*/
-
-
                         }
                     }
 

@@ -19,6 +19,7 @@ import com.example.stockprediction.utils.MySignal;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.SignInMethodQueryResult;
@@ -44,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout login_EDT_name;
     private TextInputLayout login_EDT_email;
     private TextInputLayout login_EDT_password;
-    private ProgressBar login_PB;
+    private CircularProgressIndicator login_PB;
     private MaterialButton login_BTN_login;
     private TextView login_register;
     private TextView login_TV_notes;

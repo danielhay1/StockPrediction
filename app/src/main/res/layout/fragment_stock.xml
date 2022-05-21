@@ -182,7 +182,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    app:ael_expanded="false"
+                    app:ael_expanded="true"
                     app:ael_duration="750"
                     app:ael_interpolator="accelerate"
                     app:ael_orientation="vertical">
@@ -201,39 +201,36 @@
                         android:gravity="center_horizontal"
                         android:orientation="horizontal">
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <TextView
-                                android:id="@+id/stockFrag_TV_sundayTitle"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/light_gray"
                                 android:gravity="center_horizontal"
                                 android:textSize="11sp"
-                                android:text="Sunday"/>
+                                android:text=""/>
                             <TextView
-                                android:id="@+id/stockFrag_TV_sundayPrediction"
                                 android:layout_marginTop="5dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/light_gray"
                                 android:gravity="center_horizontal"
-                                android:textSize="10sp"
-                                android:text="None."/>
+                                android:textSize="11sp"
+                                android:text="Prediction"/>
                             <TextView
-                                android:id="@+id/stockFrag_TV_sundayActual"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/light_gray"
                                 android:gravity="center_horizontal"
-                                android:textSize="10sp"
-                                android:text="None."/>
+                                android:textSize="11sp"
+                                android:text="Actual"/>
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -264,7 +261,7 @@
                                 android:text="None."/>
                         </LinearLayout>
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -295,7 +292,7 @@
                                 android:text="None."/>
                         </LinearLayout>
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -326,7 +323,7 @@
                                 android:text="None."/>
                         </LinearLayout>
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -337,7 +334,7 @@
                                 android:textColor="@color/light_gray"
                                 android:gravity="center_horizontal"
                                 android:textSize="11sp"
-                                android:text="thursday"/>
+                                android:text="Thursday"/>
                             <TextView
                                 android:id="@+id/stockFrag_TV_thursdayPrediction"
                                 android:layout_marginTop="5dp"
@@ -357,7 +354,7 @@
                                 android:text="None."/>
                         </LinearLayout>
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -380,37 +377,6 @@
                                 android:text="None."/>
                             <TextView
                                 android:id="@+id/stockFrag_TV_fridayActual"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/light_gray"
-                                android:gravity="center_horizontal"
-                                android:textSize="10sp"
-                                android:text="None."/>
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <TextView
-                                android:id="@+id/stockFrag_TV_saturdayTitle"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/light_gray"
-                                android:gravity="center_horizontal"
-                                android:textSize="11sp"
-                                android:text="Saturday"/>
-                            <TextView
-                                android:id="@+id/stockFrag_TV_saturdayPrediction"
-                                android:layout_marginTop="5dp"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/light_gray"
-                                android:gravity="center_horizontal"
-                                android:textSize="10sp"
-                                android:text="None."/>
-                            <TextView
-                                android:id="@+id/stockFrag_TV_saturdayActual"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/light_gray"
