@@ -8,176 +8,138 @@
     android:background="@color/theme_bgcolor"
     android:orientation="vertical">
 
-    <View
-        android:id="@+id/view"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="50dp"/>
-
-    <RelativeLayout
-        android:id="@+id/linear_account"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <RelativeLayout
-            android:id="@+id/profile_RL_topLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/grad_background">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imageview_account_profile"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginVertical="30dp"
-                android:src="@mipmap/ic_launcher"
-/>
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/profile_FAB_editImage"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/imageview_account_profile"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="40dp"
-                android:background="@color/theme_bgcolor"
-                app:backgroundTint="@color/theme_bgcolor"
-                android:src="@drawable/edit_icon"
-                app:maxImageSize="35dp" />
-
-<!--            <com.google.android.material.button.MaterialButton
-                android:id="@+id/profile_BTN_edit"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="24dp"
-                android:layout_marginRight="24dp"
-                android:text="Edit"
-                android:textColor="@color/white"
-                app:cornerRadius="50dp"
-                app:strokeColor="@color/white" />-->
-        </RelativeLayout>
+        android:layout_height="wrap_content">
         <LinearLayout
+            android:id="@+id/llPlayersName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/profile_RL_topLayout"
-            android:orientation="vertical">
-
-            <!--DISPLAY MODE-->
-            <LinearLayout
-                android:id="@+id/profile_LAYOUT_userDetails"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+            <RelativeLayout
+                android:id="@+id/linear_account"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
+                <RelativeLayout
+                    android:id="@+id/profile_RL_topLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="profile Details"
-                    android:textColor="@color/text"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@drawable/grad_background">
 
-                <TextView
-                    android:id="@+id/profile_TV_username"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Username"
-                    android:textColor="@color/text"
-                    android:textSize="17sp" />
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/imageview_account_profile"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginVertical="30dp"
+                        android:src="@mipmap/ic_launcher"
+                        />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/profile_FAB_editImage"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@+id/imageview_account_profile"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="40dp"
+                        android:background="@color/theme_bgcolor"
+                        app:backgroundTint="@color/theme_bgcolor"
+                        android:src="@drawable/edit_icon"
+                        app:maxImageSize="35dp" />
 
-                <TextView
-                    android:id="@+id/profile_TV_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textColor="@color/text"
-                    android:textSize="17sp"/>
-                <TextView
-                    android:id="@+id/profile_TV_favStocks"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Favorite stocks"
-                    android:textColor="@color/text"
-                    android:textSize="17sp"/>
-
-                <!--EDIT MODE-->
+                    <!--            <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/profile_BTN_edit"
+                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_marginTop="24dp"
+                                    android:layout_marginRight="24dp"
+                                    android:text="Edit"
+                                    android:textColor="@color/white"
+                                    app:cornerRadius="50dp"
+                                    app:strokeColor="@color/white" />-->
+                </RelativeLayout>
                 <LinearLayout
-                    android:id="@+id/profile_LAYOUT_editUser"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="8dp"
-                    android:visibility="invisible">
-                    <com.google.android.material.textfield.TextInputLayout
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/profile_RL_topLayout"
+                    android:orientation="vertical">
+
+                    <!--DISPLAY MODE-->
+                    <LinearLayout
+                        android:id="@+id/profile_LAYOUT_userDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp">
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Please Enter User Name"
-                            android:imeOptions="actionNext"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="10dp"
+                        android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <EditText
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Email Address"
-                            android:imeOptions="actionNext"
-                            android:inputType="textEmailAddress"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_marginBottom="10dp"
+                            android:text="profile Details"
+                            android:textColor="@color/text"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <EditText
+                        <TextView
+                            android:id="@+id/profile_TV_username"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="password"
-                            android:imeOptions="actionNext"
-                            android:inputType="textPassword"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:text="Username"
+                            android:textColor="@color/text"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/profile_TV_email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Email"
+                            android:textColor="@color/text"
+                            android:textSize="17sp"/>
+                        <TextView
+                            android:id="@+id/profile_TV_favStocks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Favorite stocks"
+                            android:textColor="@color/text"
+                            android:textSize="17sp"/>
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
-    </RelativeLayout>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/profile_BTN_Settings"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
+    </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="4dp"
-        android:layout_centerHorizontal="true"
-        android:text="Settings"
-        android:textColor="@color/purpel_text"
-        android:layout_above="@id/profile_BTN_Logout"
-        app:cornerRadius="50dp"
-        app:strokeColor="@color/purpel_text" />
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/profile_BTN_Logout"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Dialog.Flush"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginHorizontal="4dp"
-        android:text="Logout"
-        android:textColor="@color/purpel_text"
-        app:cornerRadius="50dp"
-        app:strokeColor="@color/purpel_text" />
+        android:gravity="center_horizontal">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/profile_BTN_Settings"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textColor="@color/purpel_text"
+            app:cornerRadius="50dp"
+            app:strokeColor="@color/purpel_text" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/profile_BTN_Logout"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog.Flush"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:textColor="@color/purpel_text"
+            app:cornerRadius="50dp"
+            app:strokeColor="@color/purpel_text" />
+    </LinearLayout>
 </RelativeLayout>
