@@ -271,8 +271,8 @@ public class MyPreference {
         private boolean checkPref(String preferenceName) {
             return sharedPreferences.getBoolean(preferenceName, false);
         }
-        public String getNotification_mode() {
-            return sharedPreferences.getString(notification_mode,context.getString(R.string.settings_notification_default));
+        public Boolean getNotification_mode() {
+            return sharedPreferences.getBoolean(notification_mode,true);
         }
         public String getTheme_mode() {
             return sharedPreferences.getString(theme_mode,context.getString(R.string.settings_theme_default));
@@ -282,6 +282,7 @@ public class MyPreference {
                     "Data");
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.clear();
-            editor.apply();        }
+            editor.apply();
+        }
     }
 }

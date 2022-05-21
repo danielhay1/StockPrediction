@@ -17,6 +17,7 @@ import androidx.preference.SwitchPreference;
 
 import com.example.stockprediction.R;
 import com.example.stockprediction.activites.MainActivity;
+import com.example.stockprediction.utils.MyPreference;
 import com.example.stockprediction.utils.firebase.MyFireBaseServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,7 +46,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         aboutUsBtn = (Preference) findPreference("about_us");
         themePreference.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue != null) {
-                Log.d("pttt", "onSharedPreferenceChanged: theme = " + newValue);
+                Log.d("preferences_fragment", "onSharedPreferenceChanged: theme = " + newValue);
                 int theme = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
                 switch (newValue.toString().toLowerCase()) {
                     case "day":
@@ -65,8 +66,8 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         });
         notificationPreference.setOnPreferenceChangeListener((preference, newValue) -> {
             if (newValue != null) {
-                Log.d("pttt", "onSharedPreferenceChanged: notification = " + newValue);
-                if(newValue == "true") {
+                Log.d("preferences_fragment", "onSharedPreferenceChanged: notification = " + newValue);
+                if(newValue.toString().toLowerCase() == "true") {
                     MyFireBaseServices.getInstance().registerPredictionTopic(task -> {});
                 } else {
                     MyFireBaseServices.getInstance().unregisterPredictionTopic();
@@ -97,12 +98,12 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
     }
 
     private void initListPreference() {
-        String currentThemeValue = myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),"");
-        String currentNotificationValue = myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_notification_key),"");
+        String currentThemeValue = myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),getContext().getResources().getString(R.string.settings_theme_default));
+        Boolean currentNotificationValue = myPerf.getSharedPreferences().getBoolean(getContext().getResources().getString(R.string.settings_notification_key),true);
         setSummary(currentThemeValue,themePreference);
         setDefaultValue(currentThemeValue,themePreference);
         Log.d("preferences_fragment", "initListPreference: settings_notification= "+ currentNotificationValue);
-        notificationPreference.setChecked(Boolean.parseBoolean(currentNotificationValue));
+        notificationPreference.setChecked(currentNotificationValue);
     }
 
     @Override
@@ -113,8 +114,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat implements Sha
         myPerf = getPreferenceManager();
         myPerf.setSharedPreferencesName(SETTINGS_SHARED_PREFERENCES);
         initPreferences();
-        Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+ myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_notification_key),"X"));
-        Log.d("preferences_fragment", "onCreatePreferences: settings_theme=" + myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),"X"));
+        //Log.d("preferences_fragment", "onCreatePreferences: settings_notification="+ myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_notification_key),"X"));
+        //Log.d("preferences_fragment", "onCreatePreferences: settings_theme=" + myPerf.getSharedPreferences().getString(getContext().getResources().getString(R.string.settings_theme_key),"X"));
+        Log.d("preferences_fragment", "onCreatePreferences: settings_notification=" + MyPreference.SettingsInspector.getInstance(getContext()).getNotification_mode());
+        Log.d("preferences_fragment", "onCreatePreferences: settings_theme=" + MyPreference.SettingsInspector.getInstance(getContext()).getTheme_mode());
         initListPreference();
     }
 

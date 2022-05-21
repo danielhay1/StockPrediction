@@ -24,7 +24,7 @@
     <string name="settings_theme_key">settings_theme</string>
 
     <!--Settings preferences default values-->
-    <string name="settings_notification_default">Favorite stocks</string>
+    <string name="settings_notification_default">True</string>
     <string name="settings_theme_default">Same as system</string>
 
 

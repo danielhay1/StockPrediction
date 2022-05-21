@@ -36,7 +36,7 @@ public class MyFireBaseServices {
     private final String MY_USERS = "users";
     private final String PREDICTIONS = "predictions";
     // ################# Firebase cloud messaging keys #################:
-    private final String PREDICTION_NOTIFICATIONS_TOPIC = "settings";
+    private final String PREDICTION_NOTIFICATIONS_TOPIC = "notification";
 
     // ################# CallBacks #################:
     public interface FB_Request_Callback<T> {

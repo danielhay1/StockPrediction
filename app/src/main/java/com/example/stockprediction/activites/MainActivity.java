@@ -186,6 +186,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         setNavBar(result,isImgUpdated);
                         if(savedInstanceState == null) {
                             loadFragment();
+                            // register for notification in case it allowed on settings.
+                            Boolean notificationLevelVal = MyPreference.SettingsInspector.getInstance(getApplicationContext()).getNotification_mode();
+                            if(notificationLevelVal) {
+                                MyFireBaseServices.getInstance().registerPredictionTopic(task -> {});
+                            }
                         } else {
                             if(progress.getVisibility() == View.VISIBLE) {
                                 progress.hide();
@@ -212,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     ImageTools.glideSetImageByStrUrl(this,user.getImageUrl(),nav_IMGVIEW_userImg);
                 }
             }
+
         }
     }
 
@@ -234,10 +240,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 nav_LBL_userInfo.setText(result.getEmail());
                 if(result.getImageUrl() != null) {
                     ImageTools.glideSetImageByStrUrl(activity,result.getImageUrl(),nav_IMGVIEW_userImg);
-                }
-                String notificationLevelVal = MyPreference.SettingsInspector.getInstance(getApplicationContext()).getNotification_mode();
-                if(Boolean.parseBoolean(notificationLevelVal)) {
-                    MyFireBaseServices.getInstance().registerPredictionTopic(task -> {});
                 }
             }
 
@@ -300,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void openAboutUsFragment() {
-        navigateById(R.layout.fragment_about_us);
+        navigateById( R.id.nav_about_us);
     }
 
 
