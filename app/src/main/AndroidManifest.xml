@@ -37,7 +37,7 @@
         <activity android:name=".presentation_layer.activites.MainActivity"
             />
         <service
-            android:name=".data_access_layer.apis.firebase.PushNotificationService"
+            android:name=".data_access_layer.firebase.PushNotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

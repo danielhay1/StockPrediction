@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.example.stockprediction.R;
 import com.example.stockprediction.data_access_layer.firebase.MyFireBaseServices;
+import com.example.stockprediction.data_access_layer.firebase.PushNotificationService;
 import com.example.stockprediction.presentation_layer.fragments.AboutUsFragment;
 import com.example.stockprediction.presentation_layer.fragments.PreferencesFragment;
 import com.example.stockprediction.presentation_layer.fragments.StockFragment;
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         initListeners();
         initFragment(false,savedInstanceState);
-        //PushNotificationService.printToken(this);
+        PushNotificationService.printToken(this);
     }
 
     private boolean isNetworkAvailable() {
