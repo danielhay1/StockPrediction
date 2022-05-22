@@ -67,6 +67,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
                 .setAutoCancel(true)
+                .setSmallIcon(R.drawable.adi_icon)
                 .setOnlyAlertOnce(true)
                 .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
@@ -86,7 +87,7 @@ public class PushNotificationService extends FirebaseMessagingService {
     }
 
     private RemoteViews getRemoteView(String channgelName, String title, String body, int iconId, int layoutId) {
-        RemoteViews remoteViews = new RemoteViews(channgelName, layoutId);
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), layoutId);
         remoteViews.setTextViewText(R.id.notification_TV_title,title);
         remoteViews.setTextViewText(R.id.notification_TV_body,body);
         remoteViews.setImageViewResource(R.id.notification_IMG_icon, iconId);
