@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activites.LoginActivity"
+    tools:context=".presentation_layer.activites.LoginActivity"
     android:background="@drawable/grad_background"
     android:orientation="vertical"
     android:gravity="center_horizontal">
@@ -24,7 +24,6 @@
         android:layout_height="1dp"
         android:layout_marginTop="44dp"
         android:src="@drawable/visionmarketlogo_white"
-        android:scaleType="centerCrop"
         android:layout_weight="1"/>
 
     <LinearLayout

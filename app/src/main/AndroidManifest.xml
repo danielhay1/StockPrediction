@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:name=".App"
+        android:name=".presentation_layer.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Market Vision"
@@ -26,18 +26,18 @@
 <!--            android:resource="@color/colorAccent" />-->
 
         <activity
-            android:name=".activites.SplashActivity"
+            android:name=".presentation_layer.activites.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activites.LoginActivity" />
-        <activity android:name=".activites.MainActivity"
+        <activity android:name=".presentation_layer.activites.LoginActivity" />
+        <activity android:name=".presentation_layer.activites.MainActivity"
             />
         <service
-            android:name=".utils.firebase.PushNotificationService"
+            android:name=".data_access_layer.apis.firebase.PushNotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
