@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.example.stockprediction.R;
 import com.example.stockprediction.data_access_layer.firebase.MyFireBaseServices;
 import com.example.stockprediction.presentation_layer.activites.MainActivity;
-import com.example.stockprediction.business_logic_layer.objects.BaseFragment;
+import com.example.stockprediction.presentation_layer.BaseFragment;
 import com.example.stockprediction.business_logic_layer.objects.stock.Stock;
 import com.example.stockprediction.business_logic_layer.objects.User;
 import com.example.stockprediction.utils.ImageTools;

@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.stockprediction.R;
 import com.example.stockprediction.presentation_layer.activites.MainActivity;
+import com.example.stockprediction.utils.MySignal;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -41,8 +42,8 @@ public class PushNotificationService extends FirebaseMessagingService {
         String text = "New predictions are available for the following stocks: " + remoteMessage.getNotification().getBody();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra(MainActivity.FRAGMENT_TO_LOAD, R.id.nav_favorities); // -> In case of calling MainActivity, I can specify the fragment to load.
-        //MySignal.getInstance().showNotification(getBaseContext(), CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
-        displayNotification(getBaseContext(), CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
+        MySignal.getInstance().showNotification(getBaseContext(), CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
+        //displayNotification(getBaseContext(), CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
     }
 
     private void showNotification() {
@@ -50,7 +51,7 @@ public class PushNotificationService extends FirebaseMessagingService {
         String text = "New predictions are available";
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.putExtra(MainActivity.FRAGMENT_TO_LOAD, R.id.nav_favorities); // -> In case of calling MainActivity, I can specify the fragment to load.
-       // displayNotification(this, CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
+        MySignal.getInstance().showNotification(getBaseContext(), CHANNEL_ID, CHANNEL_NAME,title,text,intent,R.mipmap.ic_launcher_round,R.layout.notification);
     }
 
     public static void printToken(Context context) {
@@ -61,37 +62,6 @@ public class PushNotificationService extends FirebaseMessagingService {
                 Log.e("push_notification_service", "token should not be null...");
             }
         });
-    }
-
-    private void displayNotification(Context context, String channelId, String channelName,String title, String message, Intent intent, int iconId, int layoutId) {
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.adi_icon)
-                .setOnlyAlertOnce(true)
-                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(pendingIntent);
-
-        notificationBuilder = notificationBuilder.setContent(getRemoteView(channelName,title,message,iconId,layoutId));
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Channel Name";// The user-visible name of the channel.
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(channelId, name, importance);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-        notificationManager.notify(0, notificationBuilder.build()); // 0 is the request code, it should be unique id
-        Log.d("push_notification_service", "showNotification:");
-    }
-
-    private RemoteViews getRemoteView(String channgelName, String title, String body, int iconId, int layoutId) {
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), layoutId);
-        remoteViews.setTextViewText(R.id.notification_TV_title,title);
-        remoteViews.setTextViewText(R.id.notification_TV_body,body);
-        remoteViews.setImageViewResource(R.id.notification_IMG_icon, iconId);
-        return remoteViews;
     }
     /*
 

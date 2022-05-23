@@ -85,10 +85,11 @@ public class MySignal {
 
      */
 
-    public void showNotification(Context context, String channelId, String channelName,String title, String message, Intent intent, int iconId, int layoutId) {
+    public void showNotification(Context context, String channelId, String channelName, String title, String message, Intent intent, int iconId, int layoutId) {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
                 .setAutoCancel(true)
+                .setSmallIcon(R.drawable.adi_icon)
                 .setOnlyAlertOnce(true)
                 .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
@@ -104,11 +105,11 @@ public class MySignal {
             notificationManager.createNotificationChannel(mChannel);
         }
         notificationManager.notify(0, notificationBuilder.build()); // 0 is the request code, it should be unique id
-        Log.d("pttt", "showNotification:");
+        Log.d("push_notification_service", "showNotification:");
     }
 
-    private RemoteViews getRemoteView(String channgelName,String title,String body,int iconId, int layoutId) {
-        RemoteViews remoteViews = new RemoteViews(channgelName, layoutId);
+    private RemoteViews getRemoteView(String channgelName, String title, String body, int iconId, int layoutId) {
+        RemoteViews remoteViews = new RemoteViews(appContext.getPackageName(), layoutId);
         remoteViews.setTextViewText(R.id.notification_TV_title,title);
         remoteViews.setTextViewText(R.id.notification_TV_body,body);
         remoteViews.setImageViewResource(R.id.notification_IMG_icon, iconId);

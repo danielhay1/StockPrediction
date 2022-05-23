@@ -1,4 +1,4 @@
-package com.example.stockprediction.utils;
+package com.example.stockprediction.data_access_layer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.stockprediction.R;
 import com.example.stockprediction.data_access_layer.apis.RapidApi;
 import com.example.stockprediction.business_logic_layer.objects.stock.Stock;
+import com.example.stockprediction.utils.MyTimeStamp;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -214,7 +215,7 @@ public class MyPreference {
         public static JSONObject generateCustomObject(JSONObject json, String jsonKey, String operation) {
             JSONObject customJson = new JSONObject();
             try {
-                customJson.put("request_day",MyTimeStamp.getCurrentDay());
+                customJson.put("request_day", MyTimeStamp.getCurrentDay());
                 customJson.put("request_timestamp",System.currentTimeMillis()/1000);
                 customJson.put("operation",operation);
                 //customJson.put("stocks",json);

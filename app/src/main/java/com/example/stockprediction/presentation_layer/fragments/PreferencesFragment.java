@@ -17,7 +17,7 @@ import androidx.preference.SwitchPreference;
 import com.example.stockprediction.R;
 import com.example.stockprediction.data_access_layer.firebase.MyFireBaseServices;
 import com.example.stockprediction.presentation_layer.activites.MainActivity;
-import com.example.stockprediction.utils.MyPreference;
+import com.example.stockprediction.data_access_layer.MyPreference;
 
 public class PreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
     private PreferenceManager myPerf;

@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.example.stockprediction.R;
 import com.example.stockprediction.business_logic_layer.objects.stock.Stock;
-import com.example.stockprediction.utils.MyPreference;
+import com.example.stockprediction.data_access_layer.MyPreference;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;

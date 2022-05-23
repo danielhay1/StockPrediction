@@ -11,7 +11,7 @@ import com.example.stockprediction.R;
 import com.example.stockprediction.business_logic_layer.objects.stock.Stock;
 import com.example.stockprediction.utils.HttpServices.HttpRequestQueue;
 import com.example.stockprediction.utils.MyAsyncTask;
-import com.example.stockprediction.utils.MyPreference;
+import com.example.stockprediction.data_access_layer.MyPreference;
 
 
 import org.json.JSONException;

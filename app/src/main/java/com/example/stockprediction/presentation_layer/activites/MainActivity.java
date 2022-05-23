@@ -36,7 +36,7 @@ import com.example.stockprediction.presentation_layer.fragments.StockRecyclerFra
 import com.example.stockprediction.presentation_layer.fragments.ProfileFragment;
 import com.example.stockprediction.business_logic_layer.objects.User;
 import com.example.stockprediction.utils.ImageTools;
-import com.example.stockprediction.utils.MyPreference;
+import com.example.stockprediction.data_access_layer.MyPreference;
 import com.example.stockprediction.utils.MySignal;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;

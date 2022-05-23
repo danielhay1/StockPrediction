@@ -1,10 +1,11 @@
-package com.example.stockprediction.business_logic_layer.objects;
+package com.example.stockprediction.presentation_layer;
 
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.stockprediction.business_logic_layer.objects.User;
 import com.example.stockprediction.data_access_layer.firebase.MyFireBaseServices;
 import com.example.stockprediction.presentation_layer.activites.MainActivity;
 import com.google.gson.Gson;

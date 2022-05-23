@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.stockprediction.data_access_layer.apis.RapidApi;
 import com.example.stockprediction.data_access_layer.firebase.MyFireBaseServices;
-import com.example.stockprediction.utils.MyPreference;
+import com.example.stockprediction.data_access_layer.MyPreference;
 import com.example.stockprediction.utils.MySignal;
 
 public class App extends Application {
