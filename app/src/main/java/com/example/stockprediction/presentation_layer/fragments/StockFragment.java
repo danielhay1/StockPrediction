@@ -1,5 +1,6 @@
 package com.example.stockprediction.presentation_layer.fragments;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;

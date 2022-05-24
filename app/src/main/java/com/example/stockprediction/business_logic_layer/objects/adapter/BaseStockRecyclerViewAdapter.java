@@ -62,6 +62,7 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d("tag-test", "onCreateViewHolder");
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = mInflater.inflate(R.layout.recycle_prediction, parent, false);
         return new ViewHolder(view);
     }
