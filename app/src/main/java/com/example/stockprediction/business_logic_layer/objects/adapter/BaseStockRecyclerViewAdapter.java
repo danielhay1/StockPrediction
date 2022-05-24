@@ -72,14 +72,27 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
         fillStockData(stock,holder);
         setStockChart(stock,holder);
         setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
-        setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
+        //setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
+
+    }
+
+    protected void setPredcitionPercent(double points,TextView textView) {
+        String sign = (points> 0) ? "+" : (points< 0) ? "-": "";
+        if(!sign.equals("")) {
+            textView.setText(sign);
+            setTextViewColor(textView);
+            textView.setText(String.format("%.2f", Math.abs(points)*100)+"%");
+        } else {
+            textView.setText("None");
+        }
 
     }
 
     protected void fillStockData(T stock, ViewHolder holder){
         holder.RVROW_LBL_StockValue.setText("$" + stock.getValue());
         holder.RVROW_LBL_StockStatusDetails.setText(getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), holder.RVROW_LBL_StockStatusDetails));
-        holder.RVROW_LBL_StockPredictionDetails.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
+        //holder.RVROW_LBL_StockPredictionDetails.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
+        setPredcitionPercent(stock.getPredictionValue(),holder.RVROW_LBL_StockPredictionDetails);
         setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
         holder.RVROW_LBL_StockName.setText(stock.getName());
         holder.RVROW_LBL_StockSymbol.setText(stock.getSymbol());

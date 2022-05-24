@@ -268,6 +268,17 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
         String sign = (stockChangeAmount> 0) ? "+" : "";
         return sign+String.format("%.2f", stockChangeAmount) + "(" + String.format("%.2f", stockChangePercent)+ "%)";
     }
+    private void setPredcitionPercent(double points,TextView textView) {
+        String sign = (points> 0) ? "+" : (points< 0) ? "-": "";
+        if(!sign.equals("")) {
+            textView.setText(sign);
+            setTextViewColor(textView);
+            textView.setText(String.format("%.2f", Math.abs(points)*100)+"%");
+        } else {
+            textView.setText("None");
+        }
+
+    }
 
     private String getStringSignedValue(double value) {
         if(value == 0) {
@@ -462,7 +473,8 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
         setStockStatusImg(stockFrag_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
         stockFrag_TV_name.setText(stock.getName());
         stockFrag_TV_symbol.setText(stock.getSymbol());
-        stockFrag_TV_predictionValue.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue())));
+        //stockFrag_TV_predictionValue.setText(getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue())));
+        setPredcitionPercent(stock.getPredictionValue(),stockFrag_TV_predictionValue);
         setStockChart(stock);
         markLikedStocks(stock);
     }

@@ -80,7 +80,7 @@ public class StockRecyclerViewAdapter <T extends Stock> extends BaseStockRecycle
         }
         setStockChart(stock, v);
         super.setTextViewColor(holder.RVROW_LBL_StockStatusDetails);
-        super.setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
+        //super.setTextViewColor(holder.RVROW_LBL_StockPredictionDetails);
         markLikedStocks(stock, v);
         v.RVROW_EV_likeButton.setOnCheckListener(new OnCheckListener() {
             @Override
@@ -146,7 +146,8 @@ public class StockRecyclerViewAdapter <T extends Stock> extends BaseStockRecycle
             stock.setChangePercent(Double.parseDouble(cacheStock.getString("regularMarketChangePercent")));
             holder.RVROW_LBL_StockValue.setText("$" + Double.parseDouble(cacheStock.getString("regularMarketPrice")));
             holder.RVROW_LBL_StockStatusDetails.setText(super.getStockChangeDetails(stock.getChangeAmount(),stock.getChangePercent(), holder.RVROW_LBL_StockStatusDetails));
-            holder.RVROW_LBL_StockPredictionDetails.setText(super.getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
+            //holder.RVROW_LBL_StockPredictionDetails.setText(super.getStockChangeDetails(stock.getPredictionValue(),stock.calcPercentageChange(stock.getPredictionValue(), stock.getValue()), holder.RVROW_LBL_StockPredictionDetails));
+            setPredcitionPercent(stock.getPredictionValue(),holder.RVROW_LBL_StockPredictionDetails);
             setImg(stock.getStockImg(),holder.RVROW_IMG_StockImg);
             setStockStatusImg(holder.RVROW_IMG_predictionStatus,stock.getPredictionStatus(),"prediction_status");
             holder.RVROW_LBL_StockName.setText(stock.getName());
