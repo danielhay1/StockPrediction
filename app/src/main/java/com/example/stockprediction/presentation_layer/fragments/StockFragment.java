@@ -573,8 +573,8 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                             Log.d("stock_fragment", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
                             // TODO: Normal values to %.2f, color the values by +/-.
                             String predictionStrVal = getStringSignedValue(predictionValue);
-                            if(predictionValue != 0)
-                                predictionTV.setText(predictionStrVal+"%");
+                            if(!predictionStrVal.equals("None."))
+                                predictionStrVal = predictionStrVal+"%";
                             predictionTV.setText(predictionStrVal);
                             actualTV.setText(getStringSignedValue(actualValue));
                             setTextViewColor(predictionTV);
