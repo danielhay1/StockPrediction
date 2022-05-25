@@ -38,7 +38,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
                         android:layout_marginVertical="30dp"
-                        android:src="@mipmap/ic_launcher"
+                        android:src="@drawable/ic_launcher_old"
                         />
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/profile_FAB_editImage"
@@ -52,18 +52,6 @@
                         android:src="@drawable/edit_icon"
                         app:maxImageSize="35dp" />
 
-                    <!--            <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/profile_BTN_edit"
-                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentRight="true"
-                                    android:layout_marginTop="24dp"
-                                    android:layout_marginRight="24dp"
-                                    android:text="Edit"
-                                    android:textColor="@color/white"
-                                    app:cornerRadius="50dp"
-                                    app:strokeColor="@color/white" />-->
                 </RelativeLayout>
                 <LinearLayout
                     android:layout_width="match_parent"

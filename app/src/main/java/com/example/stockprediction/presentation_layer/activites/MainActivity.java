@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         initListeners();
         initFragment(false,savedInstanceState);
-        PushNotificationService.printToken(this);
     }
 
     private boolean isNetworkAvailable() {

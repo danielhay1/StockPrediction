@@ -196,7 +196,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
                 // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
                 String day = MyTimeStamp.getCurrentDay();
-                //String day = "Monday";
+                //String day = "Thursday";
                 //String day = "Monday";
                 ArrayList<Prediction> predictions = result.get(day); // all predictions for today
                 if(predictions != null) {

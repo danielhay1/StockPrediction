@@ -230,14 +230,14 @@
                                         android:textColor="@color/light_gray"
                                         android:gravity="left"
                                         android:textSize="11sp"
-                                        android:text="Prediction"/>
+                                        android:text="Prediction:"/>
                                     <TextView
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:textColor="@color/light_gray"
                                         android:gravity="left"
                                         android:textSize="11sp"
-                                        android:text="Actual"/>
+                                        android:text="Actual value:"/>
                                 </LinearLayout>
 
                                 <LinearLayout

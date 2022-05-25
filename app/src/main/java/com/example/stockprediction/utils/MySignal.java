@@ -2,12 +2,14 @@ package com.example.stockprediction.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.util.Log;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 
 import com.example.stockprediction.R;
+import com.example.stockprediction.presentation_layer.activites.MainActivity;
+import com.google.firebase.messaging.RemoteMessage;
 
 public class MySignal {
     private  static MySignal instance;
@@ -85,7 +89,7 @@ public class MySignal {
 
      */
 
-    public void showNotification(Context context, String channelId, String channelName, String title, String message, Intent intent, int iconId, int layoutId) {
+    public void showCustomViewNotification(Context context, String channelId, String channelName, String title, String message, Intent intent, int iconId, int layoutId) {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, channelId)
                 .setAutoCancel(true)
@@ -114,5 +118,56 @@ public class MySignal {
         remoteViews.setTextViewText(R.id.notification_TV_body,body);
         remoteViews.setImageViewResource(R.id.notification_IMG_icon, iconId);
         return remoteViews;
+    }
+
+    public void showNotification(RemoteMessage remoteMessage, String  channelId, String  channelName){
+        NotificationManager notificationManager = null;
+        NotificationCompat.Builder mBuilder;
+
+        String title = remoteMessage.getNotification().getTitle();
+        String body = remoteMessage.getNotification().getBody();
+
+
+        //Set pending intent to builder
+        Intent intent = new Intent(appContext.getApplicationContext(), MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(appContext.getApplicationContext(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        //Notification builder
+        if (notificationManager == null){
+            notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = notificationManager.getNotificationChannel(channelId);
+            if (mChannel == null){
+                mChannel = new NotificationChannel(channelId, channelName, importance);
+                mChannel.enableVibration(true);
+                mChannel.setLightColor(Color.GREEN);
+                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notificationManager.createNotificationChannel(mChannel);
+            }
+
+            mBuilder = new NotificationCompat.Builder(appContext, channelId);
+            mBuilder.setContentTitle(title)
+                    .setColor(appContext.getColor(R.color.purple_900))
+                    .setSmallIcon(R.drawable.icon_foreground_purpel)
+                    .setContentText(body) //show icon on status bar
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                    .setDefaults(Notification.DEFAULT_ALL);
+        }else {
+            mBuilder = new NotificationCompat.Builder(appContext);
+            mBuilder.setContentTitle(title)
+                    .setSmallIcon(R.drawable.icon_foreground_purpel)
+                    .setContentText(body)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                    .setDefaults(Notification.DEFAULT_VIBRATE);
+        }
+
+        notificationManager.notify(0, mBuilder.build());
     }
 }
