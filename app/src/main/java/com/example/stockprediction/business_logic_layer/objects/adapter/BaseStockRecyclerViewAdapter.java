@@ -85,6 +85,7 @@ public class BaseStockRecyclerViewAdapter<T extends Stock> extends RecyclerView.
             textView.setText(String.format("%.2f", Math.abs(points)*100)+"%");
         } else {
             textView.setText("None");
+            setTextViewColor(textView);
         }
 
     }

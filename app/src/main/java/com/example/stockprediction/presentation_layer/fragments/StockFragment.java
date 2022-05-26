@@ -263,8 +263,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
     }
     private String getStockChangeDetails(double stockChangeAmount, double stockChangePercent){
         if(stockChangeAmount == 0) {
-            return "None.";
-
+            return "None";
         }
         String sign = (stockChangeAmount> 0) ? "+" : "";
         return sign+String.format("%.2f", stockChangeAmount) + "(" + String.format("%.2f", stockChangePercent)+ "%)";
