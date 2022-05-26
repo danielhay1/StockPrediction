@@ -60,7 +60,10 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
         super.initStockRecyclerView(recyclerView, () -> {
             ArrayList<Stock> stocksData = new ArrayList<Stock>();
             for (Map.Entry<String, String> entry : RapidApi.MY_STOCKS.entrySet()) {
-                stocksData.add(new Stock(entry.getKey(), entry.getValue()));
+                Stock s = new Stock(entry.getKey(), entry.getValue());
+                stocksData.add(s);
+                Log.d("main_fragment", "prediction: stocks = " +s.getName()+",value = "+s.getPredictionValue());
+
             }
             Collections.sort(stocksData);
             return stocksData;
@@ -68,10 +71,10 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
             @Override
             public void onStockLike(Stock stock) {
                 ArrayList<Stock> stocks = getUser().getFavStocks();
-                Log.d("pttt", "onStockLike: stocks = " + stocks);
+                Log.d("main_fragment", "onStockLike: stocks = " + stocks);
                 if (stocks.add(stock)) {
                     updateUser(getUser().setFavStocks(stocks));
-                    Log.e("pttt", "onStockLike: user=" + getUser());
+                    Log.e("main_fragment", "onStockLike: user=" + getUser());
                 }
             }
 
@@ -89,28 +92,27 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
 
     public void initBaseStockRecyclerView(RecyclerView recyclerView,List<Stock> data) {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
-
-            Log.e("pttt", "initStockRecyclerView-predictions: data="+data);
-
+            Log.e("main_fragment", "initStockRecyclerView-predictions: data="+data);
+            Collections.sort(data,Collections.reverseOrder());
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext(),RecyclerView.HORIZONTAL,true));
             adapter = initBaseAdapter(recyclerView,data);
             getInstance().getQuotesRequest((List<Stock>) data, new RapidApi.CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
-                    Log.e("pttt", "StockJson found: "+json);
+                    Log.e("main_fragment", "StockJson found: "+json);
 
                     for (int position = 0; position < data.size(); position++) {
                         try {
                             parseQuotesResponse(adapter.getItemIndex(data.get(position).getSymbol()),adapter,json);
                         } catch (JSONException e) {
-                            Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
+                            Log.e("main_fragment", "StockJson parsing error: "+e.getLocalizedMessage());
                         }
                     }
                 }
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.e("pttt", "StockJson error: "+error);
+                    Log.e("main_fragment", "StockJson error: "+error);
                 }
             });
             getInstance().getChartsRequest((List<Stock>) data, new RapidApi.CallBack_HttpTasks() {
@@ -127,7 +129,7 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
                         });
                         Log.d("stock_recycler_base_fragment", "StockJson found: " + symbol + ",stock to update: "+stock.getSymbol());
                     } catch (JSONException e) {
-                        Log.e("pttt", "StockJson parsing error: "+e.getLocalizedMessage());
+                        Log.e("main_fragment", "StockJson parsing error: "+e.getLocalizedMessage());
                     }
                 }
 
@@ -139,10 +141,10 @@ public class MainFragment extends StockRecyclerBaseFragment<Stock> {
         });
     }
     private BaseStockRecyclerViewAdapter<Stock> initBaseAdapter(RecyclerView recyclerView, List<Stock> stocksData) {
-        Log.e("pttt", "initAdapter: favStocks = "+getUser().getFavStocks());
+        Log.e("main_fragment", "initAdapter: favStocks = "+getUser().getFavStocks());
         adapter = new BaseStockRecyclerViewAdapter(getContext(), stocksData);
         adapter.setClickListener((view, position) -> {
-            Log.d("pttt", "onItemClick: Selected item: "+position);
+            Log.d("main_fragment", "onItemClick: Selected item: "+position);
             Stock stock = stocksData.get(position);
             goToStockFragment(stock);
         });

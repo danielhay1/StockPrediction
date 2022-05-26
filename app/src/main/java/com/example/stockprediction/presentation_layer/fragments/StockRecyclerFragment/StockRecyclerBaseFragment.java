@@ -101,27 +101,14 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
         return adapter;
     }
 
-    /*private StockRecyclerViewAdapter initBaseAdapter(RecyclerView recyclerView, ArrayList<T> stocksData) {
-        Log.e("stock_recycler_base_fragment", "initAdapter: favStocks = "+getUser().getFavStocks());
-        adapter = (StockRecyclerViewAdapter<T>) new BaseStockRecyclerViewAdapter(getContext(), stocksData);
-        adapter.setClickListener((view, position) -> {
-            Log.d("stock_recycler_base_fragment", "onItemClick: Selected item: "+position + ",stocks="+data);
-            Stock stock = stocksData.get(position);
-            goToStockFragment(stock);
-        });
-        recyclerView.setAdapter(adapter);
-        return adapter;
-    }*/
-
     public void initStockRecyclerView(RecyclerView recyclerView,initStockRecyclerData_Callback<T> initRecyclerData_callback, StockRecyclerViewAdapter.OnStockLike_Callback onStockLike_callback)  {
         new MyAsyncTask().executeBgTask(() -> { //Run on background thread.
             data = initRecyclerData_callback.initRecyclerData();
-            Collections.sort(this.data);
             Log.e("stock_recycler_base_fragment", "initStockRecyclerView: data="+data);
         },() -> { // Run on UI thread
             recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
             adapter = initAdapter(recyclerView, data, onStockLike_callback);
-            // Get stock from FireBaser
+            // Get stocks data from api
             getInstance().getQuotesRequest((List<Stock>) data, new CallBack_HttpTasks() {
                 @Override
                 public void onResponse(JSONObject json) {
@@ -185,12 +172,10 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
     }
 
     private void initDailyPredictions() {
-        for (Stock stock: getUser().getFavStocks()) { //TODO: DEBUG FAVSTOCK - UPDATED VALUE.
+        for (Stock stock: getUser().getFavStocks()) {
             stock.setPredictionValue(0);
         }
-        Log.d("initDailyPredictions", "initDailyPredictions:  user= "+getUser().getImageUrl());
         updateUser(getUser());
-        //added above
         MyFireBaseServices.getInstance().listenPredictions(new MyFireBaseServices.FB_Request_Callback<HashMap<String, ArrayList<Prediction>>>() {
             @Override
             public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
@@ -212,15 +197,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                     if(!predictions.isEmpty() && predictionReady_callback!=null)
                         predictionReady_callback.onPredictionUpdate(predictionStocks);
                     Log.d("data_data", "OnSuccess: data = "+predictionStocks);
-                    //Collections.sort(data);
-//                    Log.d("data_data", "OnSuccess: data = "+data);
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            adapter.notifyAdapterDataSetChanged(data);
-//                        }
-//                    });
-                    adapter.sortData();
+                    //adapter.sortData();
                 }
             }
             @Override
