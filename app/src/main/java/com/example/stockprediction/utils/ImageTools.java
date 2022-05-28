@@ -11,7 +11,7 @@ public class ImageTools {
     private ImageTools() {}
 
     public static void glideSetImageByStrUrl(Activity activity, String stringImg, ImageView imageView) {
-        Log.d("pttt", "setImageUserWithUriGlide:");
+        Log.d("image_tools", "setImageUserWithUriGlide:");
         Glide.with(activity)
                 .load(stringImg)
                 .centerCrop()
@@ -19,7 +19,7 @@ public class ImageTools {
     }
 
     public static void glideSetImageByStrUrl(Activity activity, Uri uri, ImageView imageView) {
-        Log.d("profile_fragment", "setImageUserWithUriGlide: ");
+        Log.d("image_tools", "setImageUserWithUriGlide: ");
         Glide.with(activity)
                 .load(uri)
                 .centerCrop()

@@ -36,13 +36,13 @@ public class MySignal {
 
     public static void Init(Context appContext){
         if(instance == null) {
-            Log.d("pttt", "Init: MySignal");
+            Log.d("my_signal", "Init: MySignal");
             instance = new MySignal(appContext);
         }
     }
 
     public void toast(String msg) {
-        Log.d("pttt", "toast: "+msg);
+        Log.d("my_signal", "toast: "+msg);
         Toast.makeText(appContext,msg,Toast.LENGTH_SHORT).show();
     }
 

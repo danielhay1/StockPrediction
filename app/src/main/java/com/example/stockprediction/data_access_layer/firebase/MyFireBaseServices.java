@@ -68,7 +68,7 @@ public class MyFireBaseServices {
 
     public static void Init() {
         if (instance == null) {
-            Log.d("pttt", "Init: MyFireBaseServices");
+            Log.d("my_firebase_services", "Init: MyFireBaseServices");
             instance = new MyFireBaseServices();
         }
     }
@@ -79,10 +79,10 @@ public class MyFireBaseServices {
         boolean loginSuccess;
         if (firebaseUser == null) {
             loginSuccess = false;
-            Log.d("pttt", "login: failed");
+            Log.d("my_firebase_services", "login: failed");
         } else {
             setFirebaseUser(firebaseUser);
-            Log.d("pttt", "Uid = " + firebaseUser.getUid()
+            Log.d("my_firebase_services", "Uid = " + firebaseUser.getUid()
                     + "\nDisplayName = " + firebaseUser.getDisplayName()
                     + "\nEmail = " + firebaseUser.getEmail()
                     + "\nPhoneNumber = " + firebaseUser.getPhoneNumber()
@@ -114,7 +114,7 @@ public class MyFireBaseServices {
     public void saveUserToFireBase(User user) {
         if (firebaseUser.getUid() != null) {
             saveObject(MY_USERS, user.getUid(), user);
-            Log.d("pttt", "saveUserToFireBase: ");
+            Log.d("my_firebase_services", "saveUserToFireBase: ");
         }
     }
 
@@ -161,7 +161,7 @@ public class MyFireBaseServices {
             UploadTask uploadTask = mountainImagesRef.putFile(uri);
             uploadTask.addOnFailureListener(e -> {
             }).addOnSuccessListener(taskSnapshot -> {
-                Log.d("pttt", "savePhotoToStorageUri: successed ");
+                Log.d("my_firebase_services", "savePhotoToStorageUri: successed ");
                 getImageUri(taskSnapshot, FBImageReady_Callback);
             });
         }
@@ -173,7 +173,7 @@ public class MyFireBaseServices {
                 Task<Uri> result = taskSnapshot.getStorage().getDownloadUrl();
                 result.addOnSuccessListener(uri -> {
                     String imageUrl = uri.toString();
-                    Log.d("pttt", "imageUrl= " + imageUrl);
+                    Log.d("my_firebase_services", "imageUrl= " + imageUrl);
                     if (FBImageReady_Callback != null) {
                         FBImageReady_Callback.imageUriCallback(imageUrl);
                     }
@@ -199,7 +199,7 @@ public class MyFireBaseServices {
 
             @Override
             public void OnFailure(Exception e) {
-                Log.d("pttt", "OnFailure: exception: " + e);
+                Log.d("my_firebase_services", "OnFailure: exception: " + e);
             }
         });
     }
@@ -291,10 +291,10 @@ public class MyFireBaseServices {
             if(snapshot != null) {
                 try {
                     T value = snapshot.getValue(classType);
-                    Log.d("pttt", "Value is: "+ value);
+                    Log.d("my_firebase_services", "Value is: "+ value);
                     fb_request_callback.OnSuccess(value);
                 } catch (Exception exception) {
-                    Log.e("pttt", "Failed to get value!, snapshot: " + snapshot + "\nException = "+exception);
+                    Log.e("my_firebase_services", "Failed to get value!, snapshot: " + snapshot + "\nException = "+exception);
                     fb_request_callback.OnFailure(exception);
                 }
             }

@@ -199,8 +199,8 @@ public class MyPreference {
 
         }
         public interface REFRESH_INTERVAL {
-            public final static int STOCK_DATA = 24 * 30; // In hours // TODO: change to 24 hour
-            public final static int CHARTS_DATA = 24 * 30; // In hours // TODO: change to 24 hour
+            public final static int STOCK_DATA = 24;
+            public final static int CHARTS_DATA = 24;
         }
 
         public static Boolean shouldRefreshCache(JSONObject json,int refreshInterval) throws JSONException {
