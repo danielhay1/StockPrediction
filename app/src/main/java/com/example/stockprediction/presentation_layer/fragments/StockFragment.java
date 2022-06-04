@@ -551,9 +551,12 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                                 default:
                                     throw new IllegalStateException("Unexpected value: day= " + day);
                             }
-                            if(day.equalsIgnoreCase("Thursday")) {
-                            //if(day.equalsIgnoreCase(MyTimeStamp.getCurrentDay())) {
-                                Log.d("stock_fragment", "ccccccccc Current day= " + MyTimeStamp.getCurrentDay());
+                            String currentDay =  MyTimeStamp.getCurrentDay();
+                            if(currentDay.equalsIgnoreCase("Saturday") || currentDay.equalsIgnoreCase("Sunday")) { // on weekend days.
+                                currentDay = "Friday";
+                            }
+                            if(day.equalsIgnoreCase(currentDay)) {
+                                Log.d("stock_fragment", "Current day= " + MyTimeStamp.getCurrentDay());
                                 dayTv.setTypeface(dayTv.getTypeface(), Typeface.BOLD);
                                 dayTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
                             }
@@ -571,7 +574,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
                             }
                             Log.d("stock_fragment", "day= " + day + ", value= "+ value + ", predictionValue= " + predictionValue + ", actualValue= " + actualValue+", index="+i);
                             // TODO: Normal values to %.2f, color the values by +/-.
-                            String predictionStrVal = getStringSignedValue(predictionValue);
+                            String predictionStrVal = getStringSignedValue(predictionValue*100);
                             if(!predictionStrVal.equals("None."))
                                 predictionStrVal = predictionStrVal+"%";
                             predictionTV.setText(predictionStrVal);

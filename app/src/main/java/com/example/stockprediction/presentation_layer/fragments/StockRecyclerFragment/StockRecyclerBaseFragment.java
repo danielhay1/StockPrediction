@@ -9,10 +9,12 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.Preference;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.VolleyError;
+import com.example.stockprediction.data_access_layer.apis.RapidApi;
 import com.example.stockprediction.data_access_layer.firebase.MyFireBaseServices;
 import com.example.stockprediction.presentation_layer.activites.MainActivity;
 import com.example.stockprediction.business_logic_layer.objects.adapter.BaseStockRecyclerViewAdapter;
@@ -32,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.stockprediction.data_access_layer.apis.RapidApi.*;
 
@@ -181,18 +184,28 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
                 // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
                 String day = MyTimeStamp.getCurrentDay();
-                //String day = "Thursday";
+                if(day.equalsIgnoreCase("Saturday") || day.equalsIgnoreCase("Sunday")) // on weekend days display Friday predictions.
+                    day = "Friday";
+                //String day = "Friday";
                 //String day = "Monday";
+                HashMap<String,Double> temp = new HashMap<String,Double>();
                 ArrayList<Prediction> predictions = result.get(day); // all predictions for today
                 if(predictions != null) {
                     List<T> predictionStocks = new ArrayList<T>();
                     for (Prediction prediction: predictions) {
-                        int index = adapter.getItemIndex(prediction.getTargetSymbol());
-                        T stock = data.get(index);
-                        stock.setPredictionValue(prediction.getPoints());
-                        predictionStocks.add(stock);
-                        updateFavStocksPrediction(stock); // added
+                        if(prediction.getPrecision() > 50.0) {
+                            int index = adapter.getItemIndex(prediction.getTargetSymbol());
+                            T stock = data.get(index);
+                            if(temp.getOrDefault(prediction.getTargetSymbol(),-10.0) < prediction.getPoints()) { // handle predictions conflict
+                                temp.put(prediction.getTargetSymbol(),prediction.getPoints());
+                                stock.setPredictionValue(prediction.getPoints());
+                                predictionStocks.add(stock);
+                                updateFavStocksPrediction(stock); // added
+                            }
+                        }
                     }
+                    adapter.notifyDataSetChanged();
+
                     updateUser(getUser());
                     if(!predictions.isEmpty() && predictionReady_callback!=null)
                         predictionReady_callback.onPredictionUpdate(predictionStocks);
