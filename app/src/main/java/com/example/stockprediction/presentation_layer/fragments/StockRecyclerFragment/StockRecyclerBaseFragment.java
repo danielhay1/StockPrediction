@@ -201,10 +201,10 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                                 stock.setPredictionValue(prediction.getPoints());
                                 predictionStocks.add(stock);
                                 updateFavStocksPrediction(stock); // added
+                                adapter.notifyItemChanged(index);
                             }
                         }
                     }
-                    adapter.notifyDataSetChanged();
 
                     updateUser(getUser());
                     if(!predictions.isEmpty() && predictionReady_callback!=null)
