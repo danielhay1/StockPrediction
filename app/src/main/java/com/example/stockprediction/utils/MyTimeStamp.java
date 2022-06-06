@@ -22,9 +22,10 @@ public class MyTimeStamp {
 
     public static String getDisplayDay() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE,Calendar.DATE-1);
+        calendar.add(Calendar.DATE,-1);
         if(calendar.get(calendar.HOUR_OF_DAY) >= 23 && calendar.get(calendar.MINUTE) > 10)
             return getCurrentDay();
+
         Date date = calendar.getTime();
         return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.getTime());
         // full name form of the day

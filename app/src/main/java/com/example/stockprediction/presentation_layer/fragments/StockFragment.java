@@ -491,7 +491,7 @@ public class StockFragment extends BaseFragment implements CallBack_HttpTasks{
             stockFrag_TV_prevClose.setText("Previous close: \t" + df.format(Double.parseDouble(jsonStockData.getString("prev_close"))));
             stockFrag_TV_high.setText("High: \t" + df.format(Double.parseDouble(jsonStockData.getString("high"))));
             stockFrag_TV_low.setText("Low: \t" + df.format(Double.parseDouble(jsonStockData.getString("low"))));
-            stockFrag_TV_vol.setText("Vol \t" + df.format(Double.parseDouble(jsonStockData.getString("vol"))));
+            stockFrag_TV_vol.setText("Vol: \t" + df.format(Double.parseDouble(jsonStockData.getString("vol"))));
             String[] range = jsonStockData.getString("year_range").trim().split("-");
             stockFrag_TV_yRange.setText("Yearly range: \t" + df.format(Double.parseDouble(range[0])) + " - " + df.format(Double.parseDouble(range[1])));
         }
