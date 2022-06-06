@@ -183,7 +183,7 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
             @Override
             public void OnSuccess(HashMap<String, ArrayList<Prediction>> result) {
                 // Hashmap looks like -> {Thursday=[PredictionList],Wednesday=[PredictionList]}
-                String day = MyTimeStamp.getCurrentDay();
+                String day = MyTimeStamp.getDisplayDay();
                 if(day.equalsIgnoreCase("Saturday") || day.equalsIgnoreCase("Sunday")) // on weekend days display Friday predictions.
                     day = "Friday";
                 //String day = "Friday";
@@ -193,16 +193,14 @@ public class StockRecyclerBaseFragment<T extends Stock> extends BaseFragment {
                 if(predictions != null) {
                     List<T> predictionStocks = new ArrayList<T>();
                     for (Prediction prediction: predictions) {
-                        if(prediction.getPrecision() > 50.0) {
-                            int index = adapter.getItemIndex(prediction.getTargetSymbol());
-                            T stock = data.get(index);
-                            if(temp.getOrDefault(prediction.getTargetSymbol(),-10.0) < prediction.getPoints()) { // handle predictions conflict
-                                temp.put(prediction.getTargetSymbol(),prediction.getPoints());
-                                stock.setPredictionValue(prediction.getPoints());
-                                predictionStocks.add(stock);
-                                updateFavStocksPrediction(stock); // added
-                                adapter.notifyItemChanged(index);
-                            }
+                        int index = adapter.getItemIndex(prediction.getTargetSymbol());
+                        T stock = data.get(index);
+                        if(temp.getOrDefault(prediction.getTargetSymbol(),-10.0) < prediction.getPoints()) { // handle predictions conflict
+                            temp.put(prediction.getTargetSymbol(),prediction.getPoints());
+                            stock.setPredictionValue(prediction.getPoints());
+                            predictionStocks.add(stock);
+                            updateFavStocksPrediction(stock); // added
+                            adapter.notifyItemChanged(index);
                         }
                     }
 
